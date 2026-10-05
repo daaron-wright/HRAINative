@@ -1,0 +1,351 @@
+<meta charset="utf-8">
+<title>Rotation Planning Method</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&family=IBM+Plex+Serif:wght@500;600&display=swap">
+<style>
+:root{--bg:#F4F5F2;--paper:#FFFFFF;--ink:#17201C;--muted:#58625D;--faint:#8A938E;--line:#DCE0DA;--soft:#ECEFEA;
+--accent:#1F6B57;--accent-soft:#DDEEE7;--warm:#B3622A;--warm-soft:#F6E6DA;--bad:#A8352C;--bad-soft:#F5DFDB;--ok:#2D7D4F;--ok-soft:#E0F0E5;--blue:#3D5BA8;--blue-soft:#E3E8F5;--dot:#B9C1BB}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;--bg:#121614;--paper:#1A201D;--ink:#E5EAE6;--muted:#9DA8A2;--faint:#6F7A74;--line:#2C3530;--soft:#222925;
+--accent:#5CC2A3;--accent-soft:#163A30;--warm:#E39A62;--warm-soft:#3A2818;--bad:#E57367;--bad-soft:#3C201C;--ok:#66C08A;--ok-soft:#1B3325;--blue:#93A8EA;--blue-soft:#232C45;--dot:#3F4A44}}
+:root[data-theme="dark"]{color-scheme:dark;--bg:#121614;--paper:#1A201D;--ink:#E5EAE6;--muted:#9DA8A2;--faint:#6F7A74;--line:#2C3530;--soft:#222925;
+--accent:#5CC2A3;--accent-soft:#163A30;--warm:#E39A62;--warm-soft:#3A2818;--bad:#E57367;--bad-soft:#3C201C;--ok:#66C08A;--ok-soft:#1B3325;--blue:#93A8EA;--blue-soft:#232C45;--dot:#3F4A44}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:15.5px/1.6 "IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;padding-inline:16px;padding-block:32px 72px;margin:0}
+.wrap{max-width:980px;margin:0 auto;display:flex;flex-direction:column;gap:28px}
+h1{font:600 clamp(28px,4.4vw,40px)/1.1 "IBM Plex Serif",Georgia,serif;margin:0;text-wrap:balance}
+h2{font:600 22px/1.25 "IBM Plex Serif",Georgia,serif;margin:0;text-wrap:balance}
+h3{font-size:15px;font-weight:600;margin:0}
+p{margin:0;max-width:70ch}
+a{color:var(--accent)}
+.muted{color:var(--muted)} .mono{font-family:"IBM Plex Mono",ui-monospace,Menlo,monospace}
+.kicker{font:600 11.5px "IBM Plex Mono",monospace;letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+.badge{display:inline-block;font:600 11px "IBM Plex Sans";letter-spacing:.05em;text-transform:uppercase;padding:3px 8px;border-radius:4px;background:var(--warm-soft);color:var(--warm)}
+header{display:flex;flex-direction:column;gap:10px}
+.lead{font-size:18px;line-height:1.55;max-width:66ch}
+section{display:flex;flex-direction:column;gap:14px}
+.card{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:20px}
+sup a{text-decoration:none;font:600 10.5px "IBM Plex Mono",monospace;color:var(--accent);padding:0 1px}
+/* flow */
+.flow{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px}
+@media (max-width:820px){.flow{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.fs{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:6px;position:relative}
+.fs .n{font:600 12px "IBM Plex Mono",monospace;color:var(--paper);background:var(--accent);width:22px;height:22px;border-radius:50%;display:grid;place-items:center}
+.fs b{font-size:14px;line-height:1.3}
+.fs span{font-size:12.5px;color:var(--muted);line-height:1.4}
+.fs .rest{font:500 10.5px "IBM Plex Mono",monospace;color:var(--accent);margin-top:auto}
+.fs.person .n{background:var(--warm)} .fs.person .rest{color:var(--warm)}
+/* tables */
+.sc{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--paper)}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+th,td{padding:9px 11px;text-align:left;vertical-align:top;border-bottom:1px solid var(--line)}
+th{font:600 11px "IBM Plex Sans";letter-spacing:.04em;text-transform:uppercase;color:var(--muted);background:var(--soft)}
+tr:last-child td{border-bottom:0}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.own{color:var(--warm)}
+.tag{display:inline-block;font-size:11.5px;font-weight:600;padding:1px 8px;border-radius:999px;white-space:nowrap}
+.tag.ok{background:var(--ok-soft);color:var(--ok)} .tag.no{background:var(--soft);color:var(--muted)} .tag.warm{background:var(--warm-soft);color:var(--warm)}
+/* measures */
+.two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+@media (max-width:700px){.two{grid-template-columns:minmax(0,1fr)}}
+.meas{border-left:4px solid var(--accent);display:flex;flex-direction:column;gap:8px}
+.meas.tail{border-left-color:var(--warm)}
+.fx{font:500 14px "IBM Plex Mono",monospace;background:var(--soft);border-radius:8px;padding:10px 12px;line-height:1.5;overflow-x:auto}
+/* sim */
+.rule{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:15px}
+.rule .t{background:var(--soft);border-radius:8px;padding:8px 11px}
+.rule .op{font:600 16px "IBM Plex Mono",monospace;color:var(--faint)}
+.res{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+@media (max-width:700px){.res{grid-template-columns:minmax(0,1fr)}}
+.rc{background:var(--paper);border:1.5px solid var(--line);border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:6px}
+.rc.best{border-color:var(--accent)}
+.rc .k{font-size:13px;color:var(--muted)}
+.rc .big{font:600 26px "IBM Plex Mono",monospace;line-height:1.1}
+.rc .row{display:flex;justify-content:space-between;font-size:13px;border-top:1px dashed var(--line);padding-top:5px}
+.chart{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:12px}
+.chart svg{display:block;width:100%;height:auto}
+.ax{stroke:var(--line)} .axt{fill:var(--muted);font:11px "IBM Plex Mono",monospace}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:12.5px;color:var(--muted)}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px;vertical-align:-1px}
+/* evidence */
+.ev{display:flex;flex-direction:column;gap:8px}
+.evr{display:grid;grid-template-columns:26px minmax(0,1fr);gap:10px;font-size:14px;line-height:1.5}
+.evr .ic{font-weight:700;font-size:15px}
+.find{display:flex;flex-direction:column;gap:10px}
+.fi{display:grid;grid-template-columns:minmax(0,1fr);gap:4px;border-left:3px solid var(--warm);padding:2px 0 2px 12px}
+.fi b{font-size:14.5px}
+ol.src{margin:0;padding-left:26px;display:flex;flex-direction:column;gap:7px;font-size:13.5px}
+ol.src li{padding-left:4px}
+.src .how{font-size:11.5px;margin-left:6px}
+footer{font-size:13px;color:var(--muted)}
+</style>
+
+<div class="wrap">
+<header>
+  <div><span class="badge">Invented data · method v1 · 1 October 2026</span></div>
+  <h1>Rotation Planning Method</h1>
+  <p class="lead">How the top-of-license planner decides which moves to make and when. Each step names the published method it rests on, and marks plainly where we have made our own choice.</p>
+</header>
+
+<section>
+  <span class="kicker">The method in one picture</span>
+  <div class="flow">
+    <div class="fs"><span class="n">1</span><b>Demand by stage</b><span>Signed work and pipeline deals, each weighted by its chance of closing</span><span class="rest">Weighted pipeline <sup><a href="#s1">1</a><a href="#s2">2</a></sup></span></div>
+    <div class="fs"><span class="n">2</span><b>Confirmed levels</b><span>Each person's license and the level of work they do, confirmed by a named person</span><span class="rest">SFIA levels <sup><a href="#s5">5</a></sup></span></div>
+    <div class="fs"><span class="n">3</span><b>Possible chains</b><span>One opening at the top sets off step-ups below it, ending in a free person or a junior hire</span><span class="rest">Vacancy chains <sup><a href="#s7">7</a><a href="#s8">8</a></sup></span></div>
+    <div class="fs"><span class="n">4</span><b>Scenarios</b><span>Thousands of draws of which deals win, so the plan is tested on outcomes, not one guess</span><span class="rest">Stochastic programming <sup><a href="#s13">13</a><a href="#s14">14</a></sup></span></div>
+    <div class="fs"><span class="n">5</span><b>Choose the plan</b><span>A solver picks moves across roles and months that lose the least value</span><span class="rest">Integer programming <sup><a href="#s15">15</a><a href="#s16">16</a></sup></span></div>
+    <div class="fs person"><span class="n">6</span><b>People decide, the engine learns</b><span>Each move needs its yeses. Results recalibrate the stage chances</span><span class="rest">Calibration <sup><a href="#s23">23</a><a href="#s24">24</a></sup></span></div>
+  </div>
+</section>
+
+<section>
+  <span class="kicker">Each step and what it rests on</span>
+  <h2>Established method, and our own choices</h2>
+  <p class="muted">The <span class="own">orange</span> column is what no source settles. Those are design choices the client confirms or changes.</p>
+  <div class="sc"><table>
+    <tr><th>Step</th><th>What the engine does</th><th>Established method</th><th>Our own choice</th></tr>
+    <tr><td><b>1 Demand</b></td><td>Reads signed roles and pipeline roles. Each deal's stage sets its chance of closing. Pipeline roles are held tentatively, signed roles firmly.</td><td>Stage-weighted pipeline is standard CRM practice <sup><a href="#s1">1</a><a href="#s2">2</a></sup>. Tentative and confirmed bookings are standard in resource management tools <sup><a href="#s3">3</a><a href="#s4">4</a></sup>.</td><td class="own">Turning weighted pipeline into staffing demand and a money value. No published standard exists.</td></tr>
+    <tr><td><b>2 Levels</b></td><td>Holds each person's license, the highest level of work they are qualified for, and the level of the work they do now.</td><td>SFIA defines seven levels of responsibility <sup><a href="#s5">5</a></sup>. "Top of license" comes from healthcare, where it means high-value work inside the qualified scope <sup><a href="#s6">6</a></sup>.</td><td class="own">Mapping the firm's bands to levels. Who confirms each license.</td></tr>
+    <tr><td><b>3 Chains</b></td><td>Finds the person licensed for a new role who is stuck lower down, and the step-ups that fill each job they free.</td><td>Vacancy chains: one opening moves down through a job system <sup><a href="#s7">7</a><a href="#s8">8</a><a href="#s9">9</a></sup>. Internal movers outperform and outstay external hires in published studies <sup><a href="#s10">10</a><a href="#s11">11</a></sup>.</td><td class="own">Planning chains on purpose. The research describes chains; it does not prove that planning them beats one-at-a-time filling.</td></tr>
+    <tr><td><b>4 Scenarios</b></td><td>Draws which deals win, thousands of times, and scores each plan on every draw.</td><td>Two-stage stochastic programming: decide now, react after the uncertainty resolves <sup><a href="#s13">13</a></sup>. Averaging over sampled scenarios <sup><a href="#s14">14</a></sup>.</td><td class="own">Deals treated as independent. Correlated deals need testing.</td></tr>
+    <tr><td><b>5 Choose</b></td><td>Picks moves, skill-ups and hires across roles and months, within every limit, with the least value lost.</td><td>Staffing multiple projects with multi-skilled people is solved as integer programming <sup><a href="#s15">15</a><a href="#s16">16</a><a href="#s17">17</a></sup>, with a standard constraint solver <sup><a href="#s18">18</a></sup>.</td><td class="own">The order of goals: value first, then people below license, then moves, then hiring cost.</td></tr>
+    <tr><td><b>6 Risk</b></td><td>Reports the average value lost and the average of the worst outcomes for every plan.</td><td>Expected loss, and the tail measure CVaR <sup><a href="#s19">19</a><a href="#s20">20</a></sup>. Bank regulation moved from VaR to this tail measure <sup><a href="#s21">21</a></sup>.</td><td class="own">How much average loss the client will accept to cut the bad case.</td></tr>
+    <tr><td><b>7 Re-plan</b></td><td>Opens a new plan version each month, and whenever a deal changes stage, wins or loses.</td><td>Rolling-horizon planning <sup><a href="#s22">22</a></sup>.</td><td class="own">How often, and how far ahead.</td></tr>
+    <tr><td><b>8 Learn</b></td><td>Compares stage chances with deals actually won and lost, and corrects them.</td><td>The Brier score and reliability diagrams test probability forecasts <sup><a href="#s23">23</a><a href="#s24">24</a><a href="#s25">25</a></sup>.</td><td class="own">How much history is enough before a correction is trusted.</td></tr>
+  </table></div>
+</section>
+
+<section>
+  <span class="kicker">Naming the risk correctly</span>
+  <h2>Two measures, not "value at risk"</h2>
+  <p>"Value at risk" has a precise meaning in finance: a loss level that will not be exceeded with a stated confidence <sup><a href="#s19">19</a></sup>. Our earlier sketches used the term for an average, which a finance reader would challenge. The method now reports two measures, named as in the planning policy draft.</p>
+  <div class="two">
+    <div class="card meas"><h3>Expected value of work at risk</h3><p class="muted">The average over all scenarios. The plan's main goal.</p>
+      <div class="fx">Σ roles to fill: chance won × value lost if late<br>&nbsp;&nbsp;+ chance lost × cost wasted by preparing<br>+ Σ accounts left: value at risk when a key person<br>&nbsp;&nbsp;leaves without a same-skill backfill</div></div>
+    <div class="card meas tail"><h3>Bad case, 90%</h3><p class="muted">The average of the worst 10% of scenarios. The bad case decision makers weigh.</p>
+      <div class="fx">mean of the worst 10% of scenario losses<br>(CVaR at 90%, Rockafellar and Uryasev)</div></div>
+  </div>
+  <p class="muted">We do not report the plain percentile: percentile measures can mislead when added across deals <sup><a href="#s20">20</a></sup>. The 90% level is our choice; banks' 97.5% is a regulatory rule, not a guide for staffing <sup><a href="#s21">21</a></sup>.</p>
+</section>
+
+<section>
+  <span class="kicker">Worked live in this page</span>
+  <h2>Prepare now, or wait for the signature?</h2>
+  <p>Preparing early means starting a release, a chain or a skill-up before the deal is won. It costs something if the deal is lost. Waiting costs value if the deal is won and the right person cannot be freed in time. Two-stage stochastic programming gives the rule for each role <sup><a href="#s13">13</a></sup>:</p>
+  <div class="rule"><span class="t">chance won × value saved by preparing</span><span class="op">&gt;</span><span class="t">chance lost × cost wasted by preparing</span></div>
+  <div class="sc"><table id="roles"></table></div>
+  <p class="muted" style="font-size:13.5px">Invented roles. Stage chances are the PoC planner's workshop placeholders. A role won without preparation has <span id="gap"></span> month from signature to start to free its person. Values in thousands of AED.</p>
+  <div class="res" id="res"></div>
+  <div class="chart"><div id="chart"></div>
+    <div class="legend"><span><i style="background:var(--dot)"></i>one of the <span id="nplans"></span> possible prepare-or-wait plans</span><span><i style="background:var(--accent)"></i>best trade-off between average and bad case</span><span><i style="background:var(--warm)"></i>the three plans above</span></div></div>
+  <p id="readout"></p>
+  <p class="muted" style="font-size:13px" id="simnote"></p>
+</section>
+
+<section>
+  <span class="kicker">What the evidence supports</span>
+  <h2>Supported, and still to prove</h2>
+  <div class="two">
+    <div class="card ev"><h3>Supported by published work</h3>
+      <div class="evr"><span class="ic" style="color:var(--ok)">✓</span><span>Chains of internal moves are a long-studied way vacancies travel through organisations <sup><a href="#s7">7</a><a href="#s8">8</a></sup>.</span></div>
+      <div class="evr"><span class="ic" style="color:var(--ok)">✓</span><span>Promoted workers outperformed external hires for two years and left less, while hires were paid about 18% more, in one bank <sup><a href="#s10">10</a></sup>.</span></div>
+      <div class="evr"><span class="ic" style="color:var(--ok)">✓</span><span>Stage-weighted pipeline and tentative bookings are standard tool practice <sup><a href="#s1">1</a><a href="#s3">3</a></sup>.</span></div>
+      <div class="evr"><span class="ic" style="color:var(--ok)">✓</span><span>Scenario planning, integer programming and CVaR are standard, well-documented methods <sup><a href="#s13">13</a><a href="#s15">15</a><a href="#s19">19</a></sup>.</span></div>
+    </div>
+    <div class="card ev"><h3>Not proven, or a caution</h3>
+      <div class="evr"><span class="ic" style="color:var(--warm)">!</span><span>"Top of license" is loosely defined even in healthcare, and its outcomes are rarely measured <sup><a href="#s6">6</a></sup>. Here it is an analogy, made precise by the firm's levels.</span></div>
+      <div class="evr"><span class="ic" style="color:var(--warm)">!</span><span>Stage chances in CRM tools are defaults, not calibrated forecasts <sup><a href="#s1">1</a><a href="#s2">2</a></sup>. They must be tested on the firm's own closed deals.</span></div>
+      <div class="evr"><span class="ic" style="color:var(--warm)">!</span><span>Internal hires chosen by open posting outperformed those slotted in by managers <sup><a href="#s12">12</a></sup>. A planner proposing names is close to slotting, so opt-in and open posting stay in.</span></div>
+      <div class="evr"><span class="ic" style="color:var(--warm)">!</span><span>Workers promoted and transferred at the same time did worse than other internal movers <sup><a href="#s10">10</a></sup>. Moves that change both level and client are flagged.</span></div>
+      <div class="evr"><span class="ic" style="color:var(--warm)">!</span><span>No published study shows planned chains beat one-at-a-time filling. The firm's own results must show it.</span></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <span class="kicker">What this means for the PoC planner</span>
+  <h2>Five corrections to the planner already built</h2>
+  <p class="muted">The PoC planner uses the right family of methods: a constraint solver, a month-by-month horizon and an ordered set of goals. Measured against the sources, five things needed changing. The first is adopted; the other four are with the team building it.</p>
+  <div class="find">
+    <div class="fi" style="border-left-color:var(--ok)"><b>Rename its "value at risk" <span class="tag ok">adopted</span></b><span class="muted">It computes deal value × role share × stage chance for each unstaffed role. The planning policy draft v0.2 now calls this the expected value of work at risk, not value at risk.</span></div>
+    <div class="fi"><b>Add scenarios and the tail measure</b><span class="muted">It scores one weighted outcome. Sampling which deals win would give the tail measure and show the bad case <sup><a href="#s14">14</a><a href="#s19">19</a></sup>.</span></div>
+    <div class="fi"><b>Charge for preparing early</b><span class="muted">Acting on a deal that is then lost costs nothing in the model today, so the prepare-or-wait rule above cannot work.</span></div>
+    <div class="fi"><b>Make "same input, same plan" hold under a time limit</b><span class="muted">One worker and a fixed seed repeat, but a wall-clock time limit does not. Use the solver's deterministic time limit, pin its version, record the model fingerprint, and say "optimal" only when the solver proves it <sup><a href="#s18">18</a></sup>.</span></div>
+    <div class="fi"><b>Calibrate the stage chances</b><span class="muted">They are workshop placeholders. Score them on closed deals with the Brier score before relying on them <sup><a href="#s23">23</a><a href="#s24">24</a></sup>.</span></div>
+  </div>
+</section>
+
+<section>
+  <span class="kicker">Sources</span>
+  <h2>Sources, and how each was checked</h2>
+  <p class="muted" style="font-size:13.5px"><span class="tag ok">read</span> the source text was read. <span class="tag no">record</span> only the abstract, a summary or the catalogue record was read.</p>
+  <ol class="src" id="src"></ol>
+</section>
+
+<footer>All roles, values and costs on this page are invented to show the method. No AI model is used in any calculation; the figures come from seeded code that gives the same result every time.</footer>
+</div>
+
+<script>
+// Seeded scenario simulation for the rotation method page. Invented data, labelled.
+// Two-stage logic: decide now which roles to prepare (start the chain, release, skill-up);
+// after deals close, roles of won deals are staffed in time only if the preparation lead fits.
+(function (root) {
+  "use strict";
+  // Stage probabilities: the PoC planner's workshop placeholders.
+  var STAGE_P = { "Signal": 0.05, "Interest": 0.15, "Qualified": 0.35, "Bid submitted": 0.55, "Preferred supplier": 0.8, "Signed": 1.0 };
+  // Each role: deal, stage, monthly value (AED k), months until start, months it runs,
+  // lead = months needed to free the right person (release notice + chain), prep = cost (AED k)
+  // of preparing early that is lost if the deal is lost (holds, early release, unused skill-up).
+  var ROLES = [
+    { id: "R1", deal: "D1", stage: "Signed", m: 90, start: 2, dur: 9, lead: 3, prep: 20 },
+    { id: "R2", deal: "D2", stage: "Preferred supplier", m: 120, start: 3, dur: 12, lead: 3, prep: 40 },
+    { id: "R3", deal: "D2", stage: "Preferred supplier", m: 70, start: 3, dur: 12, lead: 2, prep: 30 },
+    { id: "R4", deal: "D3", stage: "Bid submitted", m: 110, start: 4, dur: 9, lead: 4, prep: 90 },
+    { id: "R5", deal: "D4", stage: "Qualified", m: 100, start: 5, dur: 12, lead: 5, prep: 120 },
+    { id: "R6", deal: "D4", stage: "Qualified", m: 60, start: 5, dur: 12, lead: 2, prep: 60 },
+    { id: "R7", deal: "D5", stage: "Interest", m: 130, start: 6, dur: 12, lead: 5, prep: 180 },
+    { id: "R8", deal: "D6", stage: "Signal", m: 150, start: 7, dur: 12, lead: 6, prep: 260 }
+  ];
+  var SIGN_GAP = 1; // months between signature and start: the time left to react after a win
+
+  function mulberry32(a) { return function () { a |= 0; a = a + 0x6D2B79F5 | 0; var t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+
+  // Loss if the deal is won and the role is not staffed in time: monthly value times months late.
+  function lateLoss(r, prepared) {
+    var time = prepared ? r.start : Math.min(SIGN_GAP, r.start);
+    var late = Math.max(0, r.lead - time);
+    return r.m * Math.min(late, r.dur);
+  }
+  // Preparing is worth it when the expected loss avoided beats the expected wasted cost:
+  // p * (loss if unprepared - loss if prepared) > (1 - p) * prep  (a critical-ratio rule).
+  function prepareRule(r) {
+    var p = STAGE_P[r.stage], gain = lateLoss(r, false) - lateLoss(r, true);
+    return { p: p, gain: gain, threshold: r.prep / (r.prep + gain || 1), prepare: p * gain > (1 - p) * r.prep };
+  }
+  var PLANS = {
+    react: { name: "Wait for signature", pick: function () { return false; } },
+    all: { name: "Prepare everything now", pick: function () { return true; } },
+    gated: { name: "Prepare by the rule", pick: function (r) { return prepareRule(r).prepare; } }
+  };
+
+  function simulate(planKey, n, seed) {
+    var rnd = mulberry32(seed || 20261001), plan = PLANS[planKey], deals = {}, losses = new Float64Array(n);
+    var prepared = ROLES.map(function (r) { return plan.pick(r); });
+    ROLES.forEach(function (r) { deals[r.deal] = STAGE_P[r.stage]; });
+    var dealIds = Object.keys(deals).sort();
+    for (var i = 0; i < n; i++) {
+      var won = {}; dealIds.forEach(function (d) { won[d] = rnd() < deals[d]; });
+      var L = 0;
+      ROLES.forEach(function (r, k) {
+        if (won[r.deal]) L += lateLoss(r, prepared[k]);
+        else if (prepared[k]) L += r.prep;
+      });
+      losses[i] = L;
+    }
+    var s = Array.prototype.slice.call(losses).sort(function (a, b) { return a - b; });
+    var mean = s.reduce(function (a, b) { return a + b; }, 0) / n;
+    var q = function (a) { return s[Math.min(n - 1, Math.floor(a * n))]; };
+    var tail = s.slice(Math.floor(0.9 * n)), cvar = tail.reduce(function (a, b) { return a + b; }, 0) / tail.length;
+    // exact expected value, independent of sampling, as a check on the simulation
+    var exact = 0; ROLES.forEach(function (r, k) { var p = STAGE_P[r.stage]; exact += p * lateLoss(r, prepared[k]) + (prepared[k] ? (1 - p) * r.prep : 0); });
+    return { plan: plan.name, prepared: prepared, mean: mean, exact: exact, var90: q(0.9), cvar90: cvar, p50: q(0.5), max: s[n - 1], sorted: s, prepCount: prepared.filter(Boolean).length };
+  }
+  // Every prepare-or-wait plan (2^roles) scored on the same scenarios (common random numbers):
+  // expected loss and CVaR90, the mean of the worst 10% of scenarios (Rockafellar and Uryasev).
+  function frontier(n, seed) {
+    var rnd = mulberry32(seed || 20261001), dealIds = [], dp = {};
+    ROLES.forEach(function (r) { if (!(r.deal in dp)) { dp[r.deal] = STAGE_P[r.stage]; dealIds.push(r.deal); } });
+    dealIds.sort();
+    var won = []; for (var i = 0; i < n; i++) { var w = {}; dealIds.forEach(function (d) { w[d] = rnd() < dp[d]; }); won.push(w); }
+    var K = ROLES.length, out = [], L = new Float64Array(n);
+    var lp = ROLES.map(function (r) { return lateLoss(r, true); }), lu = ROLES.map(function (r) { return lateLoss(r, false); });
+    for (var mask = 0; mask < (1 << K); mask++) {
+      for (var s = 0; s < n; s++) { var x = 0, w2 = won[s];
+        for (var k = 0; k < K; k++) { var pr = (mask >> k) & 1, r = ROLES[k];
+          if (w2[r.deal]) x += pr ? lp[k] : lu[k]; else if (pr) x += r.prep; }
+        L[s] = x; }
+      var srt = Array.prototype.slice.call(L).sort(function (a, b) { return a - b; });
+      var mean = srt.reduce(function (a, b) { return a + b; }, 0) / n, t0 = Math.floor(0.9 * n), c = 0;
+      for (var j = t0; j < n; j++) c += srt[j];
+      out.push({ mask: mask, mean: mean, cvar90: c / (n - t0) });
+    }
+    out.forEach(function (o) { o.frontier = !out.some(function (q) { return (q.mean <= o.mean && q.cvar90 < o.cvar90) || (q.mean < o.mean && q.cvar90 <= o.cvar90); }); });
+    return out;
+  }
+  function maskOf(planKey) { var m = 0; ROLES.forEach(function (r, k) { if (PLANS[planKey].pick(r)) m |= 1 << k; }); return m; }
+  var API = { frontier: frontier, maskOf: maskOf, STAGE_P: STAGE_P, ROLES: ROLES, SIGN_GAP: SIGN_GAP, PLANS: PLANS, lateLoss: lateLoss, prepareRule: prepareRule, simulate: simulate };
+  if (typeof module !== "undefined" && module.exports) module.exports = API; else root.SIM = API;
+})(this);
+
+</script>
+<script>
+(function(){
+"use strict";
+var S=window.SIM;
+var SRC=[
+ ["s1","Salesforce Help. Manage opportunity stage to forecast category mappings for pipeline forecasts.","https://help.salesforce.com/s/articleView?id=sales.faq_forecasts_category_mapping.htm&language=en_US&type=5","read"],
+ ["s2","HubSpot Knowledge Base. Set up the forecast tool (weighted forecast = amount × deal probability).","https://knowledge.hubspot.com/forecast/set-up-the-forecast-tool","read"],
+ ["s3","Microsoft Learn (2026). Booking statuses, Dynamics 365 Project Operations.","https://learn.microsoft.com/en-us/dynamics365/project-operations/resource-management/booking-status","read"],
+ ["s4","Certinia Help (2023). PSA Utilization Analytics: Capacity and Demand Planning Dashboard.","https://help.certinia.com/main/2023.3/Content/PSAAnalytics/Features/UtilizationAnalyticsCapacityandDemandPlanningDashboard/UtilizationAnalyticsCapacityandDemandPlanningDashboard.htm","read"],
+ ["s5","SFIA Foundation. SFIA 9: Levels of responsibility.","https://sfia-online.org/en/sfia-9/responsibilities","read"],
+ ["s6","Hlebichuk J, Lancaster RJ, Vizgirda V, Quinlan S (2025). Top-of-license practice for registered nurses: a scoping review. Nursing Outlook 73:102397.","https://doi.org/10.1016/j.outlook.2025.102397","read"],
+ ["s7","White HC (1970). Chains of Opportunity: System Models of Mobility in Organizations. Harvard University Press.","https://doi.org/10.4159/harvard.9780674437203","record"],
+ ["s8","Chase ID (1991). Vacancy chains. Annual Review of Sociology 17:133–154.","https://doi.org/10.1146/annurev.so.17.080191.001025","record"],
+ ["s9","Stewman S, Konda SL (1983). Careers and organizational labor markets: demographic models of organizational behavior. American Journal of Sociology 88(4):637–685.","https://doi.org/10.1086/227728","record"],
+ ["s10","Bidwell M (2011). Paying more to get less: the effects of external hiring versus internal mobility. Administrative Science Quarterly 56(3):369–407.","https://doi.org/10.1177/0001839211433562","record"],
+ ["s11","Benson A, Rissing BA (2020). Strength from within: internal mobility and the retention of high performers. Organization Science 31(6):1475–1496.","https://doi.org/10.1287/orsc.2020.1362","record"],
+ ["s12","Keller JR (2018). Posting and slotting: how hiring processes shape the quality of hire and compensation in internal labor markets. Administrative Science Quarterly 63(4):848–878.","https://doi.org/10.1177/0001839217736045","record"],
+ ["s13","Birge JR, Louveaux F (2011). Introduction to Stochastic Programming, 2nd ed. Springer.","https://doi.org/10.1007/978-1-4614-0237-4","record"],
+ ["s14","Kleywegt AJ, Shapiro A, Homem-de-Mello T (2002). The sample average approximation method for stochastic discrete optimization. SIAM Journal on Optimization 12(2):479–502.","https://doi.org/10.1137/S1052623499363220","record"],
+ ["s15","De Bruecker P, Van den Bergh J, Beliën J, Demeulemeester E (2015). Workforce planning incorporating skills: state of the art. European Journal of Operational Research 243(1):1–16.","https://doi.org/10.1016/j.ejor.2014.10.038","record"],
+ ["s16","Heimerl C, Kolisch R (2010). Scheduling and staffing multiple projects with a multi-skilled workforce. OR Spectrum 32(2):343–368.","https://doi.org/10.1007/s00291-009-0169-4","record"],
+ ["s17","Gutjahr WJ, Katzensteiner S, Reiter P, Stummer C, Denk M (2008). Competence-driven project portfolio selection, scheduling and staff assignment. Central European Journal of Operations Research 16(3):281–306.","https://doi.org/10.1007/s10100-008-0057-z","read"],
+ ["s18","Google OR-Tools. CP-SAT parameters (sat_parameters.proto), and the maintainers' answers on determinism in the or-tools-discuss group.","https://groups.google.com/g/or-tools-discuss/c/lPb1FzhTMt0","read"],
+ ["s19","Rockafellar RT, Uryasev S (2000). Optimization of conditional value-at-risk. Journal of Risk 2(3):21–41.","https://doi.org/10.21314/JOR.2000.038","record"],
+ ["s20","Artzner P, Delbaen F, Eber J-M, Heath D (1999). Coherent measures of risk. Mathematical Finance 9(3):203–228.","https://doi.org/10.1111/1467-9965.00068","record"],
+ ["s21","Basel Committee on Banking Supervision (2016). Minimum capital requirements for market risk.","https://www.bis.org/bcbs/publ/d352.htm","read"],
+ ["s22","Sethi S, Sorger G (1991). A theory of rolling horizon decision making. Annals of Operations Research 29:387–415.","https://doi.org/10.1007/BF02283607","record"],
+ ["s23","Brier GW (1950). Verification of forecasts expressed in terms of probability. Monthly Weather Review 78(1):1–3.","https://doi.org/10.1175/1520-0493(1950)078%3C0001:VOFEIT%3E2.0.CO;2","record"],
+ ["s24","Gneiting T, Raftery AE (2007). Strictly proper scoring rules, prediction, and estimation. Journal of the American Statistical Association 102(477):359–378.","https://doi.org/10.1198/016214506000001437","read"],
+ ["s25","Bröcker J, Smith LA (2007). Increasing the reliability of reliability diagrams. Weather and Forecasting 22(3):651–661.","https://doi.org/10.1175/WAF993.1","record"]];
+document.getElementById("src").innerHTML=SRC.map(function(s){return '<li id="'+s[0]+'">'+s[1]+' <a href="'+s[2]+'" target="_blank" rel="noopener">link</a><span class="tag how '+(s[3]==="read"?"ok":"no")+'">'+s[3]+'</span></li>';}).join("");
+
+function k(x){return Math.round(x).toLocaleString("en-US");}
+var N=5000, SEED=20261001;
+document.getElementById("gap").textContent=S.SIGN_GAP;
+document.getElementById("roles").innerHTML='<tr><th>Role</th><th>Deal stage</th><th class="num">Chance won</th><th class="num">Months to start</th><th class="num">Months to free the person</th><th class="num">Value saved by preparing</th><th class="num">Cost wasted if lost</th><th class="num">Chance needed</th><th>Rule says</th></tr>'+
+ S.ROLES.map(function(r){var x=S.prepareRule(r);return '<tr><td class="mono">'+r.id+'</td><td>'+r.stage+'</td><td class="num">'+Math.round(x.p*100)+'%</td><td class="num">'+r.start+'</td><td class="num">'+r.lead+'</td><td class="num">'+k(x.gain)+'</td><td class="num">'+k(r.prep)+'</td><td class="num">'+Math.round(x.threshold*100)+'%</td><td>'+(x.prepare?'<span class="tag ok">prepare now</span>':'<span class="tag no">wait</span>')+'</td></tr>';}).join("");
+
+var plans=["react","all","gated"], R={};
+plans.forEach(function(p){R[p]=S.simulate(p,N,SEED);});
+var F=S.frontier(N,SEED); document.getElementById("nplans").textContent=F.length;
+var minMean=Math.min.apply(null,F.map(function(o){return o.mean;}));
+document.getElementById("res").innerHTML=plans.map(function(p){var r=R[p],o=F[S.maskOf(p)];
+  return '<div class="rc'+(p==="gated"?" best":"")+'"><span class="k">'+r.plan+'</span><span class="big">'+k(r.mean)+'</span><span class="k">expected value of work at risk</span>'+
+  '<div class="row"><span>Bad case, 90%</span><b class="mono">'+k(r.cvar90)+'</b></div><div class="row"><span>Roles prepared</span><b class="mono">'+r.prepCount+' of '+S.ROLES.length+'</b></div><div class="row"><span>Best possible average?</span><b>'+(Math.abs(o.mean-minMean)<1e-6?"yes":"no")+'</b></div></div>';}).join("");
+
+// scatter: x expected, y tail
+var W=900,H=360,pl=62,pr=20,pt=20,pb=46;
+var xs=F.map(function(o){return o.mean;}), ys=F.map(function(o){return o.cvar90;});
+function nice(v){var m=Math.pow(10,Math.floor(Math.log10(v))),c=[1,1.5,2,2.5,3,4,5,6,8,10];for(var i=0;i<c.length;i++)if(c[i]*m>=v)return c[i]*m;return 10*m;}
+var xM=nice(Math.max.apply(null,xs)*1.05), yM=nice(Math.max.apply(null,ys)*1.05);
+var X=function(v){return pl+(W-pl-pr)*v/xM;}, Y=function(v){return H-pb-(H-pt-pb)*v/yM;};
+var g=[]; [0,.25,.5,.75,1].forEach(function(f){var vx=xM*f,vy=yM*f;
+ g.push('<line class="ax" x1="'+X(vx)+'" x2="'+X(vx)+'" y1="'+pt+'" y2="'+(H-pb)+'"/><text class="axt" x="'+X(vx)+'" y="'+(H-pb+16)+'" text-anchor="middle">'+k(vx)+'</text>');
+ g.push('<line class="ax" x1="'+pl+'" x2="'+(W-pr)+'" y1="'+Y(vy)+'" y2="'+Y(vy)+'"/><text class="axt" x="'+(pl-8)+'" y="'+(Y(vy)+4)+'" text-anchor="end">'+k(vy)+'</text>');});
+g.push('<text class="axt" x="'+((W+pl)/2)+'" y="'+(H-8)+'" text-anchor="middle">expected value of work at risk (AED k) →</text>');
+g.push('<text class="axt" transform="translate(14,'+((H-pb+pt)/2)+') rotate(-90)" text-anchor="middle">bad case, 90% →</text>');
+F.forEach(function(o){if(!o.frontier)g.push('<circle cx="'+X(o.mean).toFixed(1)+'" cy="'+Y(o.cvar90).toFixed(1)+'" r="3" fill="var(--dot)"/>');});
+var fr=F.filter(function(o){return o.frontier;}).sort(function(a,b){return a.mean-b.mean;});
+g.push('<polyline fill="none" stroke="var(--accent)" stroke-width="2" points="'+fr.map(function(o){return X(o.mean).toFixed(1)+","+Y(o.cvar90).toFixed(1);}).join(" ")+'"/>');
+fr.forEach(function(o){g.push('<circle cx="'+X(o.mean).toFixed(1)+'" cy="'+Y(o.cvar90).toFixed(1)+'" r="5" fill="var(--accent)"/>');});
+var lab={react:"Wait for signature",all:"Prepare everything",gated:"Prepare by the rule"}, off={react:[-8,-10,"end"],all:[10,-8,"start"],gated:[-10,-12,"end"]};
+plans.forEach(function(p){var o=F[S.maskOf(p)],x=X(o.mean),y=Y(o.cvar90);g.push('<circle cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="6.5" fill="none" stroke="var(--warm)" stroke-width="2.5"/><text x="'+(x+off[p][0])+'" y="'+(y+off[p][1])+'" text-anchor="'+off[p][2]+'" style="fill:var(--warm);font:600 12px IBM Plex Sans,sans-serif">'+lab[p]+'</text>');});
+document.getElementById("chart").innerHTML='<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Every prepare-or-wait plan by expected value of work at risk and bad case">'+g.join("")+'</svg>';
+
+var G=R.gated, A=R.all, Rr=R.react;
+var extra=fr.filter(function(o){return o.mean>minMean+1e-6;});
+document.getElementById("readout").innerHTML='<b>The rule finds the plan with the lowest average loss</b>, confirmed by scoring all '+F.length+' plans on the same scenarios. It cuts the expected value of work at risk from '+k(Rr.mean)+' to '+k(G.mean)+'. Its bad case is worse than preparing everything, because it leaves unlikely deals unprepared. Cutting the bad case further costs average loss along the green line: '+extra.map(function(o){return k(o.mean)+' average for '+k(o.cvar90)+' in the bad case';}).join(", then ")+'. Where to sit on that line is the client\'s risk appetite.'+(F.some(function(o){return o.frontier&&o.mean<A.mean&&o.cvar90<A.cvar90;})?' Preparing everything is beaten on both measures by a plan on the line.':'');
+var sd=Math.sqrt(G.sorted.reduce(function(a,v){return a+(v-G.mean)*(v-G.mean);},0)/(N-1));
+document.getElementById("simnote").textContent=N.toLocaleString("en-US")+" scenarios, fixed seed. Check: the simulated average for the rule plan is "+k(G.mean)+"; the exact value is "+k(G.exact)+"; sampling error is about ±"+k(1.96*sd/Math.sqrt(N))+" at 95%. The engine works out the exact average where it can, and uses scenarios for the tail.";
+})();
+</script>

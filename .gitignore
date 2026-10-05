@@ -1,0 +1,12 @@
+.DS_Store
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.env
+.env.*
+!.env.example
+
+# Local workshop state contains participant data and the facilitator key.
+/4 Room tool/room-data.json
+/4 Room tool/room-data.json.tmp

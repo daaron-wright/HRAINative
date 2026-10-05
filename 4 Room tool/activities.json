@@ -1,0 +1,1659 @@
+{
+ "title": "Contract-to-Capacity Workshop",
+ "subtitle": "HR Global Staffing · Liverpool AI Innovation Lab",
+ "dates": "6–7 October 2026",
+ "promise": "Before a deal is signed, we know whether we can staff it. If we cannot, a named person owns the gap.",
+ "sessions": [
+  {
+   "id": "d1-arrive",
+   "day": 1,
+   "start": "08:30",
+   "end": "09:00",
+   "title": "Arrival",
+   "kind": "arrival",
+   "activities": [
+    "arrive.comfort",
+    "arrive.stuck"
+   ],
+   "by_option": {
+    "A": [],
+    "B": [
+     "arrive.comfort",
+     "arrive.stuck"
+    ],
+    "C": []
+   }
+  },
+  {
+   "id": "d1-welcome",
+   "day": 1,
+   "start": "09:00",
+   "end": "09:30",
+   "title": "Welcome and how the two days work",
+   "kind": "content",
+   "activities": [
+    "welcome.hopes",
+    "welcome.sure",
+    "welcome.check"
+   ],
+   "by_option": {
+    "A": [
+     "welcome.check"
+    ],
+    "B": [
+     "welcome.hopes",
+     "welcome.sure",
+     "welcome.check"
+    ],
+    "C": [
+     "welcome.check"
+    ]
+   }
+  },
+  {
+   "id": "d1-reality",
+   "day": 1,
+   "start": "09:30",
+   "end": "10:45",
+   "title": "Ground in reality",
+   "kind": "content",
+   "activities": [
+    "reality.game",
+    "reality.pain",
+    "reality.check"
+   ],
+   "by_option": {
+    "A": [
+     "reality.check"
+    ],
+    "B": [
+     "reality.game",
+     "reality.pain",
+     "reality.check"
+    ],
+    "C": [
+     "reality.check"
+    ]
+   }
+  },
+  {
+   "id": "d1-break1",
+   "day": 1,
+   "start": "10:45",
+   "end": "11:00",
+   "title": "Break",
+   "kind": "break",
+   "activities": [],
+   "by_option": {}
+  },
+  {
+   "id": "d1-outcome",
+   "day": 1,
+   "start": "11:00",
+   "end": "12:30",
+   "title": "Agree the target outcome",
+   "kind": "content",
+   "activities": [
+    "outcome.which",
+    "outcome.edit",
+    "outcome.end",
+    "outcome.checks",
+    "outcome.check"
+   ],
+   "by_option": {
+    "A": [
+     "outcome.check"
+    ],
+    "B": [
+     "outcome.which",
+     "outcome.edit",
+     "outcome.end",
+     "outcome.checks",
+     "outcome.check"
+    ],
+    "C": [
+     "outcome.check"
+    ]
+   }
+  },
+  {
+   "id": "d1-lunch",
+   "day": 1,
+   "start": "12:30",
+   "end": "13:15",
+   "title": "Lunch · build starts",
+   "kind": "build",
+   "activities": [],
+   "by_option": {
+    "A": [],
+    "B": [
+     "parking"
+    ],
+    "C": []
+   }
+  },
+  {
+   "id": "d1-decisions",
+   "day": 1,
+   "start": "13:15",
+   "end": "14:45",
+   "title": "Define how it should work: decisions and evidence",
+   "kind": "content",
+   "activities": [
+    "decisions.owner",
+    "decisions.card",
+    "decisions.check"
+   ],
+   "by_option": {
+    "A": [
+     "decisions.check"
+    ],
+    "B": [
+     "decisions.owner",
+     "decisions.card",
+     "decisions.check"
+    ],
+    "C": [
+     "decisions.check"
+    ]
+   }
+  },
+  {
+   "id": "d1-break2",
+   "day": 1,
+   "start": "14:45",
+   "end": "15:00",
+   "title": "Break",
+   "kind": "break",
+   "activities": [],
+   "by_option": {}
+  },
+  {
+   "id": "d1-rules",
+   "day": 1,
+   "start": "15:00",
+   "end": "16:15",
+   "title": "Define how it should work: rules and exceptions",
+   "kind": "content",
+   "activities": [
+    "rules.wheel",
+    "rules.respond",
+    "rules.write",
+    "rules.check"
+   ],
+   "by_option": {
+    "A": [
+     "rules.check"
+    ],
+    "B": [
+     "rules.wheel",
+     "rules.respond",
+     "rules.write",
+     "rules.check"
+    ],
+    "C": [
+     "rules.check"
+    ]
+   }
+  },
+  {
+   "id": "d1-checkpoint",
+   "day": 1,
+   "start": "16:15",
+   "end": "16:45",
+   "title": "Build checkpoint",
+   "kind": "content",
+   "activities": [
+    "checkpoint.cases",
+    "checkpoint.seats",
+    "checkpoint.premortem"
+   ],
+   "by_option": {
+    "A": [],
+    "B": [
+     "checkpoint.cases",
+     "checkpoint.seats",
+     "parking"
+    ],
+    "C": [
+     "checkpoint.premortem"
+    ]
+   }
+  },
+  {
+   "id": "d1-close",
+   "day": 1,
+   "start": "16:45",
+   "end": "17:00",
+   "title": "Close of Day 1",
+   "kind": "content",
+   "activities": [
+    "close1.rung",
+    "close1.word"
+   ],
+   "by_option": {
+    "A": [],
+    "B": [
+     "close1.rung",
+     "close1.word"
+    ],
+    "C": []
+   }
+  },
+  {
+   "id": "d1-evening",
+   "day": 1,
+   "start": "Evening",
+   "end": "",
+   "title": "Build",
+   "kind": "build",
+   "activities": [],
+   "by_option": {}
+  },
+  {
+   "id": "d2-arrive",
+   "day": 2,
+   "start": "08:30",
+   "end": "09:00",
+   "title": "Arrival",
+   "kind": "arrival",
+   "activities": [
+    "arrive2.remember"
+   ],
+   "by_option": {
+    "A": [],
+    "B": [
+     "arrive2.remember"
+    ],
+    "C": []
+   }
+  },
+  {
+   "id": "d2-recap",
+   "day": 2,
+   "start": "09:00",
+   "end": "09:15",
+   "title": "Recap and build status",
+   "kind": "content",
+   "activities": [
+    "recap.quiz"
+   ],
+   "by_option": {
+    "A": [],
+    "B": [
+     "recap.quiz"
+    ],
+    "C": []
+   }
+  },
+  {
+   "id": "d2-test",
+   "day": 2,
+   "start": "09:15",
+   "end": "10:30",
+   "title": "Test the Proof of Concept",
+   "kind": "content",
+   "activities": [
+    "test.findings",
+    "test.check"
+   ],
+   "by_option": {
+    "A": [
+     "test.check"
+    ],
+    "B": [
+     "test.findings",
+     "test.check"
+    ],
+    "C": [
+     "test.check"
+    ]
+   }
+  },
+  {
+   "id": "d2-break1",
+   "day": 2,
+   "start": "10:30",
+   "end": "10:45",
+   "title": "Break · fix list to the build team",
+   "kind": "break",
+   "activities": [],
+   "by_option": {}
+  },
+  {
+   "id": "d2-boundaries",
+   "day": 2,
+   "start": "10:45",
+   "end": "11:45",
+   "title": "Resolve key boundaries",
+   "kind": "content",
+   "activities": [
+    "boundaries.check",
+    "boundaries.b1",
+    "boundaries.b2",
+    "boundaries.b3",
+    "boundaries.b4"
+   ],
+   "by_option": {
+    "A": [
+     "boundaries.check"
+    ],
+    "B": [
+     "boundaries.b1",
+     "boundaries.b2",
+     "boundaries.b3",
+     "boundaries.b4",
+     "boundaries.check"
+    ],
+    "C": [
+     "boundaries.check"
+    ]
+   }
+  },
+  {
+   "id": "d2-rotation",
+   "day": 2,
+   "start": "11:45",
+   "end": "13:00",
+   "title": "Skill rotation rules, with the markets",
+   "kind": "content",
+   "activities": [
+    "rotation.months",
+    "rotation.release",
+    "rotation.key",
+    "rotation.cost",
+    "rotation.agree",
+    "rotation.unlock",
+    "rotation.check"
+   ],
+   "by_option": {
+    "A": [
+     "rotation.check"
+    ],
+    "B": [
+     "rotation.months",
+     "rotation.release",
+     "rotation.key",
+     "rotation.cost",
+     "rotation.agree",
+     "rotation.unlock",
+     "rotation.check"
+    ],
+    "C": [
+     "rotation.check"
+    ]
+   }
+  },
+  {
+   "id": "d2-lunch",
+   "day": 2,
+   "start": "13:00",
+   "end": "13:45",
+   "title": "Lunch · build applies fixes",
+   "kind": "break",
+   "activities": [],
+   "by_option": {}
+  },
+  {
+   "id": "d2-next",
+   "day": 2,
+   "start": "13:45",
+   "end": "15:00",
+   "title": "Shape what happens next",
+   "kind": "content",
+   "activities": [
+    "next.slice",
+    "next.measures",
+    "next.backlog",
+    "next.premortem",
+    "next.check"
+   ],
+   "by_option": {
+    "A": [
+     "next.check"
+    ],
+    "B": [
+     "next.slice",
+     "next.measures",
+     "next.backlog",
+     "next.check"
+    ],
+    "C": [
+     "next.premortem",
+     "next.check"
+    ]
+   }
+  },
+  {
+   "id": "d2-freeze",
+   "day": 2,
+   "start": "15:00",
+   "end": "15:15",
+   "title": "Break · build freeze",
+   "kind": "break",
+   "activities": [],
+   "by_option": {}
+  },
+  {
+   "id": "d2-live",
+   "day": 2,
+   "start": "15:15",
+   "end": "16:15",
+   "title": "Review the live Proof of Concept",
+   "kind": "content",
+   "activities": [
+    "live.score",
+    "live.predict",
+    "live.check"
+   ],
+   "by_option": {
+    "A": [
+     "live.check"
+    ],
+    "B": [
+     "live.score",
+     "live.check"
+    ],
+    "C": [
+     "live.predict",
+     "live.check"
+    ]
+   }
+  },
+  {
+   "id": "d2-close",
+   "day": 2,
+   "start": "16:15",
+   "end": "16:40",
+   "title": "Close: make the decision",
+   "kind": "content",
+   "activities": [
+    "close.criteria",
+    "close.rung",
+    "close.word"
+   ],
+   "by_option": {
+    "A": [],
+    "B": [
+     "close.criteria",
+     "close.rung",
+     "close.word"
+    ],
+    "C": []
+   }
+  }
+ ],
+ "activities": {
+  "pulse": {
+   "type": "pulse",
+   "title": "How is it going?",
+   "session": "*",
+   "clarity": [
+    "Clear",
+    "Unsure",
+    "Lost"
+   ],
+   "pace": [
+    "Too slow",
+    "About right",
+    "Too fast"
+   ]
+  },
+  "parking": {
+   "type": "parking",
+   "title": "Ask or park a question",
+   "session": "*",
+   "q": "Your question, or something to come back to"
+  },
+  "arrive.comfort": {
+   "type": "scale",
+   "session": "d1-arrive",
+   "title": "Comfort with AI",
+   "q": "How comfortable are you using AI tools at work today?",
+   "min": 1,
+   "max": 5,
+   "labels": [
+    "Never used them",
+    "Use them every day"
+   ]
+  },
+  "arrive.stuck": {
+   "type": "words",
+   "session": "d1-arrive",
+   "title": "Where deals get stuck",
+   "q": "In five words or fewer: where did your last deal get stuck?",
+   "max": 60
+  },
+  "welcome.hopes": {
+   "type": "words",
+   "session": "d1-welcome",
+   "title": "Worth it if...",
+   "q": "What would make these two days worth it for you?",
+   "max": 120
+  },
+  "welcome.sure": {
+   "type": "scale",
+   "session": "d1-welcome",
+   "title": "Can AI help staffing?",
+   "q": "How sure are you that AI can help us staff deals better?",
+   "min": 1,
+   "max": 5,
+   "labels": [
+    "Doubtful",
+    "Convinced"
+   ]
+  },
+  "welcome.check": {
+   "type": "poll",
+   "session": "d1-welcome",
+   "title": "Check",
+   "q": "What will the sponsor decide at the end of tomorrow?",
+   "options": [
+    "Proceed, Narrow or Stop",
+    "Which software to buy",
+    "Who joins the project team"
+   ],
+   "correct": 0
+  },
+  "reality.game": {
+   "type": "game",
+   "session": "d1-reality",
+   "title": "Record or reality?",
+   "rounds": [
+    {
+     "title": "Stage 1 · Demand emerges",
+     "record": "Atlas shows the deal entering contract drafting on 8 September.",
+     "q": "What was really true?",
+     "options": [
+      "The deal appeared in September, the same week it entered drafting, so nobody could have known sooner.",
+      "The client first raised it in April. Nobody decided whether it was real enough to prepare for.",
+      "Sales flagged it in April and staffing began preparing then, but the record was entered late."
+     ],
+     "answer": 1,
+     "lesson": "Nobody decides when demand is real enough to start."
+    },
+    {
+     "title": "Stage 2 · Work becomes a staffing need",
+     "record": "The cost case prices six people across four roles, at Bands 6 and 7, by service.",
+     "q": "What was really true?",
+     "options": [
+      "Every skill was listed, but nobody checked them against the contract.",
+      "Staffing turned it into skills at once, but used last year's skills list.",
+      "Nobody turned that into skills. One line says \"knowledge transfer as agreed\"."
+     ],
+     "answer": 2,
+     "lesson": "Sales and staffing describe the same work differently."
+    },
+    {
+     "title": "Stage 3 · Staffing sees the request",
+     "record": "The staffing request was raised three weeks before the start date.",
+     "q": "What was really true?",
+     "options": [
+      "Staffing heard about it in a corridor a month earlier, and some work had started outside the tools.",
+      "The request went to the wrong team first and sat there for a month before staffing saw it.",
+      "Staffing saw it only when the request arrived, and every step after that went through the tools."
+     ],
+     "answer": 0,
+     "lesson": "The request arrives late, and some staffing happens outside the tools."
+    },
+    {
+     "title": "Stage 4 · Who could do it, and who is free",
+     "record": "Workday shows the cloud network engineer free from 1 November.",
+     "q": "What was really true?",
+     "options": [
+      "They really were free from 1 November, but had booked leave that month.",
+      "Workday was right, but another deal had already reserved them for November.",
+      "Their current project runs to late November. Only their manager knew."
+     ],
+     "answer": 2,
+     "lesson": "Free in the system is not free in reality."
+    },
+    {
+     "title": "Stage 5 · Can they actually start",
+     "record": "Nothing. Nobody asked.",
+     "q": "What was really true?",
+     "options": [
+      "They could have started, but only part-time until the end of November.",
+      "Their manager would have released them two weeks early, if asked.",
+      "Their manager would have refused, because their client wanted to keep them."
+     ],
+     "answer": 1,
+     "lesson": "Free, releasable and ready to start are three different things."
+    },
+    {
+     "title": "Stage 6 · Is there a real gap",
+     "record": "The search for a firewall specialist found no match. A gap was recorded and a hire requested.",
+     "q": "What was really true?",
+     "options": [
+      "Someone with the skill worked on another account. Nobody asked whether they could move, or whether moves could free someone.",
+      "Nobody in the firm had the skill, so a hire really was the only way, and the search was right to find no match.",
+      "Two people had the skill, but both were on long leave until the new year, so finding no match was the right answer."
+     ],
+     "answer": 0,
+     "lesson": "No match is not a confirmed gap."
+    },
+    {
+     "title": "Stage 7 · The gap goes to action",
+     "record": "A hiring request and a subcontractor quote at a higher cost. The deal was signed on 29 September.",
+     "q": "What was really true?",
+     "options": [
+      "The plan was approved before signing, but the subcontractor quote came in late and over budget.",
+      "The plan was never approved and the gap had no owner. The deal was signed without knowing it could be staffed.",
+      "The gap had an owner and a date, but the hire took longer than the contract allowed."
+     ],
+     "answer": 1,
+     "lesson": "A gap needs an owner, and a signature needs an approved plan."
+    }
+   ]
+  },
+  "reality.pain": {
+   "type": "dots",
+   "session": "d1-reality",
+   "title": "Where it hurts",
+   "q": "Put three dots on the stages that hurt most. You can put more than one on a stage.",
+   "items": [
+    "1 · Demand emerges",
+    "2 · Work becomes a staffing need",
+    "3 · Staffing sees the request",
+    "4 · Who could do it, and who is free",
+    "5 · Can they actually start",
+    "6 · Is there a real gap",
+    "7 · The gap goes to action"
+   ],
+   "dots": 3
+  },
+  "reality.check": {
+   "type": "poll",
+   "session": "d1-reality",
+   "title": "Check",
+   "q": "The search finds nobody for a role. What is it?",
+   "options": [
+    "A gap, so start hiring straight away",
+    "A shortfall, until someone checks",
+    "A search mistake, so run it again"
+   ],
+   "correct": 1
+  },
+  "outcome.which": {
+   "type": "sort",
+   "session": "d1-outcome",
+   "title": "Outcome or not?",
+   "q": "Is each statement an outcome, or not yet?",
+   "items": [
+    "Improve staffing for big deals.",
+    "Run a skills search for every new role.",
+    "Every deal over £1m, once it is real, has each role held or a declared gap before signature, as the plan shows.",
+    "Staffing is happy with the new process."
+   ],
+   "bins": [
+    "Outcome",
+    "Not yet"
+   ],
+   "correct": [
+    1,
+    1,
+    0,
+    1
+   ],
+   "why": [
+    "No single deal, no record, no standard.",
+    "An activity, not a result.",
+    "One deal, a start and an end, a record, a standard.",
+    "No record can prove it for one deal."
+   ]
+  },
+  "outcome.edit": {
+   "type": "form",
+   "session": "d1-outcome",
+   "title": "Fix the draft",
+   "q": "Draft: Before a deal is signed, every role it needs is held for a named person who is really free, or is a gap that a named person has declared and owns.",
+   "fields": [
+    {
+     "name": "change",
+     "label": "Your wording for the part you would change",
+     "kind": "text"
+    },
+    {
+     "name": "why",
+     "label": "Why, in one line",
+     "kind": "text"
+    }
+   ],
+   "vote": true
+  },
+  "outcome.end": {
+   "type": "form",
+   "session": "d1-outcome",
+   "title": "Where does it end?",
+   "q": "Where should Contract-to-Capacity end?",
+   "fields": [
+    {
+     "name": "end",
+     "label": "End point",
+     "kind": "choice",
+     "options": [
+      "A · A confirmed gap",
+      "B · An approved plan",
+      "C · A controlled commitment"
+     ]
+    },
+    {
+     "name": "why",
+     "label": "Why, in one line",
+     "kind": "text"
+    }
+   ],
+   "vote": false,
+   "tally": "end"
+  },
+  "outcome.checks": {
+   "type": "sort",
+   "session": "d1-outcome",
+   "title": "Done checks",
+   "q": "For each done check: keep it, change it, or drop it?",
+   "items": [
+    "Every role traces to contracted work.",
+    "Every role has grade, skills, effort, start date and location.",
+    "Every skill is on the approved list, or has an open question with a deadline.",
+    "Every unclear part of the scope is a question to a named person, with a deadline.",
+    "Availability is confirmed, after existing work and holds.",
+    "Every check of who is free is dated and expires.",
+    "Every held role names a person whose release is answered.",
+    "Clashing holds are spotted and sent to a person.",
+    "Every search is recorded: who was considered, and why not.",
+    "Every gap carries its evidence and was declared by a named person.",
+    "Every gap on a signed deal has an owner and a path.",
+    "No deal is signed without an approved plan."
+   ],
+   "bins": [
+    "Keep",
+    "Change",
+    "Drop"
+   ]
+  },
+  "outcome.check": {
+   "type": "poll",
+   "session": "d1-outcome",
+   "title": "Check",
+   "q": "Which of these is an outcome?",
+   "options": [
+    "Run a skills search for every new role on every deal over £1m, and send the results to the planner each week.",
+    "Improve staffing for every big deal, so that clients get the right people, at the right level, and on time.",
+    "For each deal over £1m, from the day it is real to signature, every role is held or a declared gap in the plan."
+   ],
+   "correct": 2
+  },
+  "decisions.owner": {
+   "type": "sort",
+   "session": "d1-decisions",
+   "title": "Who owns it?",
+   "q": "Who should own each decision? Pick a role, not a team.",
+   "items": [
+    "Is the demand real enough to start?",
+    "Is the requirement complete enough for staffing?",
+    "Is the person really free?",
+    "Can they be released?",
+    "Is the shortfall a real gap?",
+    "What is the response to the gap?"
+   ],
+   "bins": [
+    "Engagement lead",
+    "Planner",
+    "Current manager",
+    "Releasing manager",
+    "Resourcing lead",
+    "Practice lead",
+    "Solution lead",
+    "Finance",
+    "The system, by rule"
+   ]
+  },
+  "decisions.card": {
+   "type": "form",
+   "session": "d1-decisions",
+   "title": "Decision card",
+   "q": "Fill the card for your decision.",
+   "fields": [
+    {
+     "name": "decision",
+     "label": "Decision",
+     "kind": "choice",
+     "options": [
+      "Is the demand real enough to start?",
+      "Is the requirement complete enough for staffing?",
+      "Is the person really free?",
+      "Can they be released?",
+      "Is the shortfall a real gap?",
+      "What is the response to the gap?"
+     ]
+    },
+    {
+     "name": "owner",
+     "label": "Owner (a role)",
+     "kind": "choice",
+     "options": [
+      "Engagement lead",
+      "Planner",
+      "Current manager",
+      "Releasing manager",
+      "Resourcing lead",
+      "Practice lead",
+      "Solution lead",
+      "Finance"
+     ]
+    },
+    {
+     "name": "backup",
+     "label": "Backup",
+     "kind": "text"
+    },
+    {
+     "name": "why",
+     "label": "Why a person decides",
+     "kind": "choice",
+     "options": [
+      "Safety",
+      "Legal ownership",
+      "Reasonable people disagree",
+      "Trust not yet earned"
+     ]
+    },
+    {
+     "name": "evidence",
+     "label": "Evidence they need, and where it comes from",
+     "kind": "text"
+    },
+    {
+     "name": "time",
+     "label": "Response time",
+     "kind": "text"
+    },
+    {
+     "name": "noanswer",
+     "label": "If nobody answers, it goes to",
+     "kind": "text"
+    }
+   ],
+   "vote": true
+  },
+  "decisions.check": {
+   "type": "poll",
+   "session": "d1-decisions",
+   "title": "Check",
+   "q": "Who should decide whether a busy person can be released?",
+   "options": [
+    "A named person, looking at the evidence",
+    "The system, by a fixed rule about dates",
+    "Whoever asks for the person first, by date"
+   ],
+   "correct": 0
+  },
+  "rules.wheel": {
+   "type": "wheel",
+   "session": "d1-rules",
+   "title": "Exception roulette",
+   "items": [
+    {
+     "id": "X1",
+     "label": "1",
+     "name": "Scope too vague to staff",
+     "line": "The contract says \"knowledge transfer as agreed\". How many people, for how long?"
+    },
+    {
+     "id": "X2",
+     "label": "2",
+     "name": "Two deals want the same person",
+     "line": "Northgate and another deal both want the same project manager in December."
+    },
+    {
+     "id": "X3",
+     "label": "3",
+     "name": "A skill missing from the approved list",
+     "line": "Northgate needs \"Azure Virtual WAN\". It is not on the approved skills list."
+    },
+    {
+     "id": "X4",
+     "label": "4",
+     "name": "A release is refused",
+     "line": "The only other person with the firewall skill is the sole expert on their own account. Their manager says no."
+    },
+    {
+     "id": "X5",
+     "label": "5",
+     "name": "Blocked by cost, not by people",
+     "line": "A qualified person is free in another country, but their cost base makes the role unaffordable."
+    }
+   ]
+  },
+  "rules.respond": {
+   "type": "poll",
+   "session": "d1-rules",
+   "title": "What should happen?",
+   "linked": "rules.wheel",
+   "q": "What should happen?",
+   "options_by_item": {
+    "X1": [
+     "Plan a standard size; correct it later",
+     "Ask the solution lead; the plan waits",
+     "Leave it out of the plan"
+    ],
+    "X2": [
+     "The resourcing lead decides, with a reason",
+     "The first hold wins",
+     "The likelier deal wins, by a fixed rule"
+    ],
+    "X3": [
+     "Add it to the list yourself",
+     "Use the nearest skill, marked as near",
+     "Ask the list owner, with a deadline"
+    ],
+    "X4": [
+     "A practice lead can overrule within two days",
+     "Declare a gap straight away",
+     "Record the refusal; keep searching"
+    ],
+    "X5": [
+     "Record a cost block; a named person decides",
+     "Above a set difference, treat it as a gap",
+     "Use them and fix the cost later"
+    ]
+   }
+  },
+  "rules.write": {
+   "type": "form",
+   "session": "d1-rules",
+   "title": "Write the rule",
+   "q": "Write the rule for this exception.",
+   "fields": [
+    {
+     "name": "exception",
+     "label": "Exception",
+     "kind": "choice",
+     "options": [
+      "Scope too vague to staff",
+      "Two deals want the same person",
+      "A skill missing from the approved list",
+      "A release is refused",
+      "Blocked by cost, not by people"
+     ]
+    },
+    {
+     "name": "when",
+     "label": "When",
+     "kind": "text"
+    },
+    {
+     "name": "then",
+     "label": "Then",
+     "kind": "text"
+    },
+    {
+     "name": "who",
+     "label": "Who decides",
+     "kind": "text"
+    },
+    {
+     "name": "by",
+     "label": "By when",
+     "kind": "text"
+    },
+    {
+     "name": "noanswer",
+     "label": "If nobody answers",
+     "kind": "text"
+    }
+   ],
+   "vote": true
+  },
+  "rules.check": {
+   "type": "poll",
+   "session": "d1-rules",
+   "title": "Check",
+   "q": "Which of these is a complete rule?",
+   "options": [
+    "When a skill is not on the list, the list owner decides, and the plan waits for as long as that takes.",
+    "When a skill is not on the list, the list owner decides within two days. No answer: the practice lead.",
+    "When a skill is not on the list, someone in staffing looks into it as soon as they can and tells people."
+   ],
+   "correct": 1
+  },
+  "checkpoint.cases": {
+   "type": "dots",
+   "session": "d1-checkpoint",
+   "title": "Tomorrow's cases",
+   "q": "Which cases should we run tomorrow? Three dots.",
+   "items": [
+    "Everything goes right: R1: the engineer is confirmed free, released and held.",
+    "Nobody answers: A manager misses the deadline. Does it go to the backup?",
+    "Two deals, one person: R3: another deal wants the project manager.",
+    "Release refused: R2: the only other firewall expert cannot be released.",
+    "A rule broken: Try to sign before the plan is approved. Is it refused, with the rule shown?",
+    "One of our own cases"
+   ],
+   "dots": 3
+  },
+  "checkpoint.seats": {
+   "type": "claim",
+   "session": "d1-checkpoint",
+   "title": "Decision seats",
+   "q": "Claim the seat you would hold in real life: owner or backup.",
+   "items": [
+    "Is the demand real enough to start?",
+    "Is the requirement complete enough for staffing?",
+    "Is the person really free?",
+    "Can they be released?",
+    "Is the shortfall a real gap?",
+    "What is the response to the gap?",
+    "Which clashing hold stays?",
+    "Approve the plan"
+   ],
+   "slots": [
+    "Owner",
+    "Backup"
+   ]
+  },
+  "checkpoint.premortem": {
+   "type": "words",
+   "session": "d1-checkpoint",
+   "title": "Imagine it failed",
+   "q": "It is 16:15 tomorrow and the live run failed. Why?",
+   "max": 140
+  },
+  "close1.rung": {
+   "type": "poll",
+   "session": "d1-close",
+   "title": "Where are you?",
+   "q": "Which step did you reach today?",
+   "options": [
+    "Step 1 · Why we are here",
+    "Step 2 · The real problem",
+    "Step 3 · The result we want",
+    "Step 4 · Who decides",
+    "Step 5 · When things go wrong"
+   ]
+  },
+  "close1.word": {
+   "type": "words",
+   "session": "d1-close",
+   "title": "One word",
+   "q": "One word for today.",
+   "max": 30
+  },
+  "arrive2.remember": {
+   "type": "words",
+   "session": "d2-arrive",
+   "title": "One thing from yesterday",
+   "q": "One thing you remember from yesterday, in a few words.",
+   "max": 60
+  },
+  "recap.quiz": {
+   "type": "game",
+   "session": "d2-recap",
+   "title": "Yesterday in three questions",
+   "rounds": [
+    {
+     "title": "Question 1",
+     "record": "The search finds nobody.",
+     "q": "What is it?",
+     "options": [
+      "A gap: start hiring",
+      "A shortfall, until checked",
+      "A search mistake: run it again"
+     ],
+     "answer": 1,
+     "lesson": "No match is not a confirmed gap."
+    },
+    {
+     "title": "Question 2",
+     "record": "A rule says what happens next.",
+     "q": "What else must it say?",
+     "options": [
+      "Who decides, and by when",
+      "Which system it is recorded in",
+      "How much it will cost"
+     ],
+     "answer": 0,
+     "lesson": "When, then, who decides, by when, and if nobody answers."
+    },
+    {
+     "title": "Question 3",
+     "record": "A deal is ready to sign.",
+     "q": "What must exist first?",
+     "options": [
+      "A hiring request",
+      "An approved plan",
+      "A subcontractor quote"
+     ],
+     "answer": 1,
+     "lesson": "No deal is signed without an approved plan."
+    }
+   ]
+  },
+  "test.findings": {
+   "type": "findings",
+   "session": "d2-test",
+   "title": "Problem hunt",
+   "q": "Log what you saw.",
+   "kinds": [
+    "Wrong result",
+    "Missing evidence",
+    "Wrong person",
+    "Unclear",
+    "Worked as agreed"
+   ],
+   "steps": [
+    "Everything goes right",
+    "Nobody answers",
+    "Two deals, one person",
+    "Release refused",
+    "A rule broken",
+    "Other"
+   ],
+   "points": {
+    "Wrong result": 3,
+    "Wrong person": 3,
+    "Missing evidence": 2,
+    "Unclear": 1,
+    "Worked as agreed": 1
+   }
+  },
+  "test.check": {
+   "type": "poll",
+   "session": "d2-test",
+   "title": "Check",
+   "q": "A decision went to the resourcing lead, but the room agreed the practice lead owns it. What kind of finding is it?",
+   "options": [
+    "Wrong person",
+    "Wrong result",
+    "Missing evidence"
+   ],
+   "correct": 0
+  },
+  "boundaries.check": {
+   "type": "poll",
+   "session": "d2-boundaries",
+   "title": "Check",
+   "q": "A boundary is still disputed at the end of the session. What happens?",
+   "options": [
+    "It waits for the next workshop",
+    "The draft's option is used for now",
+    "It gets a named owner and a date"
+   ],
+   "correct": 2
+  },
+  "rotation.months": {
+   "type": "form",
+   "session": "d2-rotation",
+   "title": "Time in role",
+   "q": "Months on an account before a move. The draft says about 12, 18 and 24.",
+   "fields": [
+    {
+     "name": "junior",
+     "label": "Junior grades, months",
+     "kind": "number",
+     "min": 0,
+     "max": 48
+    },
+    {
+     "name": "middle",
+     "label": "Middle grades, months",
+     "kind": "number",
+     "min": 0,
+     "max": 48
+    },
+    {
+     "name": "senior",
+     "label": "Senior grades, months",
+     "kind": "number",
+     "min": 0,
+     "max": 48
+    }
+   ],
+   "vote": false,
+   "numbers": true,
+   "draft": {
+    "junior": 12,
+    "middle": 18,
+    "senior": 24
+   }
+  },
+  "rotation.release": {
+   "type": "poll",
+   "session": "d2-rotation",
+   "title": "Who approves a release?",
+   "q": "Who should approve releasing a person for a move?",
+   "options": [
+    "The current manager",
+    "The country practice lead",
+    "Both",
+    "The market representative"
+   ]
+  },
+  "rotation.key": {
+   "type": "poll",
+   "session": "d2-rotation",
+   "title": "Key people",
+   "q": "How do we protect the only person on an account with a skill?",
+   "options": [
+    "Markets flag them; they move only with a same-skill backfill",
+    "They never move",
+    "No special rule"
+   ]
+  },
+  "rotation.cost": {
+   "type": "poll",
+   "session": "d2-rotation",
+   "title": "Costs between countries",
+   "q": "When a person moves to work for another country, who approves the cost?",
+   "options": [
+    "The receiving country",
+    "Finance",
+    "Both countries",
+    "Not allowed"
+   ]
+  },
+  "rotation.agree": {
+   "type": "poll",
+   "session": "d2-rotation",
+   "title": "The person agrees",
+   "q": "Must the person opt in before any move?",
+   "options": [
+    "Yes, always",
+    "Yes, except in emergencies",
+    "No"
+   ]
+  },
+  "rotation.unlock": {
+   "type": "poll",
+   "session": "d2-rotation",
+   "title": "The stuck security lead",
+   "q": "Which rule, if any, would you bend for this job?",
+   "multi": true,
+   "options": [
+    "P07: Not yet eligible",
+    "P08: Has not opted in",
+    "P31: Another country",
+    "P32: Client lock",
+    "None of them"
+   ],
+   "exclusive": 4
+  },
+  "rotation.check": {
+   "type": "poll",
+   "session": "d2-rotation",
+   "title": "Check",
+   "q": "Seniors need 24 months on an account before a move. A senior has 14, and a new job needs them. What happens?",
+   "options": [
+    "They move now, as long as they say yes to the move",
+    "They stay, unless a named person makes an exception",
+    "They move, and the rule is changed for everyone after"
+   ],
+   "correct": 1
+  },
+  "next.slice": {
+   "type": "poll",
+   "session": "d2-next",
+   "title": "First slice",
+   "q": "Which first slice would you start with?",
+   "options": [
+    "One practice, one country, deals over £1m",
+    "One country, all deal sizes",
+    "One practice, all countries",
+    "Big deals only, everywhere"
+   ]
+  },
+  "next.measures": {
+   "type": "points",
+   "session": "d2-next",
+   "title": "Measures that matter",
+   "q": "Spread 100 points over the measures that matter most.",
+   "items": [
+    "Days from deal to staffed plan",
+    "Deals signed with an approved plan",
+    "Hiring requests later filled inside",
+    "Gaps with an owner within days",
+    "Decisions answered on time",
+    "People at the top of their license"
+   ],
+   "total": 100
+  },
+  "next.backlog": {
+   "type": "form",
+   "session": "d2-next",
+   "title": "To-do list",
+   "q": "Add something that must happen next.",
+   "fields": [
+    {
+     "name": "item",
+     "label": "What",
+     "kind": "text"
+    },
+    {
+     "name": "owner",
+     "label": "Owner (a role or a name)",
+     "kind": "text"
+    },
+    {
+     "name": "date",
+     "label": "By when",
+     "kind": "text"
+    }
+   ],
+   "vote": true
+  },
+  "next.premortem": {
+   "type": "words",
+   "session": "d2-next",
+   "title": "January: imagine it failed",
+   "q": "It is January and the pilot failed. Why?",
+   "max": 140
+  },
+  "next.check": {
+   "type": "poll",
+   "session": "d2-next",
+   "title": "Check",
+   "q": "Why do we need a baseline before the pilot starts?",
+   "options": [
+    "Today the work is not measured, so no gain could be shown",
+    "Because finance asks for one before any pilot can start",
+    "So that we can compare our numbers with other firms"
+   ],
+   "correct": 0
+  },
+  "live.score": {
+   "type": "checklist",
+   "session": "d2-live",
+   "title": "Live scorecard",
+   "q": "Score what you saw.",
+   "items": [
+    "The case ran from start to finish",
+    "Each decision went to its named owner",
+    "A broken rule was refused, with the rule shown",
+    "Every step is on the record",
+    "The done checks were checked against the record",
+    "We know what is built, a stand-in, or not built"
+   ],
+   "scale": [
+    "Seen, works",
+    "Seen, with problems",
+    "Not seen"
+   ],
+   "colors": [
+    "#2F855A",
+    "#B7791F",
+    "#9AA5AE"
+   ]
+  },
+  "live.predict": {
+   "type": "poll",
+   "session": "d2-live",
+   "title": "Predict the next step",
+   "q": "What will the system do next?",
+   "options": [
+    "Go ahead",
+    "Ask a person",
+    "Stop"
+   ],
+   "rounds": true,
+   "round_word": "Prediction",
+   "compare": false
+  },
+  "live.check": {
+   "type": "poll",
+   "session": "d2-live",
+   "title": "Check",
+   "q": "Where do we check that a case is really done?",
+   "options": [
+    "On the demo screen, as the case runs live",
+    "By asking the engineers who built it",
+    "In the record, against the done checks"
+   ],
+   "correct": 2
+  },
+  "close.criteria": {
+   "type": "checklist",
+   "session": "d2-close",
+   "title": "Decision criteria",
+   "q": "How far is each criterion met?",
+   "items": [
+    "The outcome is agreed, holds for one deal, and a trusted record can prove it.",
+    "Every decision has a named role, a reason a person decides, and a response time.",
+    "The working version ran at least one case end to end, live, checked against the record.",
+    "The rotation rules are agreed, or each open rule has an owner and a date.",
+    "There is a path to read access to the systems the first slice needs.",
+    "Every open requirement has an owner and a date."
+   ],
+   "scale": [
+    "Met",
+    "Partly",
+    "Not met"
+   ],
+   "colors": [
+    "#2F855A",
+    "#B7791F",
+    "#C8341F"
+   ]
+  },
+  "close.rung": {
+   "type": "poll",
+   "session": "d2-close",
+   "title": "Where are you?",
+   "q": "Which step did you reach over the two days?",
+   "options": [
+    "Step 1 · Why we are here",
+    "Step 2 · The real problem",
+    "Step 3 · The result we want",
+    "Step 4 · Who decides",
+    "Step 5 · When things go wrong",
+    "Step 6 · Judge a working version",
+    "Step 7 · Rules for moves",
+    "Step 8 · Decide what next"
+   ]
+  },
+  "close.word": {
+   "type": "words",
+   "session": "d2-close",
+   "title": "One word",
+   "q": "One word for these two days.",
+   "max": 30
+  },
+  "boundaries.b1": {
+   "type": "poll",
+   "session": "d2-boundaries",
+   "title": "Boundary 1",
+   "q": "Who confirms that a shortfall is a real gap?",
+   "options": [
+    "The resourcing lead",
+    "The practice lead",
+    "A short gap review"
+   ],
+   "rounds": true,
+   "round_labels": [
+    "First vote",
+    "After the debate"
+   ]
+  },
+  "boundaries.b2": {
+   "type": "poll",
+   "session": "d2-boundaries",
+   "title": "Boundary 2",
+   "q": "When records disagree about who is free, which one wins?",
+   "options": [
+    "The manager's confirmation",
+    "Workday, unless the manager overrides",
+    "The newer of the two"
+   ],
+   "rounds": true,
+   "round_labels": [
+    "First vote",
+    "After the debate"
+   ]
+  },
+  "boundaries.b3": {
+   "type": "poll",
+   "session": "d2-boundaries",
+   "title": "Boundary 3",
+   "q": "Where does Contract-to-Capacity hand over?",
+   "options": [
+    "Release questions go out first",
+    "Declared gaps go to hiring or growing the skill",
+    "Both of these"
+   ],
+   "rounds": true,
+   "round_labels": [
+    "First vote",
+    "After the debate"
+   ]
+  },
+  "boundaries.b4": {
+   "type": "poll",
+   "session": "d2-boundaries",
+   "title": "Boundary 4",
+   "q": "What may be held before signature, and who approves?",
+   "options": [
+    "Holds from contract drafting, engagement lead approves",
+    "No holds before signature",
+    "Holds plus early work at risk, with a limit"
+   ],
+   "rounds": true,
+   "round_labels": [
+    "First vote",
+    "After the debate"
+   ]
+  }
+ },
+ "ladder": [
+  {
+   "rung": 0,
+   "short": "Why we are here",
+   "can": "I know why we are here and what we decide at the end."
+  },
+  {
+   "rung": 1,
+   "short": "The real problem",
+   "can": "I see where records and reality part, at each stage of a deal."
+  },
+  {
+   "rung": 2,
+   "short": "The result we want",
+   "can": "I can say the result we want, and how a record would prove it."
+  },
+  {
+   "rung": 3,
+   "short": "Who decides",
+   "can": "I know which decisions need a person, who, and what they need to see."
+  },
+  {
+   "rung": 4,
+   "short": "When things go wrong",
+   "can": "I can write the rule for an exception: what happens, who decides, by when."
+  },
+  {
+   "rung": 5,
+   "short": "Judge a working version",
+   "can": "I can test a working version and say what it got wrong."
+  },
+  {
+   "rung": 6,
+   "short": "Rules for moves",
+   "can": "I can set the rules for moving people up to the work they are qualified for."
+  },
+  {
+   "rung": 7,
+   "short": "Decide what next",
+   "can": "I can weigh the evidence and decide what to take forward."
+  }
+ ],
+ "glossary": [
+  {
+   "term": "Contract-to-Capacity",
+   "plain": "Turning a deal we are likely to win into a staffing plan, checking who is really free, and giving every unfilled role an owner.",
+   "first": "d1-welcome"
+  },
+  {
+   "term": "Engine",
+   "plain": "A system that runs one kind of work from start to a checked finish. It drafts, follows agreed rules, and sends the hard calls to named people.",
+   "first": "d1-welcome"
+  },
+  {
+   "term": "Proof of Concept",
+   "plain": "A first working version, built during these two days, to test the idea on real cases.",
+   "first": "d1-welcome"
+  },
+  {
+   "term": "Proceed, Narrow or Stop",
+   "plain": "The three possible decisions at the end of Day 2. Proceed: go ahead as planned. Narrow: go ahead with a smaller scope. Stop: not now, and we say why.",
+   "first": "d1-welcome"
+  },
+  {
+   "term": "Record",
+   "plain": "What a system says, such as Workday or Atlas.",
+   "first": "d1-reality"
+  },
+  {
+   "term": "Shortfall",
+   "plain": "Nobody found yet. Not a gap until someone has checked.",
+   "first": "d1-reality"
+  },
+  {
+   "term": "Gap",
+   "plain": "A confirmed shortage, with its evidence, declared by a named person, and owned.",
+   "first": "d1-reality"
+  },
+  {
+   "term": "Outcome",
+   "plain": "The result we promise for every deal. True or false for one deal, and provable from a record.",
+   "first": "d1-outcome"
+  },
+  {
+   "term": "Done checks",
+   "plain": "The checks that prove a deal's case is finished, read from a record we trust.",
+   "first": "d1-outcome"
+  },
+  {
+   "term": "Hold",
+   "plain": "Held: a person is reserved for this deal, for a limited time. The hold ends on its own unless someone renews it.",
+   "first": "d1-outcome"
+  },
+  {
+   "term": "Decision owner",
+   "plain": "The role that makes a decision, with a backup and a response time. A role, not a team.",
+   "first": "d1-decisions"
+  },
+  {
+   "term": "Evidence",
+   "plain": "The facts a decision owner needs, and the system or person each one comes from.",
+   "first": "d1-decisions"
+  },
+  {
+   "term": "Rule",
+   "plain": "When this happens, then this, decided by this role, by this time. If nobody answers, it goes to this role.",
+   "first": "d1-rules"
+  },
+  {
+   "term": "Top of license",
+   "plain": "Working at the highest level you are qualified for.",
+   "first": "d2-rotation"
+  },
+  {
+   "term": "Chain of moves",
+   "plain": "A new job is filled by someone stepping up, others step up behind them, and a junior hire or a free person fills the last job.",
+   "first": "d2-rotation"
+  },
+  {
+   "term": "Pilot",
+   "plain": "The first real use of the new way of working, on a small part of the business, to learn safely before going wider.",
+   "first": "d2-rotation"
+  },
+  {
+   "term": "First slice",
+   "plain": "The part of the business the pilot starts with: which practice, country, deals and decisions.",
+   "first": "d2-next"
+  },
+  {
+   "term": "Baseline",
+   "plain": "How the work performs today, measured, so we can show any improvement.",
+   "first": "d2-next"
+  }
+ ]
+}

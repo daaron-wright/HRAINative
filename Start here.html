@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Start Here · Workshop Kit</title>
+<style>
+:root{--ink:#1F2A33;--ink2:#46535E;--mute:#68747F;--line:#DCE1E5;--surf:#F3F5F6;--paper:#FFFFFF;--ground:#F7F8F9;--teal:#287079;--teal-s:#E2EFF0;--red:#E8412A;color-scheme:light}
+@media (prefers-color-scheme:dark){:root{--ink:#E8ECEF;--ink2:#C3CBD1;--mute:#9AA6B0;--line:#2F3A42;--surf:#1D252B;--paper:#161D22;--ground:#11171B;--teal:#5FB3BC;--teal-s:#173236;--red:#FF7A63;color-scheme:dark}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;line-height:1.5}
+.wrap{max-width:980px;margin:0 auto;padding-inline:20px;padding-block:32px 60px}
+.eyebrow{font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--teal)}
+h1{font-size:30px;line-height:1.15;margin:6px 0 6px;text-wrap:balance}
+h2{font-size:19px;margin:30px 0 12px}
+.lead{color:var(--ink2);max-width:68ch;margin:0}
+.promise{margin:18px 0 0;padding:14px 18px;border-radius:12px;background:var(--teal-s);font-weight:700;font-size:17px;max-width:72ch}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:14px}
+.card{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:16px 18px;display:flex;flex-direction:column;gap:6px}
+.card .n{width:30px;height:30px;border-radius:50%;background:var(--teal);color:#fff;display:grid;place-items:center;font-weight:800}
+.card b{font-size:16px}
+.card p{margin:0;color:var(--ink2);font-size:14.5px}
+.card a{font-weight:700;color:var(--teal);font-size:14.5px;margin-top:auto;word-break:break-word}
+ol.steps{margin:0;padding:0;list-style:none;counter-reset:s;display:flex;flex-direction:column;gap:10px}
+ol.steps li{counter-increment:s;display:grid;grid-template-columns:34px minmax(0,1fr);gap:12px;background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:12px 16px}
+ol.steps li::before{content:counter(s);width:28px;height:28px;border-radius:50%;background:var(--red);color:#fff;display:grid;place-items:center;font-weight:800;font-size:14px}
+ol.steps b{display:block}
+.muted{color:var(--mute);font-size:13.5px}
+.stats{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
+.stats span{background:var(--paper);border:1px solid var(--line);border-radius:99px;padding:6px 12px;font-size:14px}
+.stats b{color:var(--teal)}
+</style>
+</head>
+<body><div class="wrap">
+<div class="eyebrow">6–7 October 2026 · Liverpool AI Innovation Lab</div>
+<h1>Contract-to-Capacity: workshop kit</h1>
+<p class="lead">Everything to run the two days: slides, a facilitator guide, printed materials and a phone voting tool. Every session has three ways to run it, so your team can shape the experience.</p>
+<div class="promise">Before a deal is signed, we know whether we can staff it. If we cannot, a named person owns the gap.</div>
+<div class="stats"><span><b>217</b> slides</span><span><b>51</b> session options</span><span><b>54</b> phone activities</span><span><b>13</b> print packs</span></div>
+
+<h2>Get ready in five steps</h2>
+<ol class="steps">
+  <li><span><b>Choose an option for each session</b>Open the facilitator guide, Plan tab. The recommended mix is already selected, and the deck is already set up for it. Change any session; the run sheet, materials and slide list update.</span></li>
+  <li><span><b>Show or hide slides, only if you changed the mix</b>The guide lists which slides to show and which to hide. In PowerPoint: Slide Sorter, select them, right-click, Hide Slide. The Hub slide still jumps anywhere.</span></li>
+  <li><span><b>Print the kit</b>Print only the packs your options need. The guide's Print kit tab says what each item is for and how many.</span></li>
+  <li><span><b>Test the room tool on the venue Wi-Fi</b>The day before, start it on the presenting laptop and join from two phones. The room tool's README has plan B, C and D if phones cannot connect.</span></li>
+  <li><span><b>Optional: screenshots of the working version</b>Slides 105, 122 and 129 read well as they are. The build team can paste a screenshot on each on the day.</span></li>
+</ol>
+
+<h2>What is in the kit</h2>
+<div class="grid">
+  <div class="card"><span class="n">1</span><b>Slides</b><p>217 slides: every session, all three options, check questions, and a Hub slide to jump, skip or go back. Facilitator notes are in the speaker notes.</p><a href="1%20Slides/Contract-to-Capacity-Workshop-Deck.pptx">1 Slides / Contract-to-Capacity-Workshop-Deck.pptx</a></div>
+  <div class="card"><span class="n">2</span><b>Facilitator guide</b><p>Plan the mix, run each session against the clock, read every option in full, and see how understanding builds across the two days. Works offline in any browser.</p><a href="2%20Facilitator%20guide/Facilitator-Guide.html">2 Facilitator guide / Facilitator-Guide.html</a></div>
+  <div class="card"><span class="n">3</span><b>Print kit</b><p>13 PDF packs: posters, cards, worksheets, seat cards, scorecards, the pocket guide and the pre-work card.</p><a href="3%20Print%20kit/">3 Print kit /</a></div>
+  <div class="card"><span class="n">4</span><b>Room tool</b><p>People scan a QR code and answer on their phones; the projector shows live results. Runs on one laptop, no internet or accounts. Start with the README.</p><a href="4%20Room%20tool/README.md">4 Room tool / README.md</a></div>
+  <div class="card"><span class="n">5</span><b>Quality report</b><p>Every check run on the kit, what the reviews found and fixed, and what still needs a person on the day.</p><a href="5%20Quality%20report/Quality-Report.html">5 Quality report / Quality-Report.html</a></div>
+  <div class="card"><span class="n">6</span><b>Reference pages</b><p>The staffing engines explorer, the rotation sketch (open it on laptops for the Day 2 rotation session, options B and C) and the rotation planning method.</p><a href="6%20Reference%20pages/">6 Reference pages /</a></div>
+</div>
+<p class="muted" style="margin-top:24px">The Northgate deal and every person in it are invented for this workshop.</p>
+</div></body></html>

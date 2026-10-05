@@ -1,0 +1,4220 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Staffing Engines Explorer</title>
+<style>
+:root{
+ --bg:#0c0f16;--grid:#161d2b;--surf:#151b27;--surf2:#1b2331;--surf3:#212b3c;
+ --bd:#2a3547;--bd2:#3a495f;--tx:#e7ecf3;--mu:#8b98ad;--fa:#59647a;
+ --agent:#33c3b4;--det:#5b8def;--human:#e9b552;--root:#ef5b52;--comp:#aeb9cd;
+ --c1:#ef5b52;--c2:#2fb3a0;--c3:#f0954a;--buy:#a78bfa;--gap:#e9b552;--eng:#d38ce0;--new:#7bd88f;--chg:#e9b552;
+ --link:#2f3c56;--linkHi:#54658a;
+ --fd:'Space Grotesk',ui-sans-serif,system-ui,sans-serif;
+ --fb:ui-sans-serif,system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+ --fm:'JetBrains Mono',ui-monospace,Menlo,monospace;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-family:var(--fb);-webkit-font-smoothing:antialiased}
+button,input{font-family:inherit;color:var(--tx)}
+button{cursor:pointer}
+
+/* top bar */
+.top{position:fixed;top:0;left:0;right:0;height:52px;z-index:40;display:flex;align-items:center;gap:14px;
+ padding:0 14px;background:rgba(12,15,22,.96);border-bottom:1px solid var(--bd);backdrop-filter:blur(8px)}
+.brand{font-family:var(--fd);font-weight:700;font-size:14px;letter-spacing:-.01em;white-space:nowrap}
+.tabs{display:flex;gap:3px;overflow-x:auto;flex:1;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{height:32px;padding:0 12px;border-radius:7px;border:1px solid transparent;background:transparent;
+ font-size:12.5px;color:var(--mu);white-space:nowrap;transition:.14s}
+.tab:hover{background:var(--surf2);color:var(--tx)}
+.tab.on{background:var(--surf3);border-color:var(--bd2);color:#fff;font-weight:600}
+.tab .dot{display:inline-block;width:6px;height:6px;border-radius:50%;margin-right:6px;vertical-align:1px}
+.srch{position:relative;flex-shrink:0}
+.srch input{height:32px;width:190px;background:var(--surf);border:1px solid var(--bd);border-radius:7px;
+ padding:0 10px 0 30px;font-size:12.5px;outline:none}
+.srch input:focus{border-color:var(--agent);box-shadow:0 0 0 3px rgba(51,195,180,.12)}
+.srch svg{position:absolute;left:9px;top:9px;width:13px;height:13px;fill:var(--fa)}
+.iconbtn{width:32px;height:32px;border-radius:7px;border:1px solid var(--bd);background:var(--surf);
+ display:grid;place-items:center;color:var(--mu);font-size:14px}
+.iconbtn:hover{background:var(--surf2);color:var(--tx)}
+
+/* sidebar */
+.side{position:fixed;top:52px;left:0;bottom:0;width:262px;z-index:30;background:var(--surf);
+ border-right:1px solid var(--bd);display:flex;flex-direction:column;transition:transform .22s}
+.side.hide{transform:translateX(-100%)}
+.side .hd{padding:11px 14px 8px;font-family:var(--fm);font-size:9px;letter-spacing:.15em;
+ text-transform:uppercase;color:var(--fa);border-bottom:1px solid var(--bd)}
+.outline{flex:1;overflow:auto;padding:6px 0 16px}
+.oi{display:block;width:100%;text-align:left;background:transparent;border:0;padding:5px 12px;
+ font-size:12.5px;color:var(--mu);border-left:2px solid transparent;line-height:1.35}
+.oi:hover{background:var(--surf2);color:var(--tx)}
+.oi.on{background:var(--surf3);color:#fff;border-left-color:var(--agent)}
+.oi .id{font-family:var(--fm);font-size:10px;margin-right:7px;opacity:.75}
+.oi.l0{font-weight:600;color:var(--tx)}
+.oi.l1{padding-left:20px}
+.oi.l2{padding-left:36px;font-size:12px}
+.oi .sw{display:inline-block;width:6px;height:6px;border-radius:2px;margin-right:6px}
+.side .ft{padding:9px 13px;border-top:1px solid var(--bd);font-size:10.5px;color:var(--fa);line-height:1.6}
+.side .ft b{color:var(--mu);font-weight:600}
+kbd{font-family:var(--fm);font-size:9.5px;background:var(--surf3);border:1px solid var(--bd2);
+ border-radius:3px;padding:1px 4px;color:var(--mu)}
+
+/* canvas */
+#stage{position:fixed;top:52px;left:262px;right:0;bottom:0;cursor:grab;touch-action:none;transition:left .22s}
+#stage.wide{left:0}
+#stage.drag{cursor:grabbing}
+svg{width:100%;height:100%;display:block}
+.node-g{cursor:pointer}
+.node-g .card{transition:filter .16s,stroke .16s}
+.node-g:hover .card{filter:brightness(1.1)}
+.lbl{font-family:var(--fb);fill:var(--tx)}
+.idt{font-family:var(--fm);font-size:10px;letter-spacing:.03em}
+.tag{font-family:var(--fm);font-size:8.5px;letter-spacing:.08em;text-transform:uppercase}
+.note{font-family:var(--fb);fill:var(--mu)}
+.colh{font-family:var(--fm);font-size:9.5px;letter-spacing:.2em;fill:var(--fa);text-transform:uppercase}
+.link{fill:none;stroke:var(--link);stroke-width:1.4}
+.badge circle{fill:var(--surf2);stroke:var(--bd2)}
+.badge:hover circle{fill:var(--surf3)}
+.cword{cursor:pointer}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+/* breadcrumb */
+.crumb{position:fixed;top:60px;left:274px;z-index:25;font-size:11.5px;color:var(--fa);
+ font-family:var(--fm);letter-spacing:.03em;pointer-events:none;transition:left .22s}
+.crumb.wide{left:14px}
+.crumb b{color:var(--mu);font-weight:400}
+
+/* controls */
+.ctl{position:fixed;right:14px;bottom:14px;z-index:22;display:flex;flex-direction:column;gap:7px;align-items:flex-end;
+ transition:transform .26s}
+body.panel-open .ctl{transform:translateX(-352px)}
+.cluster{display:flex;background:var(--surf);border:1px solid var(--bd);border-radius:9px;overflow:hidden}
+.cluster button{width:36px;height:34px;background:transparent;border:0;border-left:1px solid var(--bd);
+ display:grid;place-items:center;color:var(--mu);font-size:14px}
+.cluster button:first-child{border-left:0}
+.cluster button:hover{background:var(--surf2);color:var(--tx)}
+.cluster .z{min-width:48px;font-family:var(--fm);font-size:11px;color:var(--mu);display:grid;place-items:center}
+.cluster.wide button{width:auto;padding:0 11px;font-family:var(--fb);font-size:11.5px}
+
+/* legend */
+.leg{position:fixed;left:276px;bottom:14px;z-index:22;background:var(--surf);border:1px solid var(--bd);
+ border-radius:9px;padding:9px 12px;font-size:11px;color:var(--mu);transition:left .22s}
+.leg.wide{left:14px}
+.leg .row{display:flex;align-items:center;gap:7px;margin:4px 0}
+.leg b{color:var(--tx);font-weight:600}
+.sw{width:10px;height:10px;border-radius:3px;flex-shrink:0}
+
+/* panel */
+.panel{position:fixed;top:52px;right:0;bottom:0;width:340px;z-index:35;background:var(--surf);
+ border-left:1px solid var(--bd);box-shadow:-10px 0 40px rgba(0,0,0,.35);transform:translateX(100%);
+ transition:transform .26s cubic-bezier(.4,0,.15,1);display:flex;flex-direction:column}
+.panel.open{transform:none}
+.panel .hd2{padding:16px 18px 13px;border-bottom:1px solid var(--bd)}
+.panel .kind{font-family:var(--fm);font-size:9.5px;letter-spacing:.13em;text-transform:uppercase;display:inline-flex;align-items:center;gap:7px}
+.panel .pid{font-family:var(--fm);font-size:10.5px;color:var(--fa);float:right}
+.panel h2{font-family:var(--fd);font-weight:600;font-size:16px;margin:10px 0 0;line-height:1.32}
+.panel .bd{padding:15px 18px;overflow:auto;font-size:12.5px;line-height:1.6}
+.fld{margin-bottom:13px}
+.fl{font-family:var(--fm);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--fa);margin-bottom:4px}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:3px 9px;border-radius:20px;background:var(--surf2);
+ border:1px solid var(--bd);font-size:11.5px}
+.cl{position:absolute;top:13px;right:14px;width:25px;height:25px;border:0;background:transparent;color:var(--mu);
+ font-size:16px;border-radius:6px}
+.cl:hover{background:var(--surf2);color:var(--tx)}
+.jump{display:block;width:100%;text-align:left;margin-top:5px;padding:6px 9px;border-radius:6px;
+ background:var(--surf2);border:1px solid var(--bd);font-size:11.5px;color:var(--mu)}
+.jump:hover{background:var(--surf3);color:var(--tx)}
+
+.toast{position:fixed;bottom:72px;left:50%;transform:translateX(-50%) translateY(16px);z-index:50;
+ background:var(--surf3);border:1px solid var(--bd2);border-radius:8px;padding:10px 15px;font-size:12px;
+ box-shadow:0 8px 30px rgba(0,0,0,.45);opacity:0;pointer-events:none;transition:.24s;max-width:80vw;text-align:center}
+.toast.show{opacity:1;transform:translateX(-50%)}
+.toast .em{color:var(--human)}
+
+@media (max-width:860px){
+ .side{width:230px} #stage{left:230px} .crumb{left:242px} .leg{left:244px}
+ .brand{display:none}
+}
+@media (max-width:640px){
+ .side{transform:translateX(-100%)} .side.show{transform:none}
+ #stage{left:0} .crumb{left:14px} .leg{left:14px}
+ .panel{width:100%;top:auto;bottom:0;height:62%;border-left:0;border-top:1px solid var(--bd);transform:translateY(100%)}
+ .panel.open{transform:none}
+ body.panel-open .ctl{transform:translateY(-64vh)}
+ .srch input{width:120px}
+}
+
+/* added: status, sheets, map links */
+.sheet{position:fixed;top:52px;left:0;right:0;bottom:0;z-index:38;overflow:auto;background:var(--bg);display:none;padding:28px 16px 60px}
+.sheet.on{display:block}
+.sheet .in{max-width:980px;margin:0 auto;display:flex;flex-direction:column;gap:22px}
+.sheet h1{font-family:var(--fd);font-size:26px;margin:0;line-height:1.2}
+.sheet h2{font-family:var(--fd);font-size:18px;margin:0 0 10px}
+.sheet p{margin:0;color:var(--mu);font-size:14px;line-height:1.6;max-width:72ch}
+.sheet .box{background:var(--surf);border:1px solid var(--bd);border-radius:12px;padding:18px}
+.sheet table{width:100%;border-collapse:collapse;font-size:13px}
+.sheet th{font-family:var(--fm);font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--fa);text-align:left;padding:8px 10px;border-bottom:1px solid var(--bd)}
+.sheet td{padding:9px 10px;border-bottom:1px solid var(--bd);vertical-align:top;line-height:1.45}
+.sheet tr:last-child td{border-bottom:0}
+.sheet .sc{overflow-x:auto}
+.pill{display:inline-block;font-family:var(--fm);font-size:9.5px;letter-spacing:.08em;padding:2px 7px;border-radius:5px;border:1px solid;white-space:nowrap}
+.pill.new{color:var(--new);border-color:var(--new)} .pill.changed{color:var(--chg);border-color:var(--chg)}
+.pill.built{color:var(--agent);border-color:var(--agent)} .pill.tobuild{color:var(--mu);border-color:var(--bd2)} .pill.designed{color:var(--human);border-color:var(--human)} .pill.partly{color:var(--chg);border-color:var(--chg)}
+.ladder{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px}
+@media (max-width:760px){.ladder{grid-template-columns:minmax(0,1fr)}}
+.rung{background:var(--surf2);border:1px solid var(--bd);border-radius:10px;padding:12px;display:flex;flex-direction:column;gap:6px}
+.rung .st{font-family:var(--fd);font-weight:600;font-size:14px}
+.rung .sure{height:6px;border-radius:3px;background:var(--surf3);overflow:hidden}
+.rung .sure i{display:block;height:100%;background:var(--c3)}
+.rung .act{font-family:var(--fm);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--c3)}
+.rung .d{font-size:12.5px;color:var(--mu);line-height:1.45}
+.rung .ids{font-family:var(--fm);font-size:10.5px;color:var(--fa)}
+.formula{display:flex;flex-wrap:wrap;align-items:center;gap:10px;font-size:14px}
+.formula .t{background:var(--surf2);border:1px solid var(--bd2);border-radius:9px;padding:10px 12px;text-align:center;line-height:1.35}
+.formula .t b{display:block;font-family:var(--fm);font-size:16px;color:var(--tx)}
+.formula .t span{font-size:12px;color:var(--mu)}
+.formula .op{font-family:var(--fm);font-size:18px;color:var(--fa)}
+.formula .t.res{border-color:var(--c3)} .formula .t.res b{color:var(--c3)}
+.steps{display:flex;flex-direction:column;gap:8px}
+.stp{display:grid;grid-template-columns:28px minmax(0,1fr) auto;gap:12px;align-items:center;background:var(--surf2);border:1px solid var(--bd);border-radius:10px;padding:10px 12px}
+.stp .n{width:26px;height:26px;border-radius:50%;background:var(--surf3);display:grid;place-items:center;font-family:var(--fm);font-size:12px}
+.stp .l{font-size:13.5px;line-height:1.4} .stp .l small{display:block;color:var(--fa);font-family:var(--fm);font-size:10.5px;margin-top:2px}
+.views{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:8px}
+.views div{background:var(--surf2);border:1px solid var(--bd);border-radius:10px;padding:12px;font-size:13px;line-height:1.4}
+.views b{display:block;font-family:var(--fd);margin-bottom:3px}
+.views.v3{grid-template-columns:repeat(3,minmax(0,1fr))}
+@media (max-width:700px){.views.v3{grid-template-columns:minmax(0,1fr)}}
+.sheet a{color:var(--agent)}
+.ccl{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:7px}
+.ccl li{display:grid;grid-template-columns:38px minmax(0,1fr);gap:6px;font-size:12px;line-height:1.45}
+.ccl b{font-family:var(--fm);font-size:10.5px;color:var(--fa)}
+.lkrow{display:grid;grid-template-columns:22px minmax(0,1fr);gap:8px;padding:6px 12px;font-size:12px;color:var(--mu);cursor:pointer;border:0;background:transparent;text-align:left;width:100%}
+.lkrow:hover,.lkrow.on{background:var(--surf2);color:var(--tx)}
+.lkrow .nb{width:20px;height:20px;border-radius:50%;display:grid;place-items:center;font-family:var(--fm);font-size:10px;color:#0c0f16;font-weight:700}
+.oh{padding:12px 14px 4px;font-family:var(--fm);font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--fa)}
+</style></head><body>
+
+<div class="top">
+  <div class="brand">Staffing &amp; Workforce Engines</div>
+  <div class="tabs" id="tabs"></div>
+  <div class="srch">
+    <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"/></svg>
+    <input id="q" placeholder="Search nodes…" spellcheck="false"/>
+  </div>
+  <button class="iconbtn" id="sideBtn" title="Toggle outline">☰</button>
+</div>
+
+<aside class="side" id="side">
+  <div class="hd" id="outHd">Outline</div>
+  <div class="outline" id="outline"></div>
+  <div class="ft">
+    <b>Keys</b><br/>
+    <kbd>↑</kbd><kbd>↓</kbd> move · <kbd>←</kbd> parent · <kbd>→</kbd> child<br/>
+    <kbd>F</kbd> fit · <kbd>/</kbd> search · <kbd>Esc</kbd> clear
+  </div>
+</aside>
+
+<div class="crumb" id="crumb"></div>
+
+<div id="stage">
+  <svg id="svg" xmlns="http://www.w3.org/2000/svg">
+    <defs><pattern id="dots" width="26" height="26" patternUnits="userSpaceOnUse">
+      <circle cx="1.3" cy="1.3" r="1.3" fill="#1a2231"/></pattern></defs>
+    <g id="vp"><rect x="-9000" y="-9000" width="18000" height="18000" fill="url(#dots)"/>
+      <g id="hd"></g><g id="lk"></g><g id="nd"></g></g>
+  </svg>
+</div>
+
+<div class="leg" id="leg"></div>
+
+<div class="ctl">
+  <div class="cluster wide"><button id="expand">Break down all</button><button id="collapse">Roll up all</button></div>
+  <div class="cluster"><button id="zo">−</button><div class="z" id="zl">100%</div><button id="zi">+</button><button id="fit" style="font-size:11.5px">Fit</button></div>
+</div>
+
+<aside class="panel" id="panel">
+  <button class="cl" id="pcl">✕</button>
+  <div class="hd2"><span class="kind" id="pk"></span><span class="pid" id="pi"></span><h2 id="pt"></h2></div>
+  <div class="bd" id="pb"></div>
+</aside>
+
+<div class="toast" id="toast"></div>
+<div class="sheet" id="sheet"><div class="in" id="sheetIn"></div></div>
+
+<script>
+"use strict";
+const NS="http://www.w3.org/2000/svg";
+const H={agent:{c:"var(--agent)",l:"AI agent",s:"needs judgement"},
+ deterministic:{c:"var(--det)",l:"System rule",s:"code, rule, or lookup"},
+ human:{c:"var(--human)",l:"Person",s:"a person decides, in the Exception Manager role"},
+ engine:{c:"var(--eng)",l:"Calls an engine",s:"asks another engine and waits for its answer"}};
+
+/* ============================ DATA ============================ */
+const ENG={
+ "stp": {
+  "name": "Scope-to-Plan",
+  "chain": 1,
+  "col": "var(--c1)",
+  "isRuling": true,
+  "alias": "One of the four engines Contract-to-Capacity became by the sponsor's ruling of 24 September. Its parts come from branch A of the Contract-to-Capacity tree used in the PoC, with the research fixes. Trigger: an engagement crosses the start threshold. End: a complete plan version.",
+  "outcome": "Every engagement likely to land carries a complete labour plan version whose roles all trace to contracted work, stating grade, skills, effort, start date, location.",
+  "cc": [
+   [
+    "CC2",
+    "Every role in the plan record references at least one contracted deliverable."
+   ],
+   [
+    "CC3",
+    "Every role in the plan record has grade, skills, effort, start date and location where relevant."
+   ],
+   [
+    "CC4",
+    "Every named skill is in the approved skills list, or the plan record holds an open question to the list owner with a deadline.",
+    "changed",
+    "research"
+   ],
+   [
+    "CC10",
+    "Every part of scope too vague to staff is a question on the plan record to a named owner with a response clock."
+   ]
+  ],
+  "cols": [
+   {
+    "id": "A",
+    "label": "The scope is understood well enough to staff",
+    "from": "Every engagement likely to land",
+    "fw": [
+     "engagement",
+     "likely",
+     "land"
+    ],
+    "leaves": [
+     {
+      "id": "A0",
+      "label": "The engagement lead decides the demand is real enough to start",
+      "h": "human",
+      "note": "No start threshold exists today; the trigger and the owner are agreed at the workshop",
+      "s": "new",
+      "src": "research",
+      "r": "Issue 7 · D01, B01, SYS06, REC02, D13, R08",
+      "role": "Engagement lead (role to confirm at the workshop)",
+      "reason": "trust_threshold",
+      "scaffold": "Win odds with their age, deal stage, deal value and the draft role plan"
+     },
+     {
+      "id": "A1",
+      "label": "Extract contracted deliverables and milestones",
+      "h": "agent",
+      "r": "Contract-to-Capacity tree used in the PoC, leaf A1"
+     },
+     {
+      "id": "A2",
+      "label": "Structure the work into phases and durations",
+      "h": "agent",
+      "r": "Contract-to-Capacity tree used in the PoC, leaf A2"
+     },
+     {
+      "id": "A3",
+      "label": "Identify ambiguous scope and formulate a question for the named owner",
+      "h": "agent",
+      "r": "Contract-to-Capacity tree used in the PoC, leaf A3"
+     }
+    ]
+   },
+   {
+    "id": "B",
+    "label": "Every piece of work has its roles, skills and effort",
+    "from": "whose roles all trace to contracted work",
+    "fw": [
+     "roles",
+     "trace",
+     "contracted",
+     "work"
+    ],
+    "leaves": [
+     {
+      "id": "A4",
+      "label": "Map each deliverable to the required skills",
+      "h": "agent",
+      "r": "Contract-to-Capacity tree used in the PoC, leaf A4"
+     },
+     {
+      "id": "A5",
+      "label": "Group skills into roles at approved grades, recording deal type and country",
+      "h": "agent",
+      "s": "changed",
+      "src": "research",
+      "r": "Issue 10 · R06, EV11, SYS05, S1"
+     },
+     {
+      "id": "A6",
+      "label": "Estimate effort and duration as a range",
+      "h": "agent",
+      "r": "Contract-to-Capacity tree used in the PoC, leaf A6"
+     },
+     {
+      "id": "A7",
+      "label": "Trace every role to a contracted deliverable",
+      "h": "deterministic",
+      "r": "Contract-to-Capacity tree used in the PoC, leaf A7"
+     },
+     {
+      "id": "A8",
+      "label": "Send a skill missing from the approved list to the list owner, with a deadline",
+      "h": "deterministic",
+      "s": "new",
+      "src": "research",
+      "r": "Issue 5 · B03, RR11, R07, SYS08"
+     }
+    ]
+   },
+   {
+    "id": "C",
+    "label": "The plan is complete and reconciled",
+    "from": "carries a complete labour plan version",
+    "fw": [
+     "complete",
+     "labour",
+     "plan",
+     "version"
+    ],
+    "leaves": [
+     {
+      "id": "A9",
+      "label": "Reconcile the plan with the RPL and the SDM cost case; differences go to the plan owner",
+      "h": "deterministic",
+      "s": "new",
+      "src": "research",
+      "r": "Issue 6 · SYS04, REC01, REC03, EV03, S3, RR06"
+     },
+     {
+      "id": "A10",
+      "label": "The planner confirms the requirement is complete enough for staffing, and owns the search record",
+      "h": "human",
+      "s": "new",
+      "src": "research",
+      "r": "Issue 11 · D03, D04, S3, S4",
+      "role": "Planner",
+      "reason": "trust_threshold",
+      "scaffold": "Completeness check of every role against CC3, with the open questions listed"
+     }
+    ]
+   }
+  ],
+  "evaluation": [
+   {
+    "id": "F1",
+    "label": "The labour plan is compared with final staffing"
+   },
+   {
+    "id": "F4",
+    "label": "Completed cases join the evaluation set"
+   }
+  ],
+  "cov": [
+   {
+    "p": "Every engagement likely to land",
+    "w": [
+     "engagement",
+     "likely",
+     "land"
+    ],
+    "f": "which engagements get a plan, and when to start",
+    "n": [
+     [
+      "A0",
+      "branch"
+     ],
+     [
+      "A1",
+      "branch"
+     ]
+    ]
+   },
+   {
+    "p": "carries a complete labour plan version",
+    "w": [
+     "carries",
+     "complete",
+     "labour",
+     "plan",
+     "version"
+    ],
+    "f": "the plan, its completeness and its version",
+    "n": [
+     [
+      "A10",
+      "branch"
+     ],
+     [
+      "A2",
+      "branch"
+     ],
+     [
+      "A9",
+      "constrains"
+     ],
+     [
+      "F1",
+      "measured-by"
+     ]
+    ]
+   },
+   {
+    "p": "whose roles all trace to contracted work",
+    "w": [
+     "whose",
+     "roles",
+     "all",
+     "trace",
+     "contracted",
+     "work"
+    ],
+    "f": "every role tied to the contract",
+    "n": [
+     [
+      "A7",
+      "branch"
+     ],
+     [
+      "A4",
+      "branch"
+     ],
+     [
+      "A3",
+      "constrains"
+     ]
+    ]
+   },
+   {
+    "p": "stating grade, skills, effort, start date, location",
+    "w": [
+     "stating",
+     "grade",
+     "skills",
+     "effort",
+     "start",
+     "date",
+     "location"
+    ],
+    "f": "the content of each role",
+    "n": [
+     [
+      "A5",
+      "branch"
+     ],
+     [
+      "A6",
+      "branch"
+     ],
+     [
+      "A8",
+      "constrains"
+     ]
+    ]
+   }
+  ]
+ },
+ "cah": {
+  "name": "Capacity-and-Holds",
+  "chain": 1,
+  "col": "var(--c1)",
+  "isRuling": true,
+  "alias": "One of the four Contract-to-Capacity engines (ruling of 24 September). Parts from branches B and C of the PoC tree, with the research fixes. Trigger: a plan version exists. End: every role held or declared a gap. For rotation, it provides confirmed availability, release answers and shortfalls; it does not plan rotation.",
+  "outcome": "Every role in a plan version ends held for a named person whose release is answered, or declared a gap with its evidence, on confirmed capacity net of existing commitments plus live holds.",
+  "cc": [
+   [
+    "CC5",
+    "Every capacity check on the capacity record uses confirmed availability, net of assignments, commitments and live holds.",
+    "changed",
+    "research"
+   ],
+   [
+    "CC6",
+    "Every capacity check on the capacity record is dated and expires."
+   ],
+   [
+    "CC7",
+    "Every hold record names a person whose release is answered; a capacity-band hold is recorded as provisional.",
+    "changed",
+    "research"
+   ],
+   [
+    "CC8",
+    "Competing live holds for the same period are detected on the hold record and routed."
+   ],
+   [
+    "CC11",
+    "Every gap record carries its search record, release answers, the rotation answer and its cause, and names the person who declared it.",
+    "new",
+    "research + rotation"
+   ],
+   [
+    "CC12",
+    "Every internal search is on the search record with who was considered and why, and meets the agreed test before a gap is declared.",
+    "new",
+    "research"
+   ]
+  ],
+  "cols": [
+   {
+    "id": "B",
+    "label": "Capacity is checked on confirmed figures",
+    "from": "on confirmed capacity",
+    "fw": [
+     "confirmed",
+     "capacity"
+    ],
+    "leaves": [
+     {
+      "id": "B10",
+      "label": "The current manager confirms real workload, the date the person is free and the skills that matter",
+      "h": "human",
+      "s": "new",
+      "src": "research + insights",
+      "r": "Issue 1 · SYS09, EV04, EV05, EV06, REC06, REC11, RR01, RR04, B05, B06",
+      "note": "Availability only (D05). Whether the person can be released is a separate decision, asked in B7 (D06). Open: which record proves availability when sources conflict (open question 2), and what available capacity means (W03)",
+      "role": "Current manager",
+      "reason": "trust_threshold",
+      "scaffold": "Recorded assignment dates, utilisation, recorded skills and earlier confirmations"
+     },
+     {
+      "id": "B1",
+      "label": "Check each role against confirmed availability and confirmed skills",
+      "h": "deterministic",
+      "s": "changed",
+      "src": "research",
+      "r": "Issue 1"
+     },
+     {
+      "id": "B2",
+      "label": "Subtract assignments, commitments and live holds; a busy, suitable person goes to B7, not out of the count",
+      "h": "deterministic",
+      "s": "changed",
+      "src": "research",
+      "r": "Issue 2 · S5, EV07, REC05, RR02, B07, D05, D06, W04"
+     },
+     {
+      "id": "B4",
+      "label": "Date each capacity check and set an expiry",
+      "h": "deterministic",
+      "r": "Contract-to-Capacity tree used in the PoC, leaf B4"
+     }
+    ]
+   },
+   {
+    "id": "G",
+    "label": "A shortfall becomes a gap only with evidence",
+    "from": "or declared a gap with its evidence",
+    "fw": [
+     "declared",
+     "gap",
+     "evidence"
+    ],
+    "leaves": [
+     {
+      "id": "B5",
+      "label": "Record each internal search: who was considered and why they were rejected",
+      "h": "deterministic",
+      "s": "new",
+      "src": "research",
+      "r": "Issue 4 · B08, W06, D08, EV09, REC07, SYS03"
+     },
+     {
+      "id": "B6",
+      "label": "Read the Matching shortlist into the search record",
+      "h": "deterministic",
+      "s": "new",
+      "src": "research",
+      "r": "Issue 4",
+      "calls": "Matching"
+     },
+     {
+      "id": "B7",
+      "label": "Ask Release-to-Commit whether a busy, suitable person can be released",
+      "h": "deterministic",
+      "s": "new",
+      "src": "research",
+      "r": "Issue 2",
+      "note": "The release decision (D06), kept separate from availability (B10)",
+      "calls": "Release-to-Commit"
+     },
+     {
+      "id": "B11",
+      "label": "Ask Rotation Moves whether a chain of moves can free a suitable person in time",
+      "h": "deterministic",
+      "note": "The closer look the research describes: apparent gaps filled internally",
+      "s": "new",
+      "src": "rotation",
+      "r": "RR03, S5, P4",
+      "calls": "Rotation Moves",
+      "ev": "Proposal for a sponsor ruling: ask rotation before a gap is declared. In the PoC build, Gap-Ownership calls Rotation Moves after the grow or hire path is chosen."
+     },
+     {
+      "id": "B3",
+      "label": "Record unmatched roles as shortfalls, not gaps",
+      "h": "deterministic",
+      "s": "changed",
+      "src": "research",
+      "r": "Issue 3 · S6, REC12, RR03, B09, D07, W05"
+     },
+     {
+      "id": "B8",
+      "label": "Assemble the gap case: search record, release answers, rotation answer, constraints, and whether the cause is capacity or cost",
+      "h": "agent",
+      "s": "new",
+      "src": "research + rotation",
+      "r": "Issues 3 and 9 · B10, RR10, EV12, D11",
+      "note": "Open: whether the cost-base rule is formal or behaviour (open question 4)"
+     },
+     {
+      "id": "B9",
+      "label": "The resourcing lead declares the shortfall a gap, or sends it back for another search",
+      "h": "human",
+      "note": "Who decides is agreed at the workshop",
+      "s": "new",
+      "src": "research",
+      "r": "Issue 3",
+      "role": "Resourcing lead (role to confirm at the workshop)",
+      "reason": "contested_judgment",
+      "scaffold": "The gap case from B8: search record, release answers, rotation answer, cause"
+     }
+    ]
+   },
+   {
+    "id": "C",
+    "label": "Holds are dated, expire and are contested openly",
+    "from": "ends held for a named person",
+    "fw": [
+     "held",
+     "named",
+     "person"
+    ],
+    "leaves": [
+     {
+      "id": "C1",
+      "label": "Record a time-bound hold against the labour plan",
+      "h": "deterministic",
+      "r": "Contract-to-Capacity tree used in the PoC, leaf C1"
+     },
+     {
+      "id": "C2",
+      "label": "Release an expired hold and notify the plan owner",
+      "h": "deterministic",
+      "r": "Contract-to-Capacity tree used in the PoC, leaf C2"
+     },
+     {
+      "id": "C3",
+      "label": "Detect competing holds for the same period",
+      "h": "deterministic",
+      "r": "Contract-to-Capacity tree used in the PoC, leaf C3"
+     },
+     {
+      "id": "C4",
+      "label": "The resourcing lead decides which contested hold remains, and records the reason",
+      "h": "human",
+      "role": "Resourcing lead",
+      "reason": "contested_judgment",
+      "scaffold": "The competing holds with their deal stages, values and dates",
+      "r": "Contract-to-Capacity tree used in the PoC, leaf C4"
+     }
+    ]
+   }
+  ],
+  "evaluation": [
+   {
+    "id": "F2",
+    "label": "Hold-to-assignment conversion is measured"
+   },
+   {
+    "id": "F5",
+    "label": "Declared gaps later filled internally are counted, to test B8 and B9"
+   }
+  ],
+  "cov": [
+   {
+    "p": "Every role in a plan version",
+    "w": [
+     "role",
+     "plan",
+     "version"
+    ],
+    "f": "each role of the plan",
+    "n": [
+     [
+      "B1",
+      "branch"
+     ],
+     [
+      "C1",
+      "constrains"
+     ]
+    ]
+   },
+   {
+    "p": "ends held for a named person",
+    "w": [
+     "ends",
+     "held",
+     "named",
+     "person"
+    ],
+    "f": "a dated, named hold",
+    "n": [
+     [
+      "C1",
+      "branch"
+     ],
+     [
+      "C4",
+      "branch"
+     ],
+     [
+      "C3",
+      "constrains"
+     ],
+     [
+      "F2",
+      "measured-by"
+     ]
+    ]
+   },
+   {
+    "p": "whose release is answered",
+    "w": [
+     "whose",
+     "release",
+     "answered"
+    ],
+    "f": "release asked before cover counts",
+    "n": [
+     [
+      "B7",
+      "branch"
+     ],
+     [
+      "B2",
+      "constrains"
+     ]
+    ]
+   },
+   {
+    "p": "or declared a gap with its evidence",
+    "w": [
+     "declared",
+     "gap",
+     "evidence"
+    ],
+    "f": "a shortfall becomes a gap only with evidence",
+    "n": [
+     [
+      "B3",
+      "branch"
+     ],
+     [
+      "B8",
+      "branch"
+     ],
+     [
+      "B9",
+      "branch"
+     ],
+     [
+      "B5",
+      "constrains"
+     ],
+     [
+      "B6",
+      "constrains"
+     ],
+     [
+      "B11",
+      "constrains"
+     ],
+     [
+      "F5",
+      "measured-by"
+     ]
+    ]
+   },
+   {
+    "p": "on confirmed capacity",
+    "w": [
+     "confirmed",
+     "capacity"
+    ],
+    "f": "confirmed, not recorded, capacity",
+    "n": [
+     [
+      "B10",
+      "branch"
+     ],
+     [
+      "B1",
+      "branch"
+     ],
+     [
+      "B4",
+      "constrains"
+     ]
+    ]
+   },
+   {
+    "p": "net of existing commitments plus live holds",
+    "w": [
+     "net",
+     "existing",
+     "commitments",
+     "plus",
+     "live",
+     "holds"
+    ],
+    "f": "what is already taken",
+    "n": [
+     [
+      "B2",
+      "branch"
+     ],
+     [
+      "C2",
+      "constrains"
+     ]
+    ]
+   }
+  ]
+ },
+ "gow": {
+  "name": "Gap-Ownership",
+  "chain": 1,
+  "col": "var(--c1)",
+  "isRuling": true,
+  "alias": "One of the four Contract-to-Capacity engines (ruling of 24 September). Parts from branch D of the PoC tree. Trigger: a gap record exists. End: the gap has an owner, an accepted path and a clock, or is escalated. It calls Hire-or-Grow and, in the PoC build, Rotation Moves.",
+  "outcome": "Every declared gap ends owned by an accountable person holding an agreed resolution path on a clock, or escalated to a named person.",
+  "cc": [
+   [
+    "CC9",
+    "Every gap record on a committed engagement names its owner, its resolution path and its clock, or records the escalation."
+   ]
+  ],
+  "cols": [
+   {
+    "id": "D",
+    "label": "The response is chosen by a person or by Hire-or-Grow",
+    "from": "holding an agreed resolution path",
+    "fw": [
+     "agreed",
+     "resolution",
+     "path"
+    ],
+    "leaves": [
+     {
+      "id": "D1",
+      "label": "Hand each declared gap on: the response is chosen by a person or by Hire-or-Grow, not by a rule",
+      "h": "deterministic",
+      "note": "Subcontracting goes through Hire-or-Grow until that engine exists",
+      "s": "changed",
+      "src": "research",
+      "r": "Issue 12 · S7, D14",
+      "calls": "Hire-or-Grow"
+     }
+    ]
+   },
+   {
+    "id": "E",
+    "label": "Every gap is owned to closure",
+    "from": "ends owned by an accountable person",
+    "fw": [
+     "owned",
+     "accountable",
+     "person"
+    ],
+    "leaves": [
+     {
+      "id": "D2",
+      "label": "The practice lead accepts or rejects each gap and its resolution path",
+      "h": "human",
+      "role": "Practice lead",
+      "reason": "contested_judgment",
+      "scaffold": "The gap case and the response options with their cost and lead time",
+      "r": "Contract-to-Capacity tree used in the PoC, leaf D2"
+     },
+     {
+      "id": "D3",
+      "label": "Track each gap to closure or escalation",
+      "h": "deterministic",
+      "r": "Contract-to-Capacity tree used in the PoC, leaf D3"
+     }
+    ]
+   }
+  ],
+  "evaluation": [
+   {
+    "id": "G1",
+    "label": "Gaps closed within their clock are counted"
+   }
+  ],
+  "cov": [
+   {
+    "p": "Every declared gap",
+    "w": [
+     "declared",
+     "gap"
+    ],
+    "f": "what opens a case",
+    "n": [
+     [
+      "D2",
+      "branch"
+     ]
+    ]
+   },
+   {
+    "p": "ends owned by an accountable person",
+    "w": [
+     "ends",
+     "owned",
+     "accountable",
+     "person"
+    ],
+    "f": "who owns the gap",
+    "n": [
+     [
+      "D2",
+      "branch"
+     ],
+     [
+      "G1",
+      "measured-by"
+     ]
+    ]
+   },
+   {
+    "p": "holding an agreed resolution path",
+    "w": [
+     "holding",
+     "agreed",
+     "resolution",
+     "path"
+    ],
+    "f": "the response, chosen by a person or Hire-or-Grow",
+    "n": [
+     [
+      "D1",
+      "branch"
+     ],
+     [
+      "D2",
+      "constrains"
+     ]
+    ]
+   },
+   {
+    "p": "on a clock, or escalated to a named person",
+    "w": [
+     "clock",
+     "escalated",
+     "named"
+    ],
+    "f": "the clock and the escalation",
+    "n": [
+     [
+      "D3",
+      "branch"
+     ]
+    ]
+   }
+  ]
+ },
+ "ccl": {
+  "name": "Commitment-Control",
+  "chain": 1,
+  "col": "var(--c1)",
+  "isRuling": true,
+  "alias": "One of the four Contract-to-Capacity engines (ruling of 24 September). Parts from branch E of the PoC tree. Trigger: a plan ready for approval, and a reconciliation schedule. End: commitment exists only against an approved plan, or an unsupported commitment is caught.",
+  "outcome": "Every commercial commitment exists only against an approved labour plan version, or is detected as unsupported then routed to a named owner.",
+  "cc": [
+   [
+    "CC1",
+    "The commitment record shows no commercial commitment against an engagement without an approved plan version."
+   ]
+  ],
+  "cols": [
+   {
+    "id": "E",
+    "label": "A plan is approved before any commitment",
+    "from": "an approved labour plan version",
+    "fw": [
+     "approved",
+     "labour",
+     "plan",
+     "version"
+    ],
+    "leaves": [
+     {
+      "id": "E1",
+      "label": "The plan, evidence, holds and gaps are consolidated into one record for approval",
+      "h": "deterministic",
+      "r": "Contract-to-Capacity tree used in the PoC, leaf E1"
+     },
+     {
+      "id": "E2",
+      "label": "The engagement lead approves, amends or rejects the labour plan",
+      "h": "human",
+      "role": "Engagement lead",
+      "reason": "contested_judgment",
+      "scaffold": "The consolidated plan, evidence, holds and gaps from E1",
+      "r": "Contract-to-Capacity tree used in the PoC, leaf E2"
+     },
+     {
+      "id": "E3",
+      "label": "Prevent commercial commitment until the plan is approved",
+      "h": "deterministic",
+      "r": "Contract-to-Capacity tree used in the PoC, leaf E3"
+     },
+     {
+      "id": "E5",
+      "label": "Record and version the approved plan",
+      "h": "deterministic",
+      "r": "Contract-to-Capacity tree used in the PoC, leaf E5"
+     }
+    ]
+   },
+   {
+    "id": "F",
+    "label": "Commitments around the plan are caught",
+    "from": "detected as unsupported",
+    "fw": [
+     "detected",
+     "unsupported"
+    ],
+    "leaves": [
+     {
+      "id": "E4",
+      "label": "Detect and route commitments made without approval",
+      "h": "deterministic",
+      "r": "Contract-to-Capacity tree used in the PoC, leaf E4"
+     },
+     {
+      "id": "E6",
+      "label": "The engagement lead approves a change to skills, grade or location after approval; a new version is made and capacity is checked again",
+      "h": "human",
+      "s": "new",
+      "src": "research",
+      "r": "Issue 8 · B13, D12, W07, R09",
+      "role": "Engagement lead",
+      "reason": "contested_judgment",
+      "scaffold": "The difference between plan versions and the capacity re-check"
+     }
+    ]
+   }
+  ],
+  "evaluation": [
+   {
+    "id": "F3",
+    "label": "Commitments made with open gaps are tracked"
+   }
+  ],
+  "cov": [
+   {
+    "p": "Every commercial commitment exists",
+    "w": [
+     "commercial",
+     "commitment",
+     "exists"
+    ],
+    "f": "the check before commitment",
+    "n": [
+     [
+      "E3",
+      "branch"
+     ],
+     [
+      "F3",
+      "measured-by"
+     ]
+    ]
+   },
+   {
+    "p": "an approved labour plan version",
+    "w": [
+     "approved",
+     "labour",
+     "plan",
+     "version"
+    ],
+    "f": "approval and versions",
+    "n": [
+     [
+      "E2",
+      "branch"
+     ],
+     [
+      "E5",
+      "branch"
+     ],
+     [
+      "E1",
+      "constrains"
+     ]
+    ]
+   },
+   {
+    "p": "detected as unsupported",
+    "w": [
+     "detected",
+     "unsupported"
+    ],
+    "f": "commitments made around the plan, and changes after approval",
+    "n": [
+     [
+      "E4",
+      "branch"
+     ],
+     [
+      "E6",
+      "branch"
+     ]
+    ]
+   },
+   {
+    "p": "then routed to a named owner",
+    "w": [
+     "routed",
+     "named",
+     "owner"
+    ],
+    "f": "routing to a person",
+    "n": [
+     [
+      "E4",
+      "branch"
+     ]
+    ]
+   }
+  ]
+ },
+ "rtc": {
+  "name": "Release-to-Commit",
+  "chain": 1,
+  "col": "var(--c1)",
+  "outcome": "Every request for a named person reaches a recorded release decision within the agreed time, made on a complete trade-off, with any commitment given honoured or its breach caught.",
+  "cols": [
+   {
+    "id": "A",
+    "label": "Every request carries a complete, verified trade-off",
+    "from": "a complete trade-off",
+    "fw": [
+     "complete",
+     "tradeoff"
+    ],
+    "leaves": [
+     {
+      "id": "A1",
+      "label": "The request is checked for scope and the person's eligibility, including time on the engagement by band",
+      "h": "deterministic",
+      "note": "Requests come from Contract-to-Capacity B7 and from every move in a rotation chain. Eligibility placeholders from the client: about 12 months for junior bands, 18 for middle, 24 for senior; to confirm",
+      "s": "changed",
+      "src": "research + rotation + client",
+      "r": "S5, B07, D05, D06",
+      "built": "In the sketch: eligible after 12, 18 or 24 months on the engagement by band. The PoC build uses one time-in-role limit"
+     },
+     {
+      "id": "A2",
+      "label": "Both sides of the trade are pulled from the record",
+      "h": "deterministic",
+      "note": "Reads assignment and engagement",
+      "r": "Global Staffing engine map (original explorer), Release-to-Commit A2"
+     },
+     {
+      "id": "A3",
+      "label": "The cost of moving them and the backfill options are worked out",
+      "h": "agent",
+      "note": "For a rotation move, the backfill is the next move in the chain. When the person is a key person on the account, the backfill must carry the same skill",
+      "r": "Global Staffing engine map (original explorer), Release-to-Commit A3"
+     },
+     {
+      "id": "A4",
+      "label": "Every figure is traced to its source",
+      "h": "deterministic",
+      "note": "Verify against systems of record",
+      "r": "Global Staffing engine map (original explorer), Release-to-Commit A4"
+     }
+    ]
+   },
+   {
+    "id": "B",
+    "label": "It reaches the right person with a clock running",
+    "from": "reaches … the agreed time",
+    "fw": [
+     "reaches",
+     "within",
+     "agreed",
+     "time"
+    ],
+    "leaves": [
+     {
+      "id": "B1",
+      "label": "The releasing manager, their backup and who to escalate to are identified",
+      "h": "deterministic",
+      "note": "Lookup from HR records",
+      "s": "changed",
+      "src": "research",
+      "r": "Issue 11 · D06"
+     },
+     {
+      "id": "B2",
+      "label": "A policy, cross-border or cross-cost-base blocker stops it before it goes",
+      "h": "deterministic",
+      "note": "Rules check, blocks and routes. A cross-cost-base move is shown with its cost, which lands on the country, not the account",
+      "s": "changed",
+      "src": "research",
+      "r": "D06, D11, RR10"
+     },
+     {
+      "id": "B3",
+      "label": "The case is delivered to that person with a deadline",
+      "h": "deterministic",
+      "note": "Route, and start the clock",
+      "r": "Global Staffing engine map (original explorer), Release-to-Commit B3"
+     }
+    ]
+   },
+   {
+    "id": "C",
+    "label": "A decision is made and recorded with its reason",
+    "from": "a recorded release decision",
+    "fw": [
+     "recorded",
+     "release",
+     "decision"
+    ],
+    "leaves": [
+     {
+      "id": "C1",
+      "label": "The release decision is made by the agreed owner, or refused",
+      "h": "human",
+      "note": "Owner not yet agreed. One proposal is the practice leads in each country; the markets must test this before it becomes a requirement (open question 1)",
+      "s": "changed",
+      "src": "client",
+      "r": "D06, open question 1",
+      "role": "Releasing manager (owner not yet agreed: the practice leads in each country are one proposal)",
+      "reason": "contested_judgment",
+      "scaffold": "The trade-off case from A3, the backfill options and the deadline"
+     },
+     {
+      "id": "C2",
+      "label": "The decision and its reason are recorded",
+      "h": "deterministic",
+      "note": "A refusal goes back as evidence for the gap case",
+      "r": "Global Staffing engine map (original explorer), Release-to-Commit C2"
+     },
+     {
+      "id": "C3",
+      "label": "A stalled decision reaches the named escalation",
+      "h": "deterministic",
+      "note": "Fires when the clock lapses",
+      "r": "Global Staffing engine map (original explorer), Release-to-Commit C3"
+     },
+     {
+      "id": "C4",
+      "label": "The escalation holder settles a disputed release",
+      "h": "human",
+      "note": "Who holds final release authority when manager and requester disagree is open (open question 1)",
+      "role": "Escalation holder (open question 1)",
+      "reason": "contested_judgment",
+      "scaffold": "Both positions, the trade-off and the deadline",
+      "r": "Global Staffing engine map (original explorer), Release-to-Commit C4"
+     }
+    ]
+   },
+   {
+    "id": "D",
+    "label": "A given commitment is real and holds",
+    "from": "every commitment given is honoured",
+    "fw": [
+     "commitment",
+     "given",
+     "honoured"
+    ],
+    "leaves": [
+     {
+      "id": "D1",
+      "label": "The commitment is written where it can be undone",
+      "h": "deterministic",
+      "note": "Write, with a reversal path",
+      "r": "Global Staffing engine map (original explorer), Release-to-Commit D1"
+     },
+     {
+      "id": "D2",
+      "label": "A breach or quiet withdrawal is noticed",
+      "h": "agent",
+      "note": "Plan compared to what was promised",
+      "r": "Global Staffing engine map (original explorer), Release-to-Commit D2"
+     },
+     {
+      "id": "D3",
+      "label": "A broken commitment is routed back and reopened",
+      "h": "deterministic",
+      "note": "Reopen and notify; a broken link in a rotation chain re-plans the chain",
+      "r": "Global Staffing engine map (original explorer), Release-to-Commit D3"
+     }
+    ]
+   }
+  ],
+  "cov": [
+   {
+    "p": "Every request for a named person",
+    "w": [
+     "request",
+     "named",
+     "person"
+    ],
+    "f": "which requests are in scope, and who the manager is",
+    "n": [
+     [
+      "A1",
+      "branch"
+     ],
+     [
+      "B1",
+      "constrains"
+     ]
+    ]
+   },
+   {
+    "p": "reaches",
+    "w": [
+     "reaches"
+    ],
+    "f": "delivery to the person who decides",
+    "n": [
+     [
+      "B3",
+      "branch"
+     ],
+     [
+      "B2",
+      "constrains"
+     ]
+    ]
+   },
+   {
+    "p": "a recorded release decision",
+    "w": [
+     "recorded",
+     "release",
+     "decision"
+    ],
+    "f": "the decision, and the record of it",
+    "n": [
+     [
+      "C1",
+      "branch"
+     ],
+     [
+      "C2",
+      "branch"
+     ],
+     [
+      "C4",
+      "branch"
+     ]
+    ]
+   },
+   {
+    "p": "made",
+    "w": [
+     "made"
+    ],
+    "f": "the act of deciding, which stays with a person",
+    "n": [
+     [
+      "C1",
+      "branch"
+     ]
+    ]
+   },
+   {
+    "p": "within the agreed time",
+    "w": [
+     "within",
+     "agreed",
+     "time"
+    ],
+    "f": "sets the deadline, triggers escalation, and is measured",
+    "n": [
+     [
+      "B3",
+      "constrains"
+     ],
+     [
+      "C3",
+      "constrains"
+     ],
+     [
+      "E1",
+      "measured-by"
+     ]
+    ]
+   },
+   {
+    "p": "a complete trade-off",
+    "w": [
+     "complete",
+     "tradeoff"
+    ],
+    "f": "the release case, and what makes it complete",
+    "n": [
+     [
+      "A",
+      "branch"
+     ],
+     [
+      "A3",
+      "branch"
+     ],
+     [
+      "A4",
+      "constrains"
+     ]
+    ]
+   },
+   {
+    "p": "any commitment given honoured",
+    "w": [
+     "any",
+     "commitment",
+     "given",
+     "honoured"
+    ],
+    "f": "written, watched, and measured",
+    "n": [
+     [
+      "D1",
+      "branch"
+     ],
+     [
+      "D2",
+      "constrains"
+     ],
+     [
+      "E2",
+      "measured-by"
+     ]
+    ]
+   },
+   {
+    "p": "its breach caught",
+    "w": [
+     "breach",
+     "caught"
+    ],
+    "f": "noticing it, then acting on it",
+    "n": [
+     [
+      "D2",
+      "branch"
+     ],
+     [
+      "D3",
+      "branch"
+     ]
+    ]
+   }
+  ],
+  "outcomeChanged": "Rewritten so the engine has one type of case, the request, as the methodology requires.",
+  "cc": [
+   [
+    "R1",
+    "Every request record carries the full trade-off: both sides, the cost of moving, the backfill options, each figure traced to its source.",
+    "new",
+    "methodology"
+   ],
+   [
+    "R2",
+    "Every request record shows a release decision with its reason within the agreed time, or the escalation made when the clock lapsed.",
+    "new",
+    "methodology"
+   ],
+   [
+    "R3",
+    "Every commitment given is on the commitment record with a reversal path.",
+    "new",
+    "methodology"
+   ],
+   [
+    "R4",
+    "Every breach of a given commitment is detected on the commitment record and the case reopened.",
+    "new",
+    "methodology"
+   ]
+  ],
+  "evaluation": [
+   {
+    "id": "E1",
+    "label": "Time from role need to firm commitment is measured"
+   },
+   {
+    "id": "E2",
+    "label": "Commitments held against broken is measured"
+   },
+   {
+    "id": "E3",
+    "label": "The case joins the set used to test the engine"
+   }
+  ]
+ },
+ "tlp": {
+  "name": "Top-of-License Planning",
+  "chain": 3,
+  "col": "var(--c3)",
+  "isNew": true,
+  "alias": "New engine, outside the Contract-to-Capacity boundary (W08), in its own lane across both chains. It plans: likely work becomes a month-by-month plan of moves, growth and hires with the least expected value of work at risk. Near-term chains go to Rotation Moves. Parts marked as proposals are not evidenced in the research.",
+  "outcome": "Every role, signed or forecast, that no free person can fill at standard is planned before it is needed, with the least expected value of work at risk.",
+  "cc": [
+   [
+    "T4",
+    "Every license level and level of work on the plan record was confirmed by a named person, with its date.",
+    "new",
+    "rotation"
+   ],
+   [
+    "T5",
+    "Every forecast role on the plan record carries its stage, its probability and the age of its odds.",
+    "new",
+    "rotation"
+   ],
+   [
+    "T7",
+    "The plan record shows no hold or early move before signature without work-at-risk approval.",
+    "new",
+    "rotation"
+   ],
+   [
+    "T9",
+    "Every plan version on the record states its expected value of work at risk with its bad case, and each recommendation the value it removes.",
+    "new",
+    "rotation"
+   ],
+   [
+    "T10",
+    "Re-running a plan version from its recorded inputs gives the same plan.",
+    "new",
+    "rotation"
+   ]
+  ],
+  "cols": [
+   {
+    "id": "A",
+    "label": "Demand is known across time, signed and forecast",
+    "from": "Every role, signed or forecast",
+    "fw": [
+     "role",
+     "signed",
+     "forecast"
+    ],
+    "leaves": [
+     {
+      "id": "A1",
+      "label": "Signed roles are read with level, skills, location and start date",
+      "h": "deterministic",
+      "note": "From the RPL and engagement records",
+      "s": "new",
+      "src": "rotation",
+      "r": "SYS01, REC01",
+      "built": "Built, not yet verified: the planner reads signed and pipeline roles with grade, skill, start and value, on invented data"
+     },
+     {
+      "id": "A2",
+      "label": "Forecast roles are read from pipeline opportunities, with stage, win odds and expected start",
+      "h": "deterministic",
+      "note": "Opportunity projects and pipeline odds",
+      "s": "new",
+      "src": "rotation",
+      "r": "SYS06, REC02, B14",
+      "built": "Built, not yet verified: each deal's stage sets its probability from a placeholder stage table"
+     },
+     {
+      "id": "A3",
+      "label": "Stale win odds are flagged and the opportunity owner is asked to refresh them",
+      "h": "deterministic",
+      "s": "new",
+      "src": "rotation",
+      "r": "RR09, EV10"
+     },
+     {
+      "id": "A4",
+      "label": "Each deal stage's agreed probability and action (watch, prepare, hold or move) is read from the stage table",
+      "h": "deterministic",
+      "note": "Stages and probabilities from the firm's own win history",
+      "s": "new",
+      "src": "rotation",
+      "r": "R06, R08, D13",
+      "built": "Built, not yet verified: placeholder stage table and commitment stage; stale odds are not flagged yet"
+     },
+     {
+      "id": "A5",
+      "label": "Roll-off dates that free people are read and confirmed, week by week",
+      "h": "deterministic",
+      "note": "Confirmed through Contract-to-Capacity B10",
+      "s": "new",
+      "src": "rotation",
+      "r": "RR01, EV05",
+      "built": "Built, not yet verified: release month and minimum time in role decide when someone can move"
+     },
+     {
+      "id": "A6",
+      "label": "Each role's value is read from the cost case and rate card",
+      "h": "deterministic",
+      "note": "From the cost case and rate card",
+      "s": "new",
+      "src": "rotation",
+      "r": "SYS04, REC03",
+      "built": "Built, not yet verified: each role carries a share of its deal's value"
+     },
+     {
+      "id": "A7",
+      "label": "The market account lead flags key-person risk: the only person with a skill, or another delivery reason",
+      "h": "human",
+      "note": "Not the same as a client lock, which is a hard block set by the client. The record can also detect a sole skill holder",
+      "s": "new",
+      "src": "client",
+      "built": "Not built yet. In the sketch, a key person's move needs the account lead's yes",
+      "role": "Market account lead",
+      "reason": "contested_judgment",
+      "scaffold": "The count of people with the skill on the account, from the record",
+      "r": "Rotation design, 1 Oct 2026; no policy clause assigned yet"
+     }
+    ]
+   },
+   {
+    "id": "B",
+    "label": "Everyone's license and real level of work are known",
+    "from": "that no free person can fill at standard",
+    "fw": [
+     "free",
+     "fill",
+     "standard"
+    ],
+    "leaves": [
+     {
+      "id": "B1",
+      "label": "A license level is proposed for each person from skills, certifications and delivery history",
+      "h": "agent",
+      "note": "Proposes only. Records are self-assessed and broad",
+      "s": "new",
+      "src": "rotation",
+      "r": "EV04, RR04, REC11"
+     },
+     {
+      "id": "B2",
+      "label": "The practice lead confirms each license level",
+      "h": "human",
+      "note": "Owner to confirm at the workshop",
+      "s": "new",
+      "src": "rotation",
+      "r": "Issue 1, R12",
+      "built": "Built, not yet verified: a license older than its validity period is left out of chains",
+      "role": "Practice lead",
+      "reason": "trust_threshold",
+      "scaffold": "The proposed license from B1 with its evidence"
+     },
+     {
+      "id": "B3",
+      "label": "The current manager confirms the level of work the person actually does",
+      "h": "human",
+      "note": "Same confirmation as Contract-to-Capacity B10",
+      "s": "new",
+      "src": "rotation",
+      "r": "Issue 1 · SYS09, EV06",
+      "role": "Current manager",
+      "reason": "trust_threshold",
+      "scaffold": "The assignment grade and the roles in recorded time"
+     },
+     {
+      "id": "B4",
+      "label": "License against level of work is calculated for every person, week by week",
+      "h": "deterministic",
+      "note": "The capability-versus-work-level view the research asks for",
+      "s": "new",
+      "src": "rotation",
+      "r": "P4, RR12, B15",
+      "built": "Built, not yet verified: people below license are counted month by month",
+      "ev": "Proposal for the workshop. The research gives no evidence for this yet: the research names this view as the Skill Rotation priority but holds no data that compares capability with work done (P4)."
+     },
+     {
+      "id": "B5",
+      "label": "When a person will be ready for the next level is read from Rotation-for-Growth",
+      "h": "deterministic",
+      "s": "new",
+      "src": "rotation",
+      "r": "B15, D14",
+      "built": "Built, not yet verified: skill-up paths with lead times, on invented data",
+      "calls": "Rotation-for-Growth"
+     }
+    ]
+   },
+   {
+    "id": "C",
+    "label": "Moves are timed and growth is planned",
+    "from": "planned before it is needed",
+    "fw": [
+     "planned",
+     "needed"
+    ],
+    "leaves": [
+     {
+      "id": "C4",
+      "label": "Moves are timed so each release, notice and handover fits before the role starts",
+      "h": "deterministic",
+      "s": "new",
+      "src": "rotation",
+      "r": "D06",
+      "built": "Built, not yet verified: release month and minimum time in role are respected"
+     },
+     {
+      "id": "C5",
+      "label": "Growth moves are added where a person will be ready in time",
+      "h": "deterministic",
+      "note": "Turns forecast demand into skill-up openings",
+      "s": "new",
+      "src": "rotation",
+      "r": "B14, B15, R11",
+      "built": "Built, not yet verified: rotation with skill-ups is one of the planner's three options"
+     },
+     {
+      "id": "C8",
+      "label": "Who could step into each job, as worked out each month, is offered as a living succession plan",
+      "h": "deterministic",
+      "note": "An input to chains, not the decision. Whether the firm wants a succession plan for everyone in delivery is open",
+      "s": "new",
+      "src": "client",
+      "ev": "Proposal for the workshop. The research gives no evidence for this yet: succession planning was raised by the client; no research finding covers it.",
+      "built": "Not built yet",
+      "r": "Rotation design, 1 Oct 2026; no policy clause assigned yet"
+     }
+    ]
+   },
+   {
+    "id": "D",
+    "label": "The plan with the least value of work at risk is chosen",
+    "from": "with the least expected value of work at risk",
+    "fw": [
+     "least",
+     "expected",
+     "value",
+     "work",
+     "risk"
+    ],
+    "leaves": [
+     {
+      "id": "D1",
+      "label": "The expected value of work at risk is calculated for each plan, counting the roles to fill and the risk left on accounts people leave, with the bad case beside it",
+      "h": "deterministic",
+      "note": "The planning policy draft's term. Not value at risk in the finance sense",
+      "s": "new",
+      "src": "rotation + client",
+      "r": "EV12, RR10",
+      "built": "Partly built: the expected value for roles to fill is computed; scenarios, the bad case and the risk left on accounts people leave are not"
+     },
+     {
+      "id": "D2",
+      "label": "One plan is computed across all roles and months, with nobody moved twice and every client job covered",
+      "h": "deterministic",
+      "note": "A standard optimiser, not an AI model",
+      "s": "new",
+      "src": "rotation",
+      "built": "Built, not yet verified: a constraint solver chooses month by month over nine months, fixed seed, one worker",
+      "r": "Rotation design, 1 Oct 2026; no policy clause assigned yet"
+     },
+     {
+      "id": "D3",
+      "label": "The plan is tested over many outcomes of which deals win",
+      "h": "deterministic",
+      "note": "Two-stage stochastic programming: prepare now only when the chance of winning justifies the cost",
+      "s": "new",
+      "src": "rotation",
+      "r": "Rotation design, 1 Oct 2026; no policy clause assigned yet"
+     },
+     {
+      "id": "D4",
+      "label": "The plan is checked against the safety rules before anyone sees it",
+      "h": "deterministic",
+      "note": "Completion conditions T1 to T3 and T10",
+      "s": "new",
+      "src": "rotation",
+      "built": "Built, not yet verified: an independent recount of the value and a limits check",
+      "r": "Rotation design, 1 Oct 2026; no policy clause assigned yet"
+     },
+     {
+      "id": "D5",
+      "label": "The value of work at risk each recommendation removes is calculated, and recommendations are ranked by it",
+      "h": "deterministic",
+      "s": "new",
+      "src": "rotation",
+      "built": "Built, not yet verified: ranked by value removed per move",
+      "r": "Rotation design, 1 Oct 2026; no policy clause assigned yet"
+     },
+     {
+      "id": "D6",
+      "label": "Each recommendation is explained in plain words, citing its figures",
+      "h": "agent",
+      "note": "Writes the explanation only; it does not choose",
+      "s": "new",
+      "src": "rotation",
+      "r": "Rotation design, 1 Oct 2026; no policy clause assigned yet"
+     },
+     {
+      "id": "D7",
+      "label": "The capability planning owner acts on or defers each recommendation, with a reason",
+      "h": "human",
+      "s": "new",
+      "src": "rotation",
+      "built": "Built, not yet verified: recommendations wait for this decision",
+      "role": "Capability planning owner",
+      "reason": "contested_judgment",
+      "scaffold": "The ranked recommendations with their figures and the date each is needed by",
+      "r": "Rotation design, 1 Oct 2026; no policy clause assigned yet"
+     }
+    ]
+   },
+   {
+    "id": "E",
+    "label": "Early action before signature is approved",
+    "from": "planned before it is needed",
+    "fw": [
+     "before"
+    ],
+    "leaves": [
+     {
+      "id": "E5",
+      "label": "The work-at-risk approver approves a hold or early move before signature",
+      "h": "human",
+      "note": "Owner and limit agreed at the workshop",
+      "s": "new",
+      "src": "rotation",
+      "r": "R08, D13",
+      "built": "Built, not yet verified: only deals at the commitment stage hand chains to the moves engine",
+      "role": "Work-at-risk approver (role to confirm at the workshop)",
+      "reason": "contested_judgment",
+      "scaffold": "Deal stage, probability with its age, value of work at risk and the cost of acting early"
+     }
+    ]
+   },
+   {
+    "id": "F",
+    "label": "Nothing about a person leaves the engine without them",
+    "from": "that no free person can fill at standard",
+    "fw": [
+     "person"
+    ],
+    "leaves": [
+     {
+      "id": "F1",
+      "label": "Each person's license level and proposed moves are shown to them on their own record",
+      "h": "deterministic",
+      "s": "new",
+      "src": "rotation",
+      "r": "Rotation design, 1 Oct 2026; no policy clause assigned yet"
+     },
+     {
+      "id": "F2",
+      "label": "A rule blocks any ranking of a person from outliving the run or leaving it",
+      "h": "deterministic",
+      "s": "new",
+      "src": "rotation",
+      "r": "Rotation design, 1 Oct 2026; no policy clause assigned yet"
+     },
+     {
+      "id": "F3",
+      "label": "Declining a move is recorded as a choice, not a mark",
+      "h": "deterministic",
+      "s": "new",
+      "src": "rotation",
+      "r": "Rotation design, 1 Oct 2026; no policy clause assigned yet"
+     }
+    ]
+   }
+  ],
+  "evaluation": [
+   {
+    "id": "G1",
+    "label": "The share of staff working at the top of their license is measured monthly"
+   },
+   {
+    "id": "G2",
+    "label": "Expected value of work at risk is compared with value actually lost"
+   },
+   {
+    "id": "G3",
+    "label": "Forecast accuracy is measured by deal stage; changes to stage probabilities go through a reviewed release"
+   }
+  ],
+  "cov": [
+   {
+    "p": "Every role, signed or forecast",
+    "w": [
+     "role",
+     "signed",
+     "forecast"
+    ],
+    "f": "current and pipeline demand, by stage",
+    "n": [
+     [
+      "A1",
+      "branch"
+     ],
+     [
+      "A2",
+      "branch"
+     ],
+     [
+      "A4",
+      "constrains"
+     ],
+     [
+      "A3",
+      "constrains"
+     ]
+    ]
+   },
+   {
+    "p": "that no free person can fill at standard",
+    "w": [
+     "no",
+     "free",
+     "person",
+     "can",
+     "fill",
+     "standard"
+    ],
+    "f": "license against level of work, and who is free",
+    "n": [
+     [
+      "B4",
+      "branch"
+     ],
+     [
+      "B2",
+      "constrains"
+     ],
+     [
+      "B3",
+      "constrains"
+     ],
+     [
+      "F1",
+      "constrains"
+     ],
+     [
+      "G1",
+      "measured-by"
+     ]
+    ]
+   },
+   {
+    "p": "planned before it is needed",
+    "w": [
+     "planned",
+     "before",
+     "needed"
+    ],
+    "f": "timing, growth, and approval to act early",
+    "n": [
+     [
+      "C4",
+      "branch"
+     ],
+     [
+      "C5",
+      "branch"
+     ],
+     [
+      "E5",
+      "branch"
+     ],
+     [
+      "A5",
+      "constrains"
+     ]
+    ]
+   },
+   {
+    "p": "with the least expected value of work at risk",
+    "w": [
+     "least",
+     "expected",
+     "value",
+     "work",
+     "risk"
+    ],
+    "f": "the plan, the recommendations and the decision on them",
+    "n": [
+     [
+      "D1",
+      "branch"
+     ],
+     [
+      "D2",
+      "branch"
+     ],
+     [
+      "D5",
+      "branch"
+     ],
+     [
+      "D7",
+      "branch"
+     ],
+     [
+      "A6",
+      "constrains"
+     ],
+     [
+      "A7",
+      "constrains"
+     ],
+     [
+      "D3",
+      "constrains"
+     ],
+     [
+      "G2",
+      "measured-by"
+     ]
+    ]
+   }
+  ]
+ },
+ "tlm": {
+  "name": "Rotation Moves",
+  "chain": 3,
+  "col": "var(--c3)",
+  "isNew": true,
+  "alias": "New engine in the rotation lane. It executes: a job nobody free can fill becomes an agreed chain of moves. Compiled in the PoC from the top-of-license policy draft v0.2 (compile independently verified). Parts marked as proposals are not evidenced in the research.",
+  "outcome": "Every new job that no free person can fill at standard is filled through a chain of agreed moves that leaves the people moved working at the top of their license.",
+  "cc": [
+   [
+    "T1",
+    "Every chain on the move record starts from a job, signed or forecast, that no free person can fill at standard.",
+    "new",
+    "rotation"
+   ],
+   [
+    "T2",
+    "Every move on the move record raises the person's level of work, never above their license.",
+    "new",
+    "rotation"
+   ],
+   [
+    "T3",
+    "The move record shows nobody moved twice in one plan, no job given to two people, every client job covered or a hire request open.",
+    "new",
+    "rotation"
+   ],
+   [
+    "T6",
+    "Every move on the move record has a release answer, the person's yes and the receiving lead's yes before it happens.",
+    "new",
+    "rotation"
+   ],
+   [
+    "T8",
+    "Every move across a cost base or country on the move record shows its cost impact on each country; a relocation carries mobility approval.",
+    "new",
+    "rotation + client"
+   ],
+   [
+    "T11",
+    "The move record shows no key person leaving an account without a same-skill backfill, unless the releasing decision-maker accepted the risk.",
+    "new",
+    "client"
+   ],
+   [
+    "T12",
+    "The move record shows no one moved before the eligibility time for their band, unless an exception is recorded with its reason.",
+    "new",
+    "client"
+   ]
+  ],
+  "cols": [
+   {
+    "id": "C",
+    "label": "Chains of moves that free the right person in time are found",
+    "from": "is filled through a chain",
+    "fw": [
+     "filled",
+     "chain"
+    ],
+    "leaves": [
+     {
+      "id": "C1",
+      "label": "A role enters only if no free person can fill it at standard",
+      "h": "deterministic",
+      "note": "The trigger. No move without demand behind it",
+      "s": "new",
+      "src": "rotation",
+      "built": "Built, not yet verified: the moves engine refuses a job a free person can fill",
+      "ev": "Proposal for the workshop. The research gives no evidence for this yet: rotation triggers and who starts a rotation are not evidenced.",
+      "r": "Rotation design, 1 Oct 2026; no policy clause assigned yet"
+     },
+     {
+      "id": "C2",
+      "label": "Every person is checked against the role on the move rules, including time on the engagement by band",
+      "h": "deterministic",
+      "note": "Skill, license, step up, eligibility time by band, opted in, client lock, location, cost base. Band placeholders from the client: about 12, 18 and 24 months for junior, middle and senior; to confirm",
+      "s": "new",
+      "src": "rotation + client",
+      "built": "Built, not yet verified: grade, skill, time in role (one limit, not yet by band), no-move list and past declines. The sketch adds eligibility by band, opt-in, client lock, location and cost base",
+      "r": "Rotation design, 1 Oct 2026; no policy clause assigned yet"
+     },
+     {
+      "id": "C3",
+      "label": "Chains are computed: each move empties a job one level down, until a free person or a junior hire fills the last",
+      "h": "deterministic",
+      "s": "new",
+      "src": "rotation",
+      "built": "Built, not yet verified: exhaustive chain search in the moves engine",
+      "ev": "Proposal for the workshop. The research gives no evidence for this yet: backfill mechanics and how free (bench) people are identified are not evidenced. A free person and a release from a live job are kept as separate paths.",
+      "r": "Rotation design, 1 Oct 2026; no policy clause assigned yet"
+     },
+     {
+      "id": "C6",
+      "label": "Moves across a cost base or a country are flagged, with the cost impact on each country shown",
+      "h": "deterministic",
+      "note": "The cost lands on the country, not the account. No other engine covers these moves",
+      "s": "new",
+      "src": "rotation + client",
+      "r": "D11, RR10",
+      "built": "In the sketch: flagged, with the person's cost shown moving to the receiving country"
+     },
+     {
+      "id": "C7",
+      "label": "A rule blocks a move that takes a key person off an account without a same-skill backfill in the chain",
+      "h": "deterministic",
+      "note": "The releasing decision-maker can accept the risk instead, on the record",
+      "s": "new",
+      "src": "client",
+      "built": "In the sketch: the account lead agrees and the backfill has the same skill. Not yet in the PoC build",
+      "r": "Rotation design, 1 Oct 2026; no policy clause assigned yet"
+     }
+    ]
+   },
+   {
+    "id": "E",
+    "label": "Every move is agreed by the people it touches",
+    "from": "of agreed moves",
+    "fw": [
+     "agreed",
+     "moves"
+    ],
+    "leaves": [
+     {
+      "id": "E1",
+      "label": "Each release is asked through Release-to-Commit",
+      "h": "deterministic",
+      "s": "new",
+      "src": "rotation",
+      "r": "Issue 2 · D06",
+      "built": "In the compiled moves engine (compile independently verified), the release goes to the releasing manager; wiring to Release-to-Commit is in progress",
+      "note": "Who decides a release is not yet agreed (open question 1)",
+      "calls": "Release-to-Commit"
+     },
+     {
+      "id": "E2",
+      "label": "The person opts in to the move",
+      "h": "human",
+      "s": "new",
+      "src": "rotation",
+      "built": "A human decision in the compiled moves engine, whose compile is independently verified; wiring in progress",
+      "role": "The person",
+      "reason": "contested_judgment",
+      "scaffold": "The move proposal: the new role, what changes, how to decline",
+      "r": "Rotation design, 1 Oct 2026; no policy clause assigned yet"
+     },
+     {
+      "id": "E3",
+      "label": "The receiving delivery lead accepts the person",
+      "h": "human",
+      "s": "new",
+      "src": "rotation",
+      "built": "A human decision in the compiled moves engine, whose compile is independently verified; wiring in progress",
+      "role": "Receiving delivery lead",
+      "reason": "contested_judgment",
+      "scaffold": "The handover plan and the person's license evidence",
+      "r": "Rotation design, 1 Oct 2026; no policy clause assigned yet"
+     },
+     {
+      "id": "E4",
+      "label": "Mobility approves a relocation; who approves a cross-cost-base move, if anyone, is open",
+      "h": "human",
+      "s": "new",
+      "src": "rotation + client",
+      "r": "D11, RR10, open question 4",
+      "note": "The client notes the cost flows to the country, not the account",
+      "built": "In the sketch: no approval is assumed for a cost-base move; mobility approves a relocation",
+      "role": "Mobility (relocation); the cost-base approver is open",
+      "reason": "regulatory_ownership",
+      "scaffold": "Destination work-authorisation rules and the cost on each country"
+     },
+     {
+      "id": "E6",
+      "label": "The last job in a chain goes to Hire-or-Grow as a junior hire, with its cause",
+      "h": "deterministic",
+      "s": "new",
+      "src": "rotation",
+      "built": "Built, not yet verified: a hire goes to Hire-or-Grow at the grade of the last freed job",
+      "calls": "Hire-or-Grow",
+      "r": "Rotation design, 1 Oct 2026; no policy clause assigned yet"
+     },
+     {
+      "id": "E7",
+      "label": "A refused move is recorded as a choice, and the plan is worked out again",
+      "h": "deterministic",
+      "s": "new",
+      "src": "rotation",
+      "built": "Built, not yet verified: a decline or refused release opens a new plan version without that person",
+      "r": "Rotation design, 1 Oct 2026; no policy clause assigned yet"
+     }
+    ]
+   },
+   {
+    "id": "F",
+    "label": "Nothing about a person leaves the engine without them",
+    "from": "that leaves the people moved",
+    "fw": [
+     "people",
+     "moved"
+    ],
+    "leaves": [
+     {
+      "id": "F1",
+      "label": "Each person's license level and proposed moves are shown to them on their own record",
+      "h": "deterministic",
+      "s": "new",
+      "src": "rotation",
+      "r": "Rotation design, 1 Oct 2026; no policy clause assigned yet"
+     },
+     {
+      "id": "F2",
+      "label": "A rule blocks any ranking of a person from outliving the run or leaving it",
+      "h": "deterministic",
+      "s": "new",
+      "src": "rotation",
+      "r": "Rotation design, 1 Oct 2026; no policy clause assigned yet"
+     },
+     {
+      "id": "F3",
+      "label": "Declining a move is recorded as a choice, not a mark",
+      "h": "deterministic",
+      "s": "new",
+      "src": "rotation",
+      "r": "Rotation design, 1 Oct 2026; no policy clause assigned yet"
+     }
+    ]
+   }
+  ],
+  "evaluation": [
+   {
+    "id": "G4",
+    "label": "Planned chains are compared with the moves that happened"
+   },
+   {
+    "id": "G5",
+    "label": "The case joins the set used to test the engine"
+   }
+  ],
+  "cov": [
+   {
+    "p": "Every new job",
+    "w": [
+     "new",
+     "job"
+    ],
+    "f": "what opens a case",
+    "n": [
+     [
+      "C1",
+      "branch"
+     ],
+     [
+      "G4",
+      "measured-by"
+     ]
+    ]
+   },
+   {
+    "p": "that no free person can fill at standard",
+    "w": [
+     "no",
+     "free",
+     "person",
+     "can",
+     "fill",
+     "standard"
+    ],
+    "f": "the trigger: demand first, then moves",
+    "n": [
+     [
+      "C1",
+      "branch"
+     ],
+     [
+      "C2",
+      "constrains"
+     ]
+    ]
+   },
+   {
+    "p": "is filled through a chain",
+    "w": [
+     "filled",
+     "through",
+     "chain"
+    ],
+    "f": "the search and its last link",
+    "n": [
+     [
+      "C3",
+      "branch"
+     ],
+     [
+      "E6",
+      "branch"
+     ],
+     [
+      "C6",
+      "constrains"
+     ],
+     [
+      "C7",
+      "constrains"
+     ]
+    ]
+   },
+   {
+    "p": "of agreed moves",
+    "w": [
+     "agreed",
+     "moves"
+    ],
+    "f": "the yeses each move needs",
+    "n": [
+     [
+      "E1",
+      "branch"
+     ],
+     [
+      "E2",
+      "branch"
+     ],
+     [
+      "E3",
+      "branch"
+     ],
+     [
+      "E4",
+      "branch"
+     ],
+     [
+      "E7",
+      "constrains"
+     ]
+    ]
+   },
+   {
+    "p": "that leaves the people moved",
+    "w": [
+     "leaves",
+     "people",
+     "moved"
+    ],
+    "f": "the guard around the person",
+    "n": [
+     [
+      "F1",
+      "branch"
+     ],
+     [
+      "F2",
+      "branch"
+     ],
+     [
+      "F3",
+      "branch"
+     ]
+    ]
+   },
+   {
+    "p": "working at the top of their license",
+    "w": [
+     "working",
+     "top",
+     "license"
+    ],
+    "f": "each mover lands at their license",
+    "n": [
+     [
+      "C2",
+      "branch"
+     ],
+     [
+      "C3",
+      "constrains"
+     ]
+    ]
+   }
+  ]
+ },
+ "rot": {
+  "name": "Rotation-for-Growth",
+  "chain": 2,
+  "col": "var(--c2)",
+  "outcome": "Every capability the firm is betting on has people growing into it through development moves the person chose, which an engagement delivery lead accepted, with nothing the engine works out about a person stored or shared without them.",
+  "cols": [
+   {
+    "id": "A",
+    "label": "The capability gaps that matter are known",
+    "from": "capability the firm is betting on",
+    "fw": [
+     "capability",
+     "betting"
+    ],
+    "leaves": [
+     {
+      "id": "A1",
+      "label": "The firm's growth bets are on the record, combining client demand and the firm's own transformation demand",
+      "h": "deterministic",
+      "note": "Strategy and pipeline by capability",
+      "s": "changed",
+      "src": "research",
+      "r": "R11"
+     },
+     {
+      "id": "A2",
+      "label": "Current depth in each capability is known",
+      "h": "deterministic",
+      "note": "Skills data and delivery history",
+      "r": "Global Staffing engine map (original explorer), Rotation-for-Growth A2"
+     },
+     {
+      "id": "A3",
+      "label": "The gap between the bet and the depth is sized",
+      "h": "deterministic",
+      "note": "A sized gap per capability",
+      "r": "Global Staffing engine map (original explorer), Rotation-for-Growth A3"
+     },
+     {
+      "id": "A4",
+      "label": "A named role owner is accountable for each skilling pipeline",
+      "h": "human",
+      "s": "new",
+      "src": "research",
+      "r": "R12",
+      "role": "Role owner",
+      "reason": "contested_judgment",
+      "scaffold": "The supply-and-demand view per capability from A5"
+     },
+     {
+      "id": "A5",
+      "label": "Supply and demand per capability are built from the record, not by hand",
+      "h": "deterministic",
+      "note": "Shares the forecast and level view with Top-of-License Planning",
+      "s": "new",
+      "src": "research",
+      "r": "RR12, B15, B14"
+     }
+    ]
+   },
+   {
+    "id": "B",
+    "label": "Credible growth paths exist for each gap",
+    "from": "people growing into it",
+    "fw": [
+     "people",
+     "growing"
+    ],
+    "leaves": [
+     {
+      "id": "B1",
+      "label": "People for whom this is a plausible next step are identified",
+      "h": "agent",
+      "note": "Adjacency from delivery history",
+      "r": "Global Staffing engine map (original explorer), Rotation-for-Growth B1"
+     },
+     {
+      "id": "B2",
+      "label": "The step is checked as realistic for the grade and adjacency",
+      "h": "agent",
+      "note": "A realistic or unrealistic call",
+      "r": "Global Staffing engine map (original explorer), Rotation-for-Growth B2"
+     },
+     {
+      "id": "B3",
+      "label": "The person opts in",
+      "h": "human",
+      "note": "Consent, before any name moves",
+      "role": "The person",
+      "reason": "contested_judgment",
+      "scaffold": "The proposed move, what changes for them and how to decline",
+      "r": "Global Staffing engine map (original explorer), Rotation-for-Growth B3"
+     },
+     {
+      "id": "B4",
+      "label": "Readiness dates for the next level are given to Top-of-License Planning",
+      "h": "deterministic",
+      "note": "So growth moves can be planned into chains",
+      "s": "new",
+      "src": "rotation",
+      "r": "D14"
+     }
+    ]
+   },
+   {
+    "id": "C",
+    "label": "Growth openings are seen when they occur",
+    "from": "development move",
+    "fw": [
+     "development",
+     "move"
+    ],
+    "leaves": [
+     {
+      "id": "C1",
+      "label": "Incoming roles that could serve as growth placements are flagged",
+      "h": "agent",
+      "note": "Includes the step-ups inside rotation chains",
+      "r": "Global Staffing engine map (original explorer), Rotation-for-Growth C1"
+     },
+     {
+      "id": "C2",
+      "label": "The delivery risk of a growth placement is stated",
+      "h": "agent",
+      "note": "Stated in plain terms",
+      "r": "Global Staffing engine map (original explorer), Rotation-for-Growth C2"
+     },
+     {
+      "id": "C3",
+      "label": "The engagement delivery lead accepts or declines the risk",
+      "h": "human",
+      "note": "They carry the delivery risk",
+      "role": "Engagement delivery lead",
+      "reason": "contested_judgment",
+      "scaffold": "The delivery risk statement from C2",
+      "r": "Global Staffing engine map (original explorer), Rotation-for-Growth C3"
+     }
+    ]
+   },
+   {
+    "id": "D",
+    "label": "Nothing about a person leaves the engine, or persists, without them",
+    "from": "the person chose",
+    "fw": [
+     "person",
+     "chose"
+    ],
+    "leaves": [
+     {
+      "id": "D1",
+      "label": "Every development record is visible to the person",
+      "h": "deterministic",
+      "note": "No hidden profile",
+      "r": "Global Staffing engine map (original explorer), Rotation-for-Growth D1"
+     },
+     {
+      "id": "D2",
+      "label": "A rule blocks any score about a person from outliving the run, or leaving it",
+      "h": "deterministic",
+      "note": "Checked in the data model, and deleted on decline",
+      "r": "Global Staffing engine map (original explorer), Rotation-for-Growth D2"
+     },
+     {
+      "id": "D3",
+      "label": "Declining is recorded as a choice, not a mark",
+      "h": "deterministic",
+      "note": "A neutral record",
+      "r": "Global Staffing engine map (original explorer), Rotation-for-Growth D3"
+     }
+    ]
+   }
+  ],
+  "cov": [
+   {
+    "p": "Every capability the firm is betting on",
+    "w": [
+     "capability",
+     "firm",
+     "betting"
+    ],
+    "f": "the gaps that matter",
+    "n": [
+     [
+      "A",
+      "branch"
+     ],
+     [
+      "A1",
+      "branch"
+     ],
+     [
+      "A5",
+      "constrains"
+     ],
+     [
+      "E1",
+      "measured-by"
+     ]
+    ]
+   },
+   {
+    "p": "has people growing into it",
+    "w": [
+     "people",
+     "growing"
+    ],
+    "f": "who could grow, and whether the step is realistic",
+    "n": [
+     [
+      "B1",
+      "branch"
+     ],
+     [
+      "B2",
+      "branch"
+     ],
+     [
+      "A4",
+      "constrains"
+     ]
+    ]
+   },
+   {
+    "p": "through development moves",
+    "w": [
+     "through",
+     "development",
+     "moves"
+    ],
+    "f": "seeing the opening when it appears",
+    "n": [
+     [
+      "C1",
+      "branch"
+     ],
+     [
+      "B4",
+      "branch"
+     ],
+     [
+      "C2",
+      "constrains"
+     ],
+     [
+      "E2",
+      "measured-by"
+     ]
+    ]
+   },
+   {
+    "p": "the person chose",
+    "w": [
+     "person",
+     "chose"
+    ],
+    "f": "consent",
+    "n": [
+     [
+      "B3",
+      "branch"
+     ]
+    ]
+   },
+   {
+    "p": "which an engagement delivery lead accepted",
+    "w": [
+     "engagement",
+     "delivery",
+     "lead",
+     "accepted"
+    ],
+    "f": "who owns the delivery risk",
+    "n": [
+     [
+      "C3",
+      "branch"
+     ]
+    ]
+   },
+   {
+    "p": "with nothing the engine works out about a person stored or shared without them",
+    "w": [
+     "nothing",
+     "engine",
+     "works",
+     "out",
+     "about",
+     "stored",
+     "shared",
+     "without",
+     "them"
+    ],
+    "f": "the guard around the person",
+    "n": [
+     [
+      "D1",
+      "branch"
+     ],
+     [
+      "D2",
+      "branch"
+     ],
+     [
+      "D3",
+      "branch"
+     ]
+    ]
+   }
+  ],
+  "outcomeChanged": "Rewritten as one outcome with one type of case, the capability bet, as the methodology requires.",
+  "cc": [
+   [
+    "G-1",
+    "Every capability bet on the record has its depth gap sized.",
+    "new",
+    "methodology"
+   ],
+   [
+    "G-2",
+    "Every development move on the record carries the person's consent and the delivery lead's acceptance.",
+    "new",
+    "methodology"
+   ],
+   [
+    "G-3",
+    "No score about a person remains in any record after the run, or after a decline.",
+    "new",
+    "methodology"
+   ],
+   [
+    "G-4",
+    "Every declined move is on the record as a neutral choice.",
+    "new",
+    "methodology"
+   ]
+  ],
+  "evaluation": [
+   {
+    "id": "E1",
+    "label": "Depth in each capability is measured again"
+   },
+   {
+    "id": "E2",
+    "label": "Placements are tracked through to completion"
+   },
+   {
+    "id": "E3",
+    "label": "The case joins the set used to test the engine"
+   }
+  ]
+ },
+ "hire": {
+  "name": "Hire-or-Grow",
+  "chain": 2,
+  "col": "var(--c2)",
+  "outcome": "Every request to hire reaches a recorded decision that accounts for the gap it fills, the alternatives to hiring, the full cost, and the effect on gross profit.",
+  "cols": [
+   {
+    "id": "A",
+    "label": "The gap being hired for is real and sized",
+    "from": "the gap it fills",
+    "fw": [
+     "gap",
+     "fills"
+    ],
+    "leaves": [
+     {
+      "id": "A1",
+      "label": "The gap is checked as a declared gap with its cause, or the last job in a rotation chain",
+      "h": "deterministic",
+      "note": "Only declared gaps arrive from Contract-to-Capacity",
+      "s": "changed",
+      "src": "research + rotation",
+      "r": "Issue 3 · S6, B09"
+     },
+     {
+      "id": "A2",
+      "label": "The gap is checked against the current pool",
+      "h": "deterministic",
+      "note": "What the pool already covers",
+      "r": "Global Staffing engine map (original explorer), Hire-or-Grow A2"
+     },
+     {
+      "id": "A3",
+      "label": "How long the gap will persist is estimated",
+      "h": "agent",
+      "note": "A duration for the gap",
+      "r": "Global Staffing engine map (original explorer), Hire-or-Grow A3"
+     }
+    ]
+   },
+   {
+    "id": "B",
+    "label": "The alternatives are put beside it",
+    "from": "the alternatives to hiring",
+    "fw": [
+     "alternatives",
+     "hiring"
+    ],
+    "leaves": [
+     {
+      "id": "B1",
+      "label": "Whether someone could be grown into it is assessed",
+      "h": "agent",
+      "note": "Calls Rotation-for-Growth",
+      "r": "Global Staffing engine map (original explorer), Hire-or-Grow B1"
+     },
+     {
+      "id": "B2",
+      "label": "Whether it could be subcontracted is assessed",
+      "h": "agent",
+      "note": "Routed here until a Subcontracting engine exists",
+      "s": "changed",
+      "src": "research",
+      "r": "Issue 12 · S7"
+     },
+     {
+      "id": "B3",
+      "label": "Whether the work could be resequenced is assessed",
+      "h": "agent",
+      "note": "Engagement phasing",
+      "r": "Global Staffing engine map (original explorer), Hire-or-Grow B3"
+     },
+     {
+      "id": "B4",
+      "label": "Talent-market evidence is read: lead time and availability for the skill",
+      "h": "deterministic",
+      "s": "new",
+      "src": "research",
+      "r": "EV13"
+     }
+    ]
+   },
+   {
+    "id": "C",
+    "label": "The money is on the table",
+    "from": "the full cost … gross profit",
+    "fw": [
+     "full",
+     "cost",
+     "gross",
+     "profit"
+    ],
+    "leaves": [
+     {
+      "id": "C1",
+      "label": "Fully loaded cost to hire is calculated",
+      "h": "deterministic",
+      "note": "Salary, on-costs, recruitment",
+      "r": "Global Staffing engine map (original explorer), Hire-or-Grow C1"
+     },
+     {
+      "id": "C2",
+      "label": "Expected utilization and revenue is estimated",
+      "h": "agent",
+      "note": "Least reliable leaf",
+      "r": "Global Staffing engine map (original explorer), Hire-or-Grow C2"
+     },
+     {
+      "id": "C3",
+      "label": "The effect on gross profit is calculated",
+      "h": "deterministic",
+      "note": "Cost against revenue",
+      "r": "Global Staffing engine map (original explorer), Hire-or-Grow C3"
+     },
+     {
+      "id": "C4",
+      "label": "The break-even point is calculated",
+      "h": "deterministic",
+      "note": "A month or a utilization level",
+      "r": "Global Staffing engine map (original explorer), Hire-or-Grow C4"
+     },
+     {
+      "id": "C5",
+      "label": "A rule blocks any requisition without an approval or affordability ID",
+      "h": "deterministic",
+      "s": "new",
+      "src": "research",
+      "r": "R05, REC09, B10"
+     }
+    ]
+   },
+   {
+    "id": "D",
+    "label": "A person decides and it is recorded",
+    "from": "reaches a recorded decision",
+    "fw": [
+     "reaches",
+     "recorded",
+     "decision"
+    ],
+    "leaves": [
+     {
+      "id": "D1",
+      "label": "The hiring decision owner decides",
+      "h": "human",
+      "note": "Research names delivery with the local COO or country board; to confirm",
+      "s": "changed",
+      "src": "research",
+      "r": "D09",
+      "role": "Hiring decision owner (research names delivery with the local COO or country board)",
+      "reason": "contested_judgment",
+      "scaffold": "The gap, the alternatives, the cost and the effect on gross profit"
+     },
+     {
+      "id": "D4",
+      "label": "The country approver approves before the global hiring authority",
+      "h": "human",
+      "s": "new",
+      "src": "research",
+      "r": "R04, D10",
+      "role": "Country approver, then the global hiring authority",
+      "reason": "contested_judgment",
+      "scaffold": "The decision record and the affordability ID"
+     },
+     {
+      "id": "D2",
+      "label": "The decision and its reasoning are recorded",
+      "h": "deterministic",
+      "note": "The record",
+      "r": "Global Staffing engine map (original explorer), Hire-or-Grow D2"
+     },
+     {
+      "id": "D5",
+      "label": "Approvals given by email are recorded with their source",
+      "h": "deterministic",
+      "s": "new",
+      "src": "research",
+      "r": "SYS07, REC08, RR08, B11"
+     },
+     {
+      "id": "D6",
+      "label": "A clock runs on every approval, with a named escalation",
+      "h": "deterministic",
+      "s": "new",
+      "src": "research",
+      "r": "B12"
+     },
+     {
+      "id": "D3",
+      "label": "A declined request returns when conditions change",
+      "h": "deterministic",
+      "note": "A decline with a trigger",
+      "r": "Global Staffing engine map (original explorer), Hire-or-Grow D3"
+     },
+     {
+      "id": "D7",
+      "label": "The requisition is compared with the approved plan role; a change to band or profile is routed, not restarted",
+      "h": "deterministic",
+      "s": "new",
+      "src": "research",
+      "r": "REC10, R10"
+     }
+    ]
+   }
+  ],
+  "cov": [
+   {
+    "p": "request to hire",
+    "w": [
+     "request",
+     "hire"
+    ],
+    "f": "what starts it: a declared gap or the end of a chain",
+    "n": [
+     [
+      "A1",
+      "branch"
+     ]
+    ]
+   },
+   {
+    "p": "reaches a recorded decision",
+    "w": [
+     "reaches",
+     "recorded",
+     "decision"
+    ],
+    "f": "the decision, its order of approvals, its clock and its record",
+    "n": [
+     [
+      "D1",
+      "branch"
+     ],
+     [
+      "D4",
+      "branch"
+     ],
+     [
+      "D2",
+      "branch"
+     ],
+     [
+      "D6",
+      "constrains"
+     ],
+     [
+      "D5",
+      "constrains"
+     ]
+    ]
+   },
+   {
+    "p": "the gap it fills",
+    "w": [
+     "gap",
+     "fills"
+    ],
+    "f": "proving the gap is real",
+    "n": [
+     [
+      "A1",
+      "branch"
+     ],
+     [
+      "A2",
+      "branch"
+     ],
+     [
+      "A3",
+      "constrains"
+     ]
+    ]
+   },
+   {
+    "p": "the alternatives to hiring",
+    "w": [
+     "alternatives",
+     "hiring"
+    ],
+    "f": "build, borrow, or resequence",
+    "n": [
+     [
+      "B1",
+      "branch"
+     ],
+     [
+      "B2",
+      "branch"
+     ],
+     [
+      "B3",
+      "branch"
+     ],
+     [
+      "B4",
+      "constrains"
+     ]
+    ]
+   },
+   {
+    "p": "the full cost",
+    "w": [
+     "full",
+     "cost"
+    ],
+    "f": "what the person costs, and whether it is affordable",
+    "n": [
+     [
+      "C1",
+      "branch"
+     ],
+     [
+      "C5",
+      "constrains"
+     ],
+     [
+      "C4",
+      "constrains"
+     ]
+    ]
+   },
+   {
+    "p": "the effect on gross profit",
+    "w": [
+     "effect",
+     "gross",
+     "profit"
+    ],
+    "f": "calculated, then checked afterwards",
+    "n": [
+     [
+      "C2",
+      "constrains"
+     ],
+     [
+      "C3",
+      "branch"
+     ],
+     [
+      "E2",
+      "measured-by"
+     ]
+    ]
+   }
+  ],
+  "cc": [
+   [
+    "H1",
+    "Every hire request on the request record traces to a declared gap or to the last job of a rotation chain.",
+    "new",
+    "methodology"
+   ],
+   [
+    "H2",
+    "Every hiring decision record lists the alternatives assessed (grow, subcontract, resequence) with their evidence.",
+    "new",
+    "methodology"
+   ],
+   [
+    "H3",
+    "Every hiring decision record carries the fully loaded cost, the effect on gross profit and the break-even point.",
+    "new",
+    "methodology"
+   ],
+   [
+    "H4",
+    "No requisition moves in the hiring system without an approval or affordability ID on the record.",
+    "new",
+    "research"
+   ],
+   [
+    "H5",
+    "Every approval on the record shows country approval before global approval, with its source.",
+    "new",
+    "research"
+   ]
+  ],
+  "evaluation": [
+   {
+    "id": "E1",
+    "label": "Actual utilization of the hire is tracked"
+   },
+   {
+    "id": "E2",
+    "label": "Actual gross profit is compared to the forecast"
+   },
+   {
+    "id": "E3",
+    "label": "The case joins the set used to test the engine"
+   }
+  ]
+ }
+};
+
+const MAP={
+ "cards": {
+  "stp": {
+   "x": 0,
+   "y": 0,
+   "tag": "STEP 1 · AT THE WORKSHOP",
+   "desc": "A likely engagement becomes a complete labour plan version"
+  },
+  "cah": {
+   "x": 1,
+   "y": 0,
+   "tag": "STEP 1 · AT THE WORKSHOP",
+   "desc": "Each role becomes held for a named person, or a declared gap with evidence"
+  },
+  "gow": {
+   "x": 2,
+   "y": 0,
+   "tag": "STEP 1 · AT THE WORKSHOP",
+   "desc": "A declared gap gets an owner, a path and a clock"
+  },
+  "ccl": {
+   "x": 3,
+   "y": 0,
+   "tag": "STEP 1 · AT THE WORKSHOP",
+   "desc": "Commitment only against an approved plan; the rest is caught"
+  },
+  "match": {
+   "x": 4,
+   "y": 0,
+   "tag": "ALREADY IN USE",
+   "name": "Matching",
+   "col": "var(--buy)",
+   "desc": "A role becomes a ranked shortlist, read into the search record"
+  },
+  "rtc": {
+   "x": 5,
+   "y": 0,
+   "tag": "STEP 2",
+   "desc": "A request for a named person becomes a recorded release decision"
+  },
+  "dep": {
+   "x": 6,
+   "y": 0,
+   "tag": "STEP 2",
+   "name": "Deployment",
+   "col": "#7c8698",
+   "desc": "A commitment becomes someone working. Not one of the engines"
+  },
+  "tlp": {
+   "x": 0.5,
+   "y": 1,
+   "tag": "STEP 3 · RULES AT WORKSHOP",
+   "desc": "Likely work becomes a month-by-month plan of moves, growth and hires"
+  },
+  "tlm": {
+   "x": 3.6,
+   "y": 1,
+   "tag": "STEP 3 · RULES AT WORKSHOP",
+   "desc": "A job nobody free can fill becomes an agreed chain of moves"
+  },
+  "rot": {
+   "x": 2,
+   "y": 2,
+   "tag": "STEP 3",
+   "desc": "Build the capability: grow existing people into it"
+  },
+  "hire": {
+   "x": 3,
+   "y": 2,
+   "tag": "STEP 3",
+   "desc": "Buy the capability: whether to open a role, and what it costs"
+  },
+  "sub": {
+   "x": 4,
+   "y": 2,
+   "tag": "STEP 4 · ONLY IF NEEDED",
+   "name": "Subcontracting",
+   "col": "#7c8698",
+   "desc": "Borrow the capability. Reached through Hire-or-Grow for now"
+  }
+ },
+ "lanes": [
+  {
+   "label": "STAFFING THE WORK · FROM A LIKELY DEAL TO PEOPLE STARTED",
+   "col": "var(--c1)"
+  },
+  {
+   "label": "SKILL ROTATION · CONNECTS TO BOTH",
+   "col": "var(--c3)"
+  },
+  {
+   "label": "BUILDING CAPABILITY",
+   "col": "var(--c2)"
+  }
+ ],
+ "links": [
+  [
+   "stp",
+   "cah",
+   "A complete plan version (the upstream end state is the trigger)",
+   "new",
+   "ruling",
+   "C2C-FOUR-ENGINES §3"
+  ],
+  [
+   "cah",
+   "gow",
+   "A declared gap with its evidence",
+   "new",
+   "ruling",
+   "C2C-FOUR-ENGINES §3; issue 3"
+  ],
+  [
+   "cah",
+   "ccl",
+   "Holds and checked capacity, for approval",
+   "new",
+   "ruling",
+   "C2C-FOUR-ENGINES §3"
+  ],
+  [
+   "gow",
+   "ccl",
+   "Owned gaps with their paths, for approval",
+   "new",
+   "ruling",
+   "C2C-FOUR-ENGINES §3"
+  ],
+  [
+   "match",
+   "cah",
+   "Shortlist, read into the search record (B6)",
+   "new",
+   "research",
+   "Issue 4"
+  ],
+  [
+   "cah",
+   "rtc",
+   "Can this busy person be released? Asked before a gap is declared (B7)",
+   "new",
+   "research",
+   "Issue 2"
+  ],
+  [
+   "rtc",
+   "stp",
+   "What was actually staffed",
+   "",
+   ""
+  ],
+  [
+   "rtc",
+   "dep",
+   "A firm commitment becomes someone starting",
+   "",
+   ""
+  ],
+  [
+   "gow",
+   "tlm",
+   "A gap on the grow or hire path opens a rotation case (as built in the PoC)",
+   "new",
+   "rotation",
+   ""
+  ],
+  [
+   "cah",
+   "tlm",
+   "Proposal for ruling: ask for a chain before declaring a gap (B11)",
+   "new",
+   "rotation",
+   "RR03, S5"
+  ],
+  [
+   "tlm",
+   "cah",
+   "Proposal for ruling: the chain found, or why none exists, for the gap case (B8)",
+   "new",
+   "rotation",
+   ""
+  ],
+  [
+   "stp",
+   "tlp",
+   "Role plans for likely work, with each deal's stage",
+   "new",
+   "rotation",
+   ""
+  ],
+  [
+   "tlp",
+   "tlm",
+   "Near-term chains, once a deal reaches the commitment stage",
+   "new",
+   "rotation",
+   ""
+  ],
+  [
+   "tlm",
+   "tlp",
+   "A declined chain or refused release opens a new plan version",
+   "new",
+   "rotation",
+   ""
+  ],
+  [
+   "rot",
+   "tlp",
+   "Readiness dates for the next level",
+   "new",
+   "rotation",
+   "D14"
+  ],
+  [
+   "tlp",
+   "rot",
+   "Skill-ups acted on, with the person's consent",
+   "new",
+   "rotation",
+   ""
+  ],
+  [
+   "tlm",
+   "rtc",
+   "A release request for every move in a chain (E1)",
+   "new",
+   "rotation",
+   "Issue 2"
+  ],
+  [
+   "tlm",
+   "hire",
+   "A junior hire at the end of a chain, with its cause (E6)",
+   "new",
+   "rotation",
+   ""
+  ],
+  [
+   "gow",
+   "rot",
+   "Declared gaps only, with their cause",
+   "changed",
+   "research",
+   "Issue 3"
+  ],
+  [
+   "gow",
+   "hire",
+   "Declared gaps only, with their cause; the response is chosen there or by a person",
+   "changed",
+   "research",
+   "Issues 3 and 12"
+  ],
+  [
+   "rot",
+   "hire",
+   "Growth option",
+   "",
+   ""
+  ],
+  [
+   "rtc",
+   "hire",
+   "Utilisation data",
+   "",
+   ""
+  ],
+  [
+   "hire",
+   "sub",
+   "Subcontract path, through Hire-or-Grow until Subcontracting is designed",
+   "new",
+   "research",
+   "Issue 12"
+  ]
+ ]
+};
+
+const CHANGES=[
+ [
+  "Map",
+  "Staffing the work",
+  "Contract-to-Capacity redrawn as four engines: Scope-to-Plan, Capacity-and-Holds, Gap-Ownership, Commitment-Control. Their parts come from branches A to E of the PoC tree, with the research fixes",
+  "ruling",
+  "Sponsor ruling of 24 September; the upstream engine's end state triggers the next",
+  "C2C-FOUR-ENGINES §1, §3"
+ ],
+ [
+  "Map",
+  "Rotation",
+  "Rotation split into Top-of-License Planning and Rotation Moves, in their own lane across both chains",
+  "methodology",
+  "Different triggers, clocks and end states make separate engines; each engine has one type of case",
+  "Template Kit; C2C-FOUR-ENGINES §1"
+ ],
+ [
+  "Every engine",
+  "Done-conditions",
+  "Every engine now has done-conditions, each naming the record it is checked in",
+  "methodology",
+  "If you cannot write the done-conditions down, the outcome is not ready",
+  "How to Define an Outcome §3.3; Template Kit §20.9 item 1"
+ ],
+ [
+  "Every engine",
+  "Measurement",
+  "\"Whether it worked\" branches moved to an Evaluation list; they are no longer sub-outcomes",
+  "methodology",
+  "The outcome can be true without it, so it is not a sub-outcome",
+  "Template Kit §20.9"
+ ],
+ [
+  "Every engine",
+  "Person parts",
+  "Every decision a person makes names a role, one of the four reasons and what the system prepares for the person; owners are to be confirmed",
+  "methodology",
+  "Every human leaf has a named role, exactly one of four reasons and a scaffold",
+  "Portfolio Playbook §9.4; Template Kit §20.9 item 9"
+ ],
+ [
+  "Every engine",
+  "Engine calls",
+  "Calls to another engine are code routing steps, with the engine named",
+  "methodology",
+  "Every leaf has exactly one handler: AI agent, code or named person",
+  "Template Kit §20.9 items 5–6"
+ ],
+ [
+  "Release-to-Commit, Rotation-for-Growth",
+  "Outcomes",
+  "Rewritten so each has one type of case and one outcome per sentence",
+  "methodology",
+  "Exactly one type of case; sponsor convention: no second outcome joined by 'and'",
+  "Template Kit"
+ ],
+ [
+  "Map",
+  "Calls into rotation",
+  "Gap-Ownership calls Rotation Moves (as built). Asking rotation before a gap is declared is shown as a proposal for ruling",
+  "rotation",
+  "A change to a call contract is ruled by the sponsor",
+  "ALIGNMENT-MODEL rule 6"
+ ],
+ [
+  "Contract-to-Capacity",
+  "A0, A8, A9, A10, B5–B10, E6, F5",
+  "New leaves",
+  "research",
+  "Issues 1 to 13 of the research review",
+  "See each leaf"
+ ],
+ [
+  "Contract-to-Capacity",
+  "A5, B1, B2, B3, D1",
+  "Changed leaves",
+  "research",
+  "Issues 1, 2, 3, 10, 12",
+  "See each leaf"
+ ],
+ [
+  "Contract-to-Capacity",
+  "B11",
+  "Ask the rotation engines before a shortfall becomes a gap",
+  "rotation",
+  "Apparent gaps were filled internally once someone looked closer",
+  "RR03, S5"
+ ],
+ [
+  "Contract-to-Capacity",
+  "B8, CC11",
+  "The gap case also carries the rotation answer",
+  "rotation",
+  "A gap is declared only when no acceptable chain exists",
+  "RR03"
+ ],
+ [
+  "Contract-to-Capacity",
+  "CC4, CC5, CC7, CC11, CC12",
+  "Changed and new completion conditions",
+  "research",
+  "Issues 1 to 5",
+  ""
+ ],
+ [
+  "Release-to-Commit",
+  "A1",
+  "Requests also come from Contract-to-Capacity B7 and from each move in a rotation chain",
+  "research + rotation",
+  "Release is asked before a gap is declared",
+  "S5, B07, D05, D06"
+ ],
+ [
+  "Release-to-Commit",
+  "B1, B2",
+  "A named backup; blockers between countries checked",
+  "research",
+  "Issue 11 and the cost-base question",
+  "D06, D11, RR10"
+ ],
+ [
+  "Rotation-for-Growth",
+  "A1, A4, A5",
+  "Growth bets combine client and internal demand; a role owner per pipeline; supply and demand built from the record",
+  "research",
+  "Findings the review gave to this engine",
+  "R11, R12, RR12, B14, B15"
+ ],
+ [
+  "Rotation-for-Growth",
+  "B4",
+  "Readiness dates go to the rotation engines",
+  "rotation",
+  "Growth moves can then be planned into chains",
+  "D14"
+ ],
+ [
+  "Hire-or-Grow",
+  "A1",
+  "Only declared gaps, or the last job in a rotation chain, open a request",
+  "research + rotation",
+  "Issue 3",
+  "S6, B09"
+ ],
+ [
+  "Hire-or-Grow",
+  "B2, B4",
+  "Subcontracting routed here; talent-market evidence read",
+  "research",
+  "Issue 12 and a finding the review gave to this engine",
+  "S7, EV13"
+ ],
+ [
+  "Hire-or-Grow",
+  "C5, D4, D5, D6, D7",
+  "Affordability ID, country then global approval, email approvals captured, a clock, requisition checked against the plan",
+  "research",
+  "Findings the review gave to this engine",
+  "R04, R05, REC08–REC10, SYS07, RR08, B11, B12, D10, R10"
+ ],
+ [
+  "Hire-or-Grow",
+  "D1",
+  "The hiring decision owner is to be confirmed against the research's version",
+  "research",
+  "The research names delivery with the local COO or country board",
+  "D09"
+ ],
+ [
+  "Every engine",
+  "Person leaves",
+  "Every decision owner has a named backup and stays marked to confirm until the workshop agrees it",
+  "research",
+  "Issue 11",
+  "D03, D04, D12, D13"
+ ],
+ [
+  "Contract-to-Capacity",
+  "B10, B7",
+  "Availability (B10) and release (B7) kept as separate decisions; open questions 2 and W03 attached",
+  "insights",
+  "The insights deck: keep D05 and D06 separate",
+  "D05, D06, RV01, W03"
+ ],
+ [
+  "Contract-to-Capacity, rotation",
+  "Engine notes",
+  "What Contract-to-Capacity provides to rotation, and what rotation owns, is stated",
+  "insights",
+  "The insights deck: the workshop must state what C2C serves for rotation versus owns",
+  "W08"
+ ],
+ [
+  "Rotation engines",
+  "B4, C1, C3, C8",
+  "Marked as proposals: the research does not evidence these mechanics",
+  "insights",
+  "The insights deck's not-evidenced list",
+  "P4"
+ ],
+ [
+  "Release-to-Commit, rotation",
+  "rtc A1, tol C2, T12",
+  "Eligibility by time on the engagement and band (placeholders about 12, 18, 24 months)",
+  "client",
+  "Client input, 1 October",
+  ""
+ ],
+ [
+  "Release-to-Commit",
+  "C1, C4",
+  "Who decides a release is not yet agreed; the practice leads in each country are one proposal, to test with the markets",
+  "client",
+  "Client input, 1 October",
+  "open question 1"
+ ],
+ [
+  "Rotation engines",
+  "A7, C7, D1, T11",
+  "Key-person risk on the account being left: flagged by markets, needs a same-skill backfill, counted in the value of work at risk",
+  "client",
+  "Client input, 1 October",
+  ""
+ ],
+ [
+  "Rotation engines",
+  "C8",
+  "A living succession plan from the engine's monthly view, offered as a proposal",
+  "client",
+  "Client input, 1 October",
+  ""
+ ],
+ [
+  "Rotation engines",
+  "C6, E4, T8",
+  "Cross-cost-base moves show the cost per country; the approver is open",
+  "client",
+  "Client input, 1 October",
+  "D11, open question 4"
+ ]
+];
+
+/* ============================ STATE ============================ */
+let view="map", ROOT=null, byId=new Map(), sel=null, elMap=new Map();
+let hl={ref:null,words:null,color:null}, claims=new Map(), cov=false;
+let tx=0,ty=0,k=1;
+
+/* ============================ BUILD ============================ */
+function buildTree(e){
+ byId=new Map();
+ const r={id:"L0",label:e.outcome,kind:"outcome",depth:0,collapsed:false,children:[]};
+ byId.set("L0",r);
+ e.cols.forEach(c=>{
+  const n={id:c.id,label:c.label,kind:"composite",cnote:c.note||"",depth:1,collapsed:false,parent:r,children:[],
+    from:{ref:"L0",phrase:c.from,words:c.fw||[]}};
+  byId.set(c.id,n);
+  c.leaves.forEach(l=>{
+   const lf={id:l.id,label:l.label,kind:"leaf",handler:l.h,note:l.note||"",st:l.s||"",src:l.src||"",rs:l.r||"",built:l.built||"",ev:l.ev||"",role:l.role||"",reason:l.reason||"",scaffold:l.scaffold||"",calls:l.calls||"",depth:2,parent:n,children:[],
+     from:{ref:c.id,phrase:c.label.split(" ").slice(0,4).join(" "),words:[]}};
+   byId.set(l.id,lf); n.children.push(lf);});
+  r.children.push(n);});
+ ROOT=r;
+}
+const STOP=new Set("the a an is are was of to it and or with for its be that this in on at as by we you your their our not into every each where what against carries which whose than then also both more most less only just still has have one accounts being makes gets".split(" "));
+function kw(s){return String(s||"").toLowerCase().replace(/[^a-z0-9\s']/g," ").split(/\s+/).filter(w=>w&&!STOP.has(w));}
+function covFor(w){const n=w.toLowerCase().replace(/[^a-z0-9']/g,"");
+ return (ENG[view]?.cov||[]).find(p=>p.w.includes(n));}
+function claimed(){const s=new Set();(ENG[view]?.cov||[]).forEach(p=>p.w.forEach(w=>s.add(w)));return s;}
+
+/* ============================ LAYOUT ============================ */
+const mc=document.createElement("canvas").getContext("2d");
+function wrapT(t,f,m){mc.font=f;const w=String(t).split(" ");let L=[],c="";
+ for(const x of w){const s=c?c+" "+x:x;if(mc.measureText(s).width<=m||!c)c=s;else{L.push(c);c=x;}}
+ if(c)L.push(c);return L;}
+const NW=272,PH=17,PV=13,GX=104,GY=16;
+const F1="500 13.5px ui-sans-serif,system-ui,sans-serif", F2="400 11px ui-sans-serif,system-ui,sans-serif";
+function measure(n){
+ n._l=wrapT(n.label,F1,NW-2*PH);
+ let h=PV+18+7+n._l.length*18.5;
+ if(n.kind==="leaf"&&n.note){n._n=wrapT(n.note,F2,NW-2*PH-4);h+=5+n._n.length*15;}
+ else if(n.kind==="composite"&&n.from?.phrase){n._n=[n.from.phrase];h+=5+15;}
+ h+=PV; n._w=NW; n._h=Math.max(h,54);}
+const vis=n=>n.collapsed?[]:n.children;
+function layout(){let cur=0;
+ (function pl(n){measure(n);const kids=vis(n);
+  if(!kids.length){n._y=cur+n._h/2;cur+=n._h+GY;}
+  else{kids.forEach(pl);n._y=(kids[0]._y+kids[kids.length-1]._y)/2;}
+  n._x=n.depth*(NW+GX);})(ROOT);}
+function visNodes(){const o=[];(function w(n){o.push(n);vis(n).forEach(w);})(ROOT);return o;}
+
+/* ============================ RENDER ============================ */
+const nd=document.getElementById("nd"),lk=document.getElementById("lk"),hdL=document.getElementById("hd");
+const svgEl=(t,a)=>{const e=document.createElementNS(NS,t);for(const x in a)e.setAttribute(x,a[x]);return e;};
+const COLH=["The outcome","Sub-outcomes","The smallest parts"];
+function accent(n){return n.kind==="leaf"?H[n.handler].c:(n.kind==="outcome"?"var(--root)":"var(--comp)");}
+
+function render(anim){
+ if(view==="map"){renderMap();return;}
+ layout();
+ const V=visNodes(), ids=new Set(V.map(n=>n.id));
+ lk.textContent="";
+ V.forEach(n=>vis(n).forEach(c=>{const x1=n._x+n._w,y1=n._y,x2=c._x,y2=c._y,d=(x2-x1)/2;
+  lk.appendChild(svgEl("path",{class:"link",d:`M${x1},${y1} C${x1+d},${y1} ${x2-d},${y2} ${x2},${y2}`,
+   stroke:(sel===c||sel===n)?"var(--linkHi)":"var(--link)"}));}));
+ hdL.textContent="";
+ const minY=Math.min(...V.map(n=>n._y-n._h/2));
+ [...new Set(V.map(n=>n.depth))].sort().forEach(d=>{const x=d*(NW+GX);
+  const t=svgEl("text",{class:"colh",x:x+2,y:minY-26});t.textContent=(COLH[d]||"").toUpperCase();hdL.appendChild(t);
+  hdL.appendChild(svgEl("line",{x1:x,y1:minY-18,x2:x+NW,y2:minY-18,stroke:"var(--bd)","stroke-width":1}));});
+ for(const [id,el] of elMap){if(!ids.has(id)){el.remove();elMap.delete(id);}}
+ V.forEach(n=>{let g=elMap.get(n.id);
+  if(!g){g=svgEl("g",{class:"node-g"});g.dataset.id=n.id;nd.appendChild(g);elMap.set(n.id,g);
+   g.addEventListener("click",ev=>{ev.stopPropagation();select(byId.get(g.dataset.id));});
+   g.addEventListener("pointerenter",()=>setProv(byId.get(g.dataset.id)));
+   g.addEventListener("pointerleave",()=>setProv(sel));}
+  g.setAttribute("transform",`translate(${n._x},${n._y-n._h/2})`);
+  drawNode(g,n);});
+ zlab();
+}
+function labelLine(g,n,line,x,y,size,weight,doHL){
+ const t=svgEl("text",{x,y,"font-size":size,"font-weight":weight,class:"lbl"});
+ const isC=(n.kind==="outcome"&&cov), CL=claimed();
+ line.split(" ").forEach((w,i)=>{
+  if(i){const s=svgEl("tspan",{});s.textContent=" ";t.appendChild(s);}
+  const ts=svgEl("tspan",{});ts.textContent=w;
+  const nw=w.toLowerCase().replace(/[^a-z0-9']/g,""), content=nw.length>1&&!STOP.has(nw);
+  if(doHL&&hl.words&&hl.words.has(nw)){ts.setAttribute("fill",hl.color);ts.setAttribute("font-weight","700");ts.setAttribute("text-decoration","underline");}
+  else if(isC&&content){if(CL.has(nw)){ts.setAttribute("fill","#cfd6e0");ts.setAttribute("text-decoration","underline");}
+   else{ts.setAttribute("fill","#e9b552");ts.setAttribute("font-weight","700");ts.setAttribute("text-decoration","underline");}}
+  if(isC&&content){ts.setAttribute("class","cword");
+   ts.addEventListener("click",e=>{e.stopPropagation();setClaims(w);});
+   ts.addEventListener("pointerenter",e=>{e.stopPropagation();setClaims(w);});}
+  t.appendChild(ts);});
+ g.appendChild(t);
+}
+function drawNode(g,n){
+ g.textContent="";
+ const w=n._w,h=n._h,ac=accent(n),isS=sel===n,cm=claims.get(n.id);
+ g.appendChild(svgEl("rect",{class:"card",x:0,y:0,width:w,height:h,rx:11,
+  fill:n.kind==="outcome"?"#1a1620":"var(--surf)",stroke:cm?cm.c:(isS?ac:(n.ev?"var(--chg)":"var(--bd)")),"stroke-width":cm?2.5:(isS?2:(n.ev?1.4:1)),"stroke-dasharray":n.ev&&!isS&&!cm?"5 4":""}));
+ g.appendChild(svgEl("circle",{cx:PH+4,cy:PV+11,r:3.4,fill:ac}));
+ const idt=svgEl("text",{class:"idt",x:PH+14,y:PV+11,fill:ac});idt.textContent=n.id;g.appendChild(idt);
+ if(n.st){const sx=PH+14+n.id.length*7.4+8;const pc=n.st==="new"?"var(--new)":"var(--chg)";g.appendChild(svgEl("rect",{x:sx,y:PV+2,width:n.st==="new"?34:56,height:13,rx:3,fill:"none",stroke:pc,"stroke-width":1}));const stt=svgEl("text",{class:"idt",x:sx+(n.st==="new"?17:28),y:PV+12,fill:pc,"text-anchor":"middle","font-size":"8.5"});stt.textContent=n.st.toUpperCase();g.appendChild(stt);}
+ let tg="";
+ if(n.kind==="outcome")tg="END STATE";
+ else if(n.kind==="composite")tg=n.collapsed?("+"+cnt(n)+" ▸"):("▾ "+n.children.length);
+ else tg=H[n.handler].l.toUpperCase();
+ const tt=svgEl("text",{class:"tag",x:w-PH,y:PV+11,fill:ac,"text-anchor":"end"});tt.textContent=tg;g.appendChild(tt);
+ let y=PV+18+15,doHL=(hl.ref===n.id);
+ n._l.forEach(l=>{labelLine(g,n,l,PH,y,"13.5","500",doHL);y+=18.5;});
+ if(n._n){y+=3;n._n.forEach(l=>{const t=svgEl("text",{class:"note",x:PH,y,"font-size":"11",
+   "font-style":n.kind==="composite"?"italic":"normal"});t.textContent=l;g.appendChild(t);y+=15;});}
+ if(n.children.length){const b=svgEl("g",{class:"badge"});b.setAttribute("transform",`translate(${w},${h/2})`);
+  b.appendChild(svgEl("circle",{cx:0,cy:0,r:11}));
+  const s=svgEl("text",{x:0,y:.5,"text-anchor":"middle","dominant-baseline":"central",
+   "font-family":"var(--fm)","font-size":"15",fill:ac});s.textContent=n.collapsed?"+":"–";b.appendChild(s);
+  b.addEventListener("click",e=>{e.stopPropagation();n.collapsed=!n.collapsed;render(true);buildOutline();});
+  g.appendChild(b);}
+}
+function cnt(n){let c=0;(function w(x){if(!x.children.length)c++;else x.children.forEach(w);})(n);return c;}
+
+/* ---- map view ---- */
+const CWm=286,GXm=66,LHm=112,GYm=190;
+let selLink=-1;
+function cardPos(k){const c=MAP.cards[k];return {x:c.x*(CWm+GXm),y:c.y*(LHm+GYm),w:CWm,h:LHm};}
+function lkCol(st){return st==="new"?"var(--new)":st==="changed"?"var(--chg)":"var(--linkHi)";}
+/* hand-placed ports: [fromSide, fromOffset, toSide, toOffset, badge t, bend] */
+/* automatic routing: ports are spread along each card edge, ordered by where the other end sits */
+let GEO=[];
+function port(p,side,off){return side==="l"?[p.x,p.y+p.h/2+off]:side==="r"?[p.x+p.w,p.y+p.h/2+off]:side==="t"?[p.x+off,p.y]:[p.x+off,p.y+p.h];}
+function bez(a,c1,c2,b,tt){const u=1-tt;return [0,1].map(i=>u*u*u*a[i]+3*u*u*tt*c1[i]+3*u*tt*tt*c2[i]+tt*tt*tt*b[i]);}
+function routeAll(){
+ const ends=[],edges={},rowOf=k=>MAP.cards[k].y,colOf=k=>MAP.cards[k].x;
+ MAP.links.forEach((L,i)=>{const a=L[0],b=L[1],ra=rowOf(a),rb=rowOf(b),ca=colOf(a),cb=colOf(b);let sa,sb,kind;
+  if(ra===rb&&Math.abs(ca-cb)===1){sa=ca<cb?"r":"l";sb=ca<cb?"l":"r";kind="side";}
+  else if(ra===rb){sa=sb=(ra===0?"t":"b");kind="arc";}
+  else if(ra<rb){sa="b";sb="t";kind="vert";} else {sa="t";sb="b";kind="vert";}
+  ends[i]={a,b,sa,sb,kind};
+  [[a,sa,b],[b,sb,a]].forEach(([k,sd,o])=>{(edges[k+sd]=edges[k+sd]||[]).push({i,k,o,end:k===a?"a":"b"});});});
+ const off={};
+ Object.values(edges).forEach(list=>{
+  const sd=list.length&&ends[list[0].i][list[0].end==="a"?"sa":"sb"];
+  list.sort((p,q)=>(colOf(p.o)-colOf(q.o))||(rowOf(p.o)-rowOf(q.o))||(p.i-q.i));
+  const n=list.length;
+  list.forEach((it,j)=>{const span=(sd==="l"||sd==="r")?LHm-36:CWm-48;const v=n===1?0:(-span/2+span*j/(n-1));
+   off[it.i+it.end]=(sd==="l"||sd==="r")?v:CWm/2+v;});});
+ let arcN={0:0,2:0,1:0};
+ GEO=MAP.links.map((L,i)=>{const E=ends[i],A=cardPos(E.a),B=cardPos(E.b);
+  const a=port(A,E.sa,off[i+"a"]),b=port(B,E.sb,off[i+"b"]);let c1,c2;
+  if(E.kind==="side"){const mx=(a[0]+b[0])/2;c1=[mx,a[1]];c2=[mx,b[1]];}
+  else if(E.kind==="arc"){const r=rowOf(E.a),h=(r===0?-1:1)*(55+28*(arcN[r]++%5));const yy=(r===0?Math.min(a[1],b[1]):Math.max(a[1],b[1]))+h;c1=[a[0],yy];c2=[b[0],yy];}
+  else{const my=(a[1]+b[1])/2;c1=[a[0],my];c2=[b[0],my];}
+  const tt=[.5,.38,.62,.44,.56][i%5];
+  return {a,b,c1,c2,m:bez(a,c1,c2,b,E.kind==="side"?.5:tt)};});
+}
+function linkGeom(i){return GEO[i];}
+function renderMap(){
+ lk.textContent="";hdL.textContent="";nd.textContent="";elMap.clear();routeAll();
+ MAP.lanes.forEach((ln,i)=>{const t=svgEl("text",{class:"colh",x:0,y:i*(LHm+GYm)-(i?16:215)});t.textContent=ln.label;t.setAttribute("fill",ln.col);hdL.appendChild(t);});
+ const defs=svgEl("defs",{});["new","changed",""].forEach(st=>{const m=svgEl("marker",{id:"ar"+(st||"x"),viewBox:"0 0 10 10",refX:"9",refY:"5",markerWidth:"7",markerHeight:"7",orient:"auto-start-reverse"});
+  m.appendChild(svgEl("path",{d:"M0,0 L10,5 L0,10 z",fill:lkCol(st)}));defs.appendChild(m);});lk.appendChild(defs);
+ MAP.links.forEach((L,i)=>{const G=linkGeom(i),on=selLink===i,dim=selLink>=0&&!on;
+  lk.appendChild(svgEl("path",{d:`M${G.a[0]},${G.a[1]} C${G.c1[0]},${G.c1[1]} ${G.c2[0]},${G.c2[1]} ${G.b[0]},${G.b[1]}`,fill:"none",stroke:lkCol(L[3]),"stroke-width":on?3:1.6,opacity:dim?.18:.95,"stroke-dasharray":L[3]?"":"5 4","marker-end":`url(#ar${L[3]||"x"})`}));});
+ Object.keys(MAP.cards).forEach(key=>{const c=MAP.cards[key],P=cardPos(key),e=ENG[key];
+  const name=e?e.name:c.name,col=e?e.col:c.col;
+  const g=svgEl("g",{class:"node-g"});g.dataset.map=e?key:"";
+  g.appendChild(svgEl("rect",{class:"card",x:P.x,y:P.y,width:CWm,height:LHm,rx:11,fill:e&&e.isNew?"#22190f":"var(--surf)",stroke:e&&e.isNew?"var(--c3)":(e&&e.isRuling?"var(--c1)":"var(--bd)"),"stroke-width":(e&&(e.isNew||e.isRuling))?1.6:1}));
+  g.appendChild(svgEl("circle",{cx:P.x+18,cy:P.y+20,r:3.6,fill:col}));
+  const tg=svgEl("text",{class:"tag",x:P.x+27,y:P.y+20,fill:col});tg.textContent=c.tag;g.appendChild(tg);
+  let yy=P.y+44;
+  wrapT(name,"600 15px ui-sans-serif,system-ui,sans-serif",CWm-36).forEach(l=>{const t2=svgEl("text",{x:P.x+18,y:yy,"font-size":15,"font-weight":600,class:"lbl"});t2.textContent=l;g.appendChild(t2);yy+=19;});
+  yy+=2;wrapT(c.desc,F2,CWm-36).slice(0,2).forEach(l=>{const t3=svgEl("text",{class:"note",x:P.x+18,y:yy,"font-size":11});t3.textContent=l;g.appendChild(t3);yy+=14;});
+  if(e){const o=svgEl("text",{class:"tag",x:P.x+CWm-18,y:P.y+LHm-14,fill:"var(--fa)","text-anchor":"end"});o.textContent="OPEN ▸";g.appendChild(o);g.addEventListener("click",()=>go(key));}
+  nd.appendChild(g);});
+ MAP.links.forEach((L,i)=>{const G=linkGeom(i),dim=selLink>=0&&selLink!==i;
+  const b=svgEl("g",{class:"node-g",opacity:dim?.25:1});b.appendChild(svgEl("circle",{cx:G.m[0],cy:G.m[1],r:11,fill:lkCol(L[3]),stroke:"#0c0f16","stroke-width":2}));
+  const tx2=svgEl("text",{x:G.m[0],y:G.m[1]+.5,"text-anchor":"middle","dominant-baseline":"central","font-family":"var(--fm)","font-size":"11","font-weight":"700",fill:"#0c0f16"});tx2.textContent=i+1;b.appendChild(tx2);
+  b.addEventListener("click",ev=>{ev.stopPropagation();openLink(i);});nd.appendChild(b);});
+ zlab();
+}
+function openLink(i){selLink=i;const L=MAP.links[i],nm=k=>ENG[k]?ENG[k].name:MAP.cards[k].name;
+ document.getElementById("pk").innerHTML=`<span style="width:9px;height:9px;border-radius:50%;background:${lkCol(L[3])};display:inline-block"></span>Link ${i+1}${L[3]?" · "+L[3].toUpperCase():""}`;
+ document.getElementById("pi").textContent="";document.getElementById("pt").textContent=L[2];
+ let b=fld("From → to",`${nm(L[0])} → ${nm(L[1])}`);
+ b+=fld("Status",L[3]?`<span class="pill ${L[3]}">${L[3].toUpperCase()}</span> &nbsp;from the ${L[4]==="rotation"?"rotation design":"research review"}`:"Unchanged from the first map");
+ if(L[5])b+=fld("Answers",L[5]);
+ document.getElementById("pb").innerHTML=b;panel.classList.add("open");document.body.classList.add("panel-open");
+ renderMap();buildOutline();}
+
+/* ============================ INTERACTION ============================ */
+function setProv(n){
+ const prev=hl.ref;
+ if(n&&n.from&&n.from.words&&n.from.words.length){hl={ref:n.from.ref,words:new Set(n.from.words.map(w=>w.toLowerCase())),color:accent(n)};}
+ else hl={ref:null,words:null,color:null};
+ [prev,hl.ref].forEach(id=>{if(!id)return;const el=elMap.get(id),nn=byId.get(id);if(el&&nn)drawNode(el,nn);});
+}
+function select(n){sel=n;setProv(n);render(false);openPanel(n);buildOutline();crumb();}
+function deselect(){sel=null;selLink=-1;setProv(null);claims.clear();panel.classList.remove("open");
+ document.body.classList.remove("panel-open");render(false);buildOutline();crumb();}
+function setClaims(word){
+ claims.clear();const p=covFor(word);
+ if(p)p.n.forEach(([id,rel])=>{if(byId.get(id))claims.set(id,REL[rel]);});
+ render(false);openCov(word,p);
+}
+const REL={branch:{c:"#33c3b4",l:"branch"},constrains:{c:"#e9b552",l:"constrains"},"measured-by":{c:"#5b8def",l:"measured by"}};
+
+/* ---- panel ---- */
+const panel=document.getElementById("panel");
+function fld(l,h){return `<div class="fld"><div class="fl">${l}</div><div>${h}</div></div>`;}
+function openPanel(n){
+ const ac=accent(n);
+ const kind=n.kind==="outcome"?"Outcome · end-state":n.kind==="composite"?"Sub-outcome":
+  (n.handler==="human"?"A person decides":n.handler==="deterministic"?"System rule":n.handler==="engine"?"Calls another engine":"Agent · needs judgement");
+ document.getElementById("pk").innerHTML=`<span style="width:9px;height:9px;border-radius:3px;background:${ac};display:inline-block"></span>${kind}`;
+ document.getElementById("pi").textContent=n.id;
+ document.getElementById("pt").textContent=n.label;
+ let b="";
+ if(n.from&&n.from.phrase&&n.from.phrase!=="no phrase of its own"){
+  b+=fld("Derived from",`<span class="chip" style="border-color:${ac}"><span style="width:7px;height:7px;border-radius:50%;background:${ac};display:inline-block"></span>“${n.from.phrase}”</span> <span style="color:var(--mu);font-size:11px">&nbsp;in ${n.from.ref==="L0"?"the outcome":"node "+n.from.ref}</span>`);}
+ if(n.kind==="outcome"){const E0=ENG[view];
+  if(E0.alias)b+=fld("About this engine",E0.alias);
+  b+=fld("Decomposes into",`${n.children.length} sub-outcomes → ${cnt(n)} parts`);
+  if(E0.outcomeChanged)b+=fld("Outcome changed",E0.outcomeChanged);
+  if(E0.evaluation)b+=fld("Evaluation, measured between cases (not part of the tree)",`<ul class="ccl">${E0.evaluation.map(m=>`<li><b>${m.id}</b><span>${m.label}</span></li>`).join("")}</ul>`);
+  if(E0.cc)b+=fld("Done-conditions, checked on the record",`<ul class="ccl">${E0.cc.map(c=>`<li><b>${c[0]}</b><span>${c[1]} ${c[2]?`<span class="pill ${c[2]}">${c[2].toUpperCase()}</span>`:""}</span></li>`).join("")}</ul>`);
+  b+=fld("Coverage","Press <b>C</b> to see which words of the outcome each part carries.");}
+ else if(n.kind==="composite"&&n.cnote)b+=fld("Boundary",n.cnote)+fld("Decomposes into",`${n.children.length} parts, each small enough for one agent, one step or one person to own`);
+ else if(n.kind==="composite")b+=fld("Decomposes into",`${n.children.length} parts, each small enough for one agent, one step or one person to own`);
+ else{const h=H[n.handler];
+  b+=fld("Handled by",`<span class="chip" style="border-color:${h.c}"><span style="width:8px;height:8px;border-radius:50%;background:${h.c};display:inline-block"></span>${h.l} — ${h.s}</span>`);
+  if(n.note)b+=fld("How",n.note);
+  if(n.st)b+=fld("Status",`<span class="pill ${n.st}">${n.st.toUpperCase()}</span> &nbsp;from ${srcName(n.src).replace(/^./,c=>c.toLowerCase())}`);
+  if(n.rs)b+=fld("Research findings",n.rs);
+  if(n.ev)b+=fld("Evidence",`<span style="color:var(--chg)">${n.ev}</span>`);
+  if(n.built)b+=fld("Built so far (1 October)",n.built);
+  if(n.calls)b+=fld("Routing step",`Calls <b>${n.calls}</b> and waits for its answer`);
+  if(n.handler==="human"){const RS={safety_critical:"Safety: a mistake could cause harm",regulatory_ownership:"Law or regulation requires a person",contested_judgment:"People can reasonably disagree",trust_threshold:"Not yet trusted to the system"};
+   b+=fld("Role",n.role||"Not named")+fld("Reason it stays with a person",(RS[n.reason]||"Not given")+` <span style="color:var(--fa)">(Portfolio Playbook §9.4)</span>`)+fld("What the system prepares for the person",n.scaffold||"None")+fld("Owner","To confirm with the decision owner at the workshop. A named backup acts when they are away.");}
+  b+=fld("Closure","One AI agent, one system rule or one named person can own this with only what it reads.");}
+ if(n.parent)b+=`<button class="jump" data-j="${n.parent.id}">↑ Go to parent · ${n.parent.id}</button>`;
+ if(n.children.length)b+=`<button class="jump" data-j="${n.children[0].id}">↓ First child · ${n.children[0].id}</button>`;
+ const bd=document.getElementById("pb");bd.innerHTML=b;
+ bd.querySelectorAll("[data-j]").forEach(x=>x.onclick=()=>focusNode(byId.get(x.dataset.j)));
+ panel.classList.add("open");document.body.classList.add("panel-open");
+}
+function openCov(word,p){
+ const bd=document.getElementById("pb");document.getElementById("pi").textContent="";
+ if(!p){document.getElementById("pk").innerHTML=`<span style="width:9px;height:9px;border-radius:3px;background:#e9b552;display:inline-block"></span>Unclaimed phrase`;
+  document.getElementById("pt").textContent=`“${word}”`;
+  bd.innerHTML=fld("Nothing under it","This promise maps to no node. Make it a branch, attach it as a constraint, make it measured, or cut it from the outcome.");}
+ else{document.getElementById("pk").innerHTML=`<span style="width:9px;height:9px;border-radius:3px;background:#33c3b4;display:inline-block"></span>Outcome phrase`;
+  document.getElementById("pt").textContent=`“${p.p}”`;
+  let h=p.f?fld("Where it goes",p.f):"";
+  h+=fld("Claimed by "+p.n.length+" node"+(p.n.length>1?"s":""),
+   p.n.map(([id,rel])=>{const R=REL[rel],nn=byId.get(id);
+    return `<div style="display:flex;align-items:center;gap:8px;margin:6px 0"><span class="chip" style="border-color:${R.c};padding:2px 8px;font-size:11px"><span style="width:6px;height:6px;border-radius:50%;background:${R.c};display:inline-block"></span>${R.l}</span><span><b>${id}</b> · ${nn?nn.label:""}</span></div>`;}).join(""));
+  bd.innerHTML=h;}
+ panel.classList.add("open");document.body.classList.add("panel-open");
+}
+document.getElementById("pcl").onclick=deselect;
+
+/* ---- outline ---- */
+function buildOutline(){
+ const o=document.getElementById("outline");o.innerHTML="";
+ document.getElementById("outHd").textContent=view==="map"?"Engines":"Outline · "+ENG[view].name;
+ const q=(document.getElementById("q").value||"").toLowerCase();
+ if(view==="map"){
+  Object.keys(ENG).forEach(kk=>{const e=ENG[kk];
+   if(q&&!e.name.toLowerCase().includes(q))return;
+   const b=document.createElement("button");b.className="oi l0";
+   b.innerHTML=`<span class="sw" style="background:${e.col}"></span>${e.name}${e.isNew?' <span class="pill new">NEW</span>':""}`;
+   b.onclick=()=>go(kk);o.appendChild(b);});
+  const h=document.createElement("div");h.className="oh";h.textContent="Links";o.appendChild(h);
+  MAP.links.forEach((L,i)=>{if(q&&!L[2].toLowerCase().includes(q))return;
+   const b=document.createElement("button");b.className="lkrow"+(selLink===i?" on":"");
+   b.innerHTML=`<span class="nb" style="background:${lkCol(L[3])}">${i+1}</span><span>${L[2]}</span>`;
+   b.onclick=()=>openLink(i);o.appendChild(b);});
+  return;}
+ const add=(n,cls)=>{
+  const txt=(n.id+" "+n.label).toLowerCase();
+  if(q&&!txt.includes(q))return;
+  const b=document.createElement("button");
+  b.className="oi "+cls+(sel===n?" on":"");
+  const sw=n.kind==="leaf"?`<span class="sw" style="background:${H[n.handler].c}"></span>`:"";
+  b.innerHTML=`${sw}<span class="id">${n.id}</span>${n.label}`;
+  b.onclick=()=>focusNode(n);o.appendChild(b);};
+ add(ROOT,"l0");
+ ROOT.children.forEach(c=>{add(c,"l1");c.children.forEach(l=>add(l,"l2"));});
+}
+document.getElementById("q").addEventListener("input",buildOutline);
+document.getElementById("q").addEventListener("keydown",e=>{
+ if(e.key==="Enter"){const first=document.querySelector(".outline .oi");if(first)first.click();}
+ if(e.key==="Escape"){e.target.value="";buildOutline();e.target.blur();}});
+
+/* ---- crumb ---- */
+function crumb(){
+ const c=document.getElementById("crumb");
+ if(view==="map"){c.innerHTML="<b>Map</b> · staffing the work, building capability, and skill rotation connecting both";return;}
+ let path=[ENG[view].name];
+ if(sel){let n=sel,st=[];while(n){st.unshift(n.id);n=n.parent;}path=path.concat(st);}
+ c.innerHTML=path.map((p,i)=>i===path.length-1?`<b>${p}</b>`:p).join(" › ");
+}
+
+/* ---- focus a node ---- */
+function focusNode(n){
+ if(!n)return;
+ let p=n.parent;while(p){if(p.collapsed)p.collapsed=false;p=p.parent;}
+ sel=n;setProv(n);render(false);openPanel(n);buildOutline();crumb();
+ layout();
+ const r=stage.getBoundingClientRect();
+ k=Math.min(Math.max(k,.55),1.05);
+ tx=r.width*0.34-(n._x+n._w/2)*k; ty=r.height/2-n._y*k;
+ anim();
+}
+function anim(){vp.style.transition="transform .38s cubic-bezier(.4,0,.15,1)";apply();setTimeout(()=>vp.style.transition="",400);}
+
+/* ---- tabs ---- */
+function buildTabs(){
+ const t=document.getElementById("tabs");t.innerHTML="";
+ const mk=(id,label,dot)=>{const b=document.createElement("button");
+  b.className="tab"+(view===id?" on":"");
+  b.innerHTML=(dot?`<span class="dot" style="background:${dot}"></span>`:"")+label;
+  b.onclick=()=>go(id);t.appendChild(b);};
+ mk("map","Map");mk("changes","What changed");
+ Object.keys(ENG).forEach(kk=>mk(kk,ENG[kk].name,ENG[kk].col));
+ mk("howtol","How rotation computes","var(--c3)");
+}
+function go(v){
+ const sh=document.getElementById("sheet");
+ if(v==="changes"||v==="howtol"){view=v;sel=null;selLink=-1;panel.classList.remove("open");document.body.classList.remove("panel-open");
+  document.getElementById("sheetIn").innerHTML=v==="changes"?changesHTML():howHTML();sh.classList.add("on");sh.scrollTop=0;buildTabs();
+  document.getElementById("crumb").innerHTML="";return;}
+ sh.classList.remove("on");
+ view=v;sel=null;selLink=-1;claims.clear();hl={ref:null,words:null,color:null};
+ panel.classList.remove("open");document.body.classList.remove("panel-open");
+ elMap.forEach(e=>e.remove());elMap.clear();nd.textContent="";
+ if(v!=="map")buildTree(ENG[v]); else {ROOT=null;byId=new Map();}
+ buildTabs();buildOutline();crumb();render(true);setTimeout(()=>fit(true),20);
+ legend();
+}
+
+/* ---- legend ---- */
+function legend(){
+ const l=document.getElementById("leg");
+ if(view==="map"){l.innerHTML=`<div class="row"><span class="sw" style="background:var(--c1)"></span><span><b>Staffing the work</b> · top row</span></div>
+  <div class="row"><span class="sw" style="background:var(--c2)"></span><span><b>Building capability</b> · bottom row</span></div>
+  <div class="row"><span class="sw" style="background:var(--buy)"></span><span><b>Buy</b></span></div>
+  <div class="row"><span class="sw" style="background:var(--c1)"></span><span><b>Sponsor decision</b> · Contract-to-Capacity as four engines</span></div>
+  <div class="row"><span class="sw" style="background:var(--c3)"></span><span><b>New engines</b> · rotation planning and moves</span></div>
+  <div class="row"><span class="sw" style="background:var(--new)"></span><span><b>New link</b></span></div>
+  <div class="row"><span class="sw" style="background:var(--chg)"></span><span><b>Changed link</b></span></div>
+  <div class="row"><span class="sw" style="background:var(--linkHi)"></span><span><b>Unchanged link</b></span></div>`;}
+ else{l.innerHTML=`<div class="row"><span class="sw" style="background:var(--agent)"></span><span><b>AI agent</b> · needs judgement</span></div>
+  <div class="row"><span class="sw" style="background:var(--det)"></span><span><b>System rule</b> · code, rule or lookup</span></div>
+  <div class="row"><span class="sw" style="background:var(--human)"></span><span><b>Person</b> · a person decides</span></div>
+  <div class="row"><span class="pill new">NEW</span><span class="pill changed">CHANGED</span><span>after the research, the rotation design or client input</span></div>
+  <div class="row"><span class="sw" style="border:1.5px dashed var(--chg);background:transparent"></span><span><b>Proposal</b> · not yet backed by the research</span></div>`;}
+}
+
+/* ---- pan / zoom ---- */
+const stage=document.getElementById("stage"),vp=document.getElementById("vp");
+function apply(){vp.setAttribute("transform",`translate(${tx},${ty}) scale(${k})`);}
+function zlab(){document.getElementById("zl").textContent=Math.round(k*100)+"%";}
+function bounds(){
+ const bb=vp.getBBox();return {x0:bb.x,y0:bb.y-40,x1:bb.x+bb.width,y1:bb.y+bb.height};}
+function fit(an){
+ const b=(view==="map")?mapBounds():treeBounds();
+ const r=stage.getBoundingClientRect(),pad=54;
+ const bw=b.x1-b.x0,bh=b.y1-b.y0;
+ k=Math.max(Math.min((r.width-pad*2)/bw,(r.height-pad*2)/bh,1.1),.18);
+ tx=pad+(r.width-pad*2-bw*k)/2-b.x0*k; ty=pad+(r.height-pad*2-bh*k)/2-b.y0*k;
+ if(an)anim(); else apply();
+ zlab();
+}
+function treeBounds(){const V=visNodes();let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;
+ V.forEach(n=>{x0=Math.min(x0,n._x);y0=Math.min(y0,n._y-n._h/2);x1=Math.max(x1,n._x+n._w);y1=Math.max(y1,n._y+n._h/2);});
+ return {x0,y0:y0-46,x1,y1};}
+function mapBounds(){return {x0:-20,y0:-240,x1:7*CWm+6*GXm+20,y1:3*LHm+2*GYm+200};}
+stage.addEventListener("wheel",e=>{e.preventDefault();zoomAt(e.clientX,e.clientY,e.deltaY<0?1.12:1/1.12);},{passive:false});
+function zoomAt(cx,cy,f){const nk=Math.min(Math.max(k*f,.18),2.4);
+ const r=stage.getBoundingClientRect(),px=cx-r.left,py=cy-r.top;
+ tx=px-(px-tx)*(nk/k);ty=py-(py-ty)*(nk/k);k=nk;apply();zlab();}
+let dg=false,lx2,ly2,mv;
+stage.addEventListener("pointerdown",e=>{if(e.target.closest(".node-g"))return;dg=true;mv=false;lx2=e.clientX;ly2=e.clientY;stage.classList.add("drag");stage.setPointerCapture(e.pointerId);});
+stage.addEventListener("pointermove",e=>{if(!dg)return;const dx=e.clientX-lx2,dy=e.clientY-ly2;
+ if(Math.abs(dx)+Math.abs(dy)>3)mv=true;tx+=dx;ty+=dy;lx2=e.clientX;ly2=e.clientY;apply();});
+stage.addEventListener("pointerup",()=>{dg=false;stage.classList.remove("drag");});
+stage.addEventListener("click",e=>{if(!mv&&!e.target.closest(".node-g"))deselect();});
+document.getElementById("zi").onclick=()=>{const r=stage.getBoundingClientRect();zoomAt(r.left+r.width/2,r.top+r.height/2,1.2);};
+document.getElementById("zo").onclick=()=>{const r=stage.getBoundingClientRect();zoomAt(r.left+r.width/2,r.top+r.height/2,1/1.2);};
+document.getElementById("fit").onclick=()=>fit(true);
+document.getElementById("expand").onclick=()=>{if(view==="map")return;byId.forEach(n=>n.collapsed=false);render(true);buildOutline();setTimeout(()=>fit(true),20);};
+document.getElementById("collapse").onclick=()=>{if(view==="map")return;byId.forEach(n=>{if(n.kind==="composite")n.collapsed=true;});render(true);buildOutline();setTimeout(()=>fit(true),20);};
+document.getElementById("sideBtn").onclick=()=>{
+ const s=document.getElementById("side");
+ if(window.innerWidth<=640){s.classList.toggle("show");}
+ else{s.classList.toggle("hide");
+  stage.classList.toggle("wide");document.getElementById("crumb").classList.toggle("wide");
+  document.getElementById("leg").classList.toggle("wide");setTimeout(()=>fit(true),240);}};
+
+/* ---- keyboard ---- */
+function flat(){const o=[];(function w(n){o.push(n);vis(n).forEach(w);})(ROOT);return o;}
+window.addEventListener("keydown",e=>{
+ if(e.target.tagName==="INPUT"){return;}
+ if(e.key==="/"){e.preventDefault();document.getElementById("q").focus();return;}
+ if(e.key==="f"||e.key==="F"||e.key==="0"){fit(true);return;}
+ if(e.key==="Escape"){deselect();return;}
+ if(view==="map"||view==="changes"||view==="howtol")return;
+ const L=flat();
+ if(e.key==="ArrowDown"||e.key==="ArrowUp"){e.preventDefault();
+  let i=sel?L.indexOf(sel):-1; i=e.key==="ArrowDown"?Math.min(i+1,L.length-1):Math.max(i-1,0);
+  focusNode(L[i]);return;}
+ if(e.key==="ArrowLeft"){e.preventDefault();if(sel&&sel.parent)focusNode(sel.parent);return;}
+ if(e.key==="ArrowRight"){e.preventDefault();
+  if(sel&&sel.children.length){sel.collapsed=false;focusNode(sel.children[0]);}return;}
+});
+window.addEventListener("resize",()=>{if(view!=="changes"&&view!=="howtol")fit(false);});
+
+/* ---- toast ---- */
+let tT;function toast(h,ms=3600){const t=document.getElementById("toast");t.innerHTML=h;t.classList.add("show");clearTimeout(tT);tT=setTimeout(()=>t.classList.remove("show"),ms);}
+
+/* ---- coverage toggle via key c ---- */
+window.addEventListener("keydown",e=>{if(e.target.tagName==="INPUT")return;
+ if(e.key==="c"||e.key==="C"){if(view==="map"||view==="changes"||view==="howtol")return;cov=!cov;claims.clear();
+  const g=elMap.get("L0"),n=byId.get("L0");if(g&&n)drawNode(g,n);render(false);
+  toast(cov?"Coverage on. <span class='em'>Amber</span> words in the outcome have nothing under them. Click a word.":"Coverage off.");}});
+
+/* ---- sheets: what changed, and how rotation computes ---- */
+function srcName(s){const N={research:"the research review",rotation:"the rotation design",client:"client input, 1 October",insights:"the Skill Rotation insights deck",ruling:"the four-engine ruling of 24 September",methodology:"the methodology check of 1 October"};
+ const parts=String(s||"").split(" + ").map(x=>N[x.trim()]||x);const txt=parts.length>1?parts.slice(0,-1).join(", ")+" and "+parts[parts.length-1]:parts[0];return txt.charAt(0).toUpperCase()+txt.slice(1);}
+function changesHTML(){
+ let nNew=0,nChg=0,rows="";
+ Object.keys(ENG).forEach(k=>{const E0=ENG[k];E0.cols.forEach(c=>c.leaves.forEach(l=>{if(!l.s)return;if(l.s==="new")nNew++;else nChg++;
+  rows+=`<tr><td>${E0.name}</td><td><b style="font-family:var(--fm)">${l.id}</b></td><td>${l.label}</td><td style="color:${H[l.h].c}">${H[l.h].l}</td><td><span class="pill ${l.s}">${l.s.toUpperCase()}</span></td><td>${srcName(l.src)}</td><td style="font-family:var(--fm);font-size:11.5px;color:var(--mu)">${l.r||""}</td></tr>`;}));});
+ const lkN=MAP.links.filter(L=>L[3]==="new").length,lkC=MAP.links.filter(L=>L[3]==="changed").length;
+ return `<div><h1>What changed in the engine map</h1><p style="margin-top:8px">Six sources changed this map. The sponsor's ruling of 24 September split Contract-to-Capacity into four engines. The research review applied the HR research findings to every engine they touch. The rotation design added the two rotation engines, which answer the client's skill-rotation concern. The client's input of 1 October and the Skill Rotation insights deck refined them. The methodology check of 1 October fixed every engine to the Template Kit's completion checklist. Every new or changed part is listed with the finding or reason behind it.</p></div>
+ <div class="views"><div><b>4 ruled engines</b>Contract-to-Capacity as Scope-to-Plan, Capacity-and-Holds, Gap-Ownership and Commitment-Control</div><div><b>2 new engines</b>Top-of-License Planning (${ENG.tlp.cols.reduce((a,c)=>a+c.leaves.length,0)} parts) and Rotation Moves (${ENG.tlm.cols.reduce((a,c)=>a+c.leaves.length,0)} parts)</div><div><b>${lkN} new links, ${lkC} changed</b>See the numbered links on the map</div><div><b>${nNew} new parts, ${nChg} changed</b>Across all nine engines</div><div><b>Methodology check: 0 failures</b>Run on 1 October. Two flags for a person: Scope-to-Plan has six judgment parts and Hire-or-Grow five, where the method says roughly four or fewer</div></div>
+ <div class="box"><h2>Summary of changes</h2><div class="sc"><table><tr><th>Where</th><th>Item</th><th>Change</th><th>Source</th><th>Why</th><th>Findings</th></tr>${CHANGES.map(c=>`<tr><td>${c[0]}</td><td><b>${c[1]}</b></td><td>${c[2]}</td><td>${srcName(c[3])}</td><td style="color:var(--mu)">${c[4]}</td><td style="font-family:var(--fm);font-size:11.5px;color:var(--mu)">${c[5]}</td></tr>`).join("")}</table></div></div>
+ <div class="box"><h2>Every new or changed part</h2><div class="sc"><table><tr><th>Engine</th><th>Part</th><th>What it does</th><th>Handled by</th><th>Status</th><th>Source</th><th>Findings</th></tr>${rows}</table></div></div>
+ <p>Sources: the research review, the rotation design, client input received on 1 October, and the Skill Rotation insights deck. Research numbering follows the HR Research Synthesis and the final research review: P problem and scope, S stages, SYS systems, EV evidence, REC records, R rules, RR records against reality, B bottlenecks, D decisions, W workshop questions. Issues 1 to 13 are the research review's issues.</p>`;
+}
+function howHTML(){
+ const P0=ENG.tlp, M0=ENG.tlm;
+ const rung=(st,sure,act,d,ids)=>`<div class="rung"><span class="st">${st}</span><span class="sure" title="How sure the firm is that the work will happen"><i style="width:${sure}%"></i></span><span class="act">${act}</span><span class="d">${d}</span><span class="ids">${ids}</span></div>`;
+ const LBL={built:"BUILT · NOT YET VERIFIED",partly:"PARTLY BUILT",tobuild:"NOT BUILT"};
+ const step=(n,l,ids,st,note)=>`<div class="stp"><span class="n">${n}</span><span class="l">${l}<small>${ids}${note?" · "+note:""}</small></span><span class="pill ${st}">${LBL[st]}</span></div>`;
+ return `<div><h1>How rotation computes</h1><p style="margin-top:8px">Two engines share the work. Top-of-License Planning plans moves across time; Rotation Moves turns a job nobody free can fill into an agreed chain. It reads signed work and the pipeline, weighs each deal by how likely it is, works out the chains of moves that free the right people in time, and measures the expected value of work at risk under each plan, with the bad case beside it. Each step rests on a published method; the <a href="03-Rotation-Planning-Method.html" target="_blank" rel="noopener">method page</a> gives the sources. People decide every move. No AI model makes a decision; the plan comes from ordinary code that gives the same answer for the same inputs.</p></div>
+ <div class="box"><h2>The outcomes</h2><p style="color:var(--tx);font-size:15px"><b>Top-of-License Planning.</b> ${P0.outcome}</p><p style="color:var(--tx);font-size:15px;margin-top:10px"><b>Rotation Moves.</b> ${M0.outcome}</p></div>
+ <div class="box"><h2>The deal stage sets how firm the action is</h2><p style="margin-bottom:14px">Stage names and probabilities are placeholders. The real ones come from the firm's pipeline and its win history (A4).</p>
+ <div class="ladder">
+  ${rung("Signal",8,"Watch","Counted in the forecast at its probability. No names are used.","A2, A4")}
+  ${rung("Interest",20,"Watch and grow","Shortfalls by skill and level show weeks ahead. Growth starts for people who need time to reach the next level.","C5, B5")}
+  ${rung("Qualified",40,"Prepare","Chains are found and timed. Releases with long lead times are asked early.","C3, C4, E1")}
+  ${rung("Competing",60,"Hold","Holds and early moves need the work-at-risk approver.","E5, T7")}
+  ${rung("Signed",100,"Move","Moves happen once the release, the person and the receiving lead say yes.","E1–E4, T6")}
+  ${rung("Deployed",100,"Learn","Roll-offs feed the next plan. Forecast accuracy is measured by stage.","A5, G3")}
+ </div></div>
+ <div class="box"><h2>Value of work at risk, measured two ways</h2><p style="margin-bottom:14px">"Value at risk" has a precise finance meaning, so the engine reports two named measures (D1), using the planning policy draft's term. Sources and a live scenario test are on the <a href="03-Rotation-Planning-Method.html" target="_blank" rel="noopener">method page</a>.</p>
+ <div class="formula"><div class="t"><b>Expected value of work at risk</b><span>the average over all scenarios: chance won × value lost if late, plus chance lost × cost wasted by preparing</span></div><div class="t res"><b>Bad case, 90%</b><span>the average of the worst 10% of scenarios</span></div></div>
+ <p style="margin-top:14px">Prepare a role now when <b style="color:var(--tx)">chance won × value saved by preparing</b> is greater than <b style="color:var(--tx)">chance lost × cost wasted by preparing</b>. On invented data this rule gives the lowest average loss of all 256 possible plans; cutting the bad case further costs average loss, which is the client's risk appetite.</p></div>
+ <div class="box"><h2>Step by step</h2><p style="margin-bottom:12px">What the engine does on every run, the parts of the tree that do it, and how far the PoC build has got. Checked on 1 October against branch rotation-poc of the PoC: its 55 rotation tests pass when re-run on a copy. Only the compile of the moves engine is independently verified so far; a planning engine is being compiled.</p><div class="steps">
+  ${step(1,"Read demand month by month: signed roles, forecast roles with stage and odds, roll-offs, and the value of each role","Planning A1–A7","partly","stale odds are not flagged yet")}
+  ${step(2,"Confirm each person's license and the level of work they actually do","Planning B1–B4","partly","license age is checked; the named confirmation is not wired")}
+  ${step(3,"Keep only roles that no free person can fill at standard","Moves C1","built","")}
+  ${step(4,"Check every person against each role on the move rules, including eligibility time by band","Moves C2","partly","rules built; eligibility by band is in the sketch, not yet in the PoC build")}
+  ${step(5,"Search chains, one level down each time, to a free person or a junior hire","Moves C3","built","")}
+  ${step(6,"Time each move against release and time in role, and add growth moves for people ready in time","Planning C4, C5, B5","built","")}
+  ${step(7,"Work out the expected value of work at risk, and the bad case over many outcomes of which deals win","Planning D1, D3","partly","expected value built; scenarios, bad case and key-person risk not")}
+  ${step(8,"Choose one plan across all roles, month by month, with nobody moved twice and every client job covered","Planning D2","built","constraint solver, nine months")}
+  ${step(9,"Prove the plan safe before anyone sees it","Planning D4","built","independent recount and limits check")}
+  ${step(10,"Rank recommendations by the value of work at risk each removes, and explain each in plain words","Planning D5–D7","partly","ranking built; plain-word explanation not")}
+  ${step(11,"Ask for every yes: release, the person, the receiving lead, finance or mobility, work-at-risk","Moves E1–E4; Planning E5","partly","decisions compiled in the verified moves engine; wiring in progress")}
+ </div></div>
+ <div class="box"><h2>What decision makers see</h2><div class="views v3">
+  <div><b>Signed or forecast</b>Switch between signed work only and the probability-weighted pipeline</div>
+  <div><b>Supply against demand</b>By skill, level and week, with the shortfalls marked</div>
+  <div><b>License against work</b>Who works below their license, by how much, and for how long</div>
+  <div><b>Value of work at risk</b>Expected and bad case, by deal, by stage and in total, for each plan</div>
+  <div><b>Moves on a timeline</b>Every move in every chain, with its approvals and dates</div>
+  <div><b>Recommendations</b>Ranked by the value of work at risk each one removes</div></div></div>
+ <p>See the rules, chains and safety checks working on invented data in the <a href="02-Top-of-License-Rotation-Sketch.html" target="_blank" rel="noopener">rotation sketch</a>.</p>`;
+}
+
+/* ---- init ---- */
+buildTabs();go("map");
+setTimeout(()=>toast("Click an engine to open it, or a numbered link to see what passes. <span class='em'>NEW</span> and <span class='em'>CHANGED</span> mark what the research and the rotation design added.",6000),700);
+</script></body></html>

@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Join cards</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body class="print-page">
+<div class="noprint"><b>Join cards.</b> Print on A4 (two to a page), cut along the dashed line, fold, and put one on each table. Use your browser's Print command.</div>
+<div id="cards"></div>
+<script src="/static/qrcode.min.js"></script>
+<script src="/static/common.js"></script>
+<script>
+(async function () {
+  const C = await R.get('/api/config'), url = C.join_url + '/';
+  const card = `<div class="tent">${R.qrSvg(url)}<div><div class="tag">${R.esc(C.dates)}</div><h1>Join on your phone</h1>
+    <div class="url">${R.esc(url.replace(/^https?:\/\//, '').replace(/\/$/, ''))}</div>
+    <ol><li>Point your phone camera at the code.</li><li>Type your name and choose a four-digit PIN.</li><li>Keep the page open all day.</li></ol>
+    <div class="small">Use the same Wi-Fi as the room. No phone? Every activity also runs on paper.</div></div></div>`;
+  document.getElementById('cards').innerHTML = card + card + card + card;
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,532 @@
+<meta charset="utf-8">
+<title>Top of License Rotation</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+:root{--bg:#F3F5F7;--paper:#FFFFFF;--ink:#16202B;--muted:#5A6474;--line:#DCE0E7;--soft:#ECEFF3;--accent:#0F6B70;--accent-soft:#DFEEEE;
+--ok:#2E8656;--ok-bg:#E3F1E9;--warn:#C08A1E;--warn-bg:#F7EDD6;--bad:#B3302A;--bad-bg:#F6E0DC;--grey:#8A92A1;--grey-bg:#ECEEF2;--new:#4B5BB5;--new-bg:#E7E9F7;--plat:#C3C9D3}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;--bg:#11151B;--paper:#192029;--ink:#E6EAF0;--muted:#9BA4B3;--line:#2B333F;--soft:#212833;--accent:#5FC3C8;--accent-soft:#12363A;
+--ok:#5AB983;--ok-bg:#1C3125;--warn:#DDB25A;--warn-bg:#382F19;--bad:#E2685A;--bad-bg:#3D211D;--grey:#8F97A6;--grey-bg:#252B35;--new:#9AA6EE;--new-bg:#262A45;--plat:#4A5462}}
+:root[data-theme="dark"]{color-scheme:dark;--bg:#11151B;--paper:#192029;--ink:#E6EAF0;--muted:#9BA4B3;--line:#2B333F;--soft:#212833;--accent:#5FC3C8;--accent-soft:#12363A;
+--ok:#5AB983;--ok-bg:#1C3125;--warn:#DDB25A;--warn-bg:#382F19;--bad:#E2685A;--bad-bg:#3D211D;--grey:#8F97A6;--grey-bg:#252B35;--new:#9AA6EE;--new-bg:#262A45;--plat:#4A5462}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:15px/1.5 "IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;padding-inline:16px;padding-block:26px 56px;margin:0}
+.wrap{max-width:900px;margin:0 auto;display:flex;flex-direction:column;gap:18px}
+h1{font-size:clamp(24px,3.6vw,32px);font-weight:600;margin:0;line-height:1.15}
+p{margin:0}
+.muted{color:var(--muted)} .mono{font-family:"IBM Plex Mono",ui-monospace,Menlo,monospace}
+.badge{display:inline-block;font:600 11px "IBM Plex Sans",sans-serif;letter-spacing:.06em;text-transform:uppercase;padding:3px 8px;border-radius:4px;background:var(--warn-bg);color:var(--warn);margin-right:8px;vertical-align:2px}
+/* job tabs */
+.tabs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+@media (max-width:640px){.tabs{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.tab{font:inherit;text-align:left;background:var(--paper);border:1.5px solid var(--line);border-radius:12px;padding:10px 12px;cursor:pointer;color:var(--ink);display:flex;flex-direction:column;gap:6px}
+.tab[aria-selected="true"]{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.tab .t1{font-weight:600;font-size:14px}
+.tab .t2{display:flex;gap:6px;align-items:center;font-size:12.5px}
+.dot{width:10px;height:10px;border-radius:50%;flex:none}
+.tab .was{color:var(--bad)} .tab .now{font-weight:600}
+.tab .now.ok{color:var(--ok)} .tab .now.no{color:var(--bad)}
+/* stage */
+.stage{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:18px 18px 14px;display:flex;flex-direction:column;gap:12px}
+.caption{font-size:17px;line-height:1.45;max-width:62ch}
+.caption b{font-weight:600}
+.fig{overflow-x:auto} .fig svg{display:block;width:100%;height:auto;min-width:560px}
+.bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between}
+.facts{display:flex;flex-wrap:wrap;gap:8px}
+.fact{font-size:13.5px;font-weight:600;padding:5px 11px;border-radius:999px;background:var(--ok-bg);color:var(--ok)}
+.fact.grey{background:var(--grey-bg);color:var(--muted);font-weight:500}
+.fact.bad{background:var(--bad-bg);color:var(--bad)}
+button.btn{font:inherit;font-size:13.5px;padding:7px 13px;border:1.5px solid var(--accent);border-radius:8px;background:var(--paper);color:var(--accent);cursor:pointer;font-weight:600}
+button.btn:hover{background:var(--accent-soft)}
+button.unlock{border-color:var(--bad);color:var(--bad)} button.unlock:hover{background:var(--bad-bg)}
+button:focus-visible,summary:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.unlocks{display:flex;flex-wrap:wrap;gap:8px}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:12.5px;color:var(--muted)}
+.legend i{display:inline-block;width:11px;height:11px;border-radius:50%;margin-right:6px;vertical-align:-1px}
+/* svg */
+.lvl{fill:var(--muted);font:500 11px "IBM Plex Mono",monospace}
+.grid{stroke:var(--line);stroke-width:1}
+.plat{stroke:var(--plat);stroke-width:7;stroke-linecap:round}
+.plat.new{stroke:var(--new)}
+.plab{fill:var(--muted);font:12px "IBM Plex Sans",sans-serif}
+.plab.new{fill:var(--new);font-weight:600}
+.num{fill:#fff;font:600 11px "IBM Plex Mono",monospace;pointer-events:none}
+.pid{fill:var(--ink);font:600 12px "IBM Plex Mono",monospace}
+.ghost{fill:none;stroke:var(--warn);stroke-width:2;stroke-dasharray:3 3}
+.mv{fill:none;stroke:var(--ok);stroke-width:2.4}
+.block{fill:none;stroke:var(--bad);stroke-width:2;stroke-dasharray:5 5}
+.tag{fill:var(--bad-bg);stroke:var(--bad);stroke-width:1}
+.tagt{fill:var(--bad);font:600 11px "IBM Plex Sans",sans-serif}
+.bench{fill:var(--grey-bg)}
+.benchl{fill:var(--muted);font:600 11px "IBM Plex Sans",sans-serif;letter-spacing:.06em}
+.person{transition:transform .9s cubic-bezier(.35,.1,.25,1)}
+.person circle{transition:fill .35s ease .85s}
+.fadein{transition:opacity .4s ease .7s}
+@media (prefers-reduced-motion:reduce){.person,.person circle,.fadein{transition:none}}
+/* drawers */
+details.more{background:var(--paper);border:1px solid var(--line);border-radius:12px}
+details.more summary{cursor:pointer;padding:11px 16px;font-weight:600;font-size:14px}
+.inner{padding:0 16px 14px;font-size:13.5px}
+.yeslist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.rgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px 20px}
+.seg{display:flex;border:1px solid var(--line);border-radius:7px;overflow:hidden}
+.seg button{flex:1;font:inherit;font-size:13px;padding:6px 0;border:0;background:var(--paper);color:var(--ink);cursor:pointer;border-left:1px solid var(--line)}
+.seg button:first-child{border-left:0}
+.seg button[aria-pressed="true"]{background:var(--accent);color:var(--paper);font-weight:600}
+.tog{display:flex;align-items:flex-start;gap:9px;cursor:pointer}
+.tog input{width:17px;height:17px;margin:2px 0 0;accent-color:var(--accent);flex:none}
+.lbl{font-weight:600;display:block;margin-bottom:5px}
+</style>
+
+<div class="wrap">
+  <header style="display:flex;flex-direction:column;gap:6px">
+    <div><span class="badge">Invented data</span><span class="muted" style="font-size:13px">Sketch for the Contract-to-Capacity workshop</span></div>
+    <h1>Top of License Rotation</h1>
+    <p class="muted">A new job comes in. The right person is stuck lower down. Move people up one step each to free them.</p>
+  </header>
+
+  <div class="tabs" role="tablist" id="tabs"></div>
+
+  <section class="stage" role="tabpanel" id="stage">
+    <p class="caption" id="caption"></p>
+    <div class="fig" id="fig"></div>
+    <div class="bar"><div class="facts" id="facts"></div><button type="button" class="btn" id="replay">Replay the moves</button></div>
+    <div class="unlocks" id="unlocks"></div>
+    <div class="legend"><span><i style="background:var(--warn)"></i>working below their license</span><span><i style="background:var(--ok)"></i>at top of license</span><span><i style="background:var(--new)"></i>the new job</span><span><b style="color:var(--ink)">6</b> in a dot = the highest level that person is qualified for</span></div>
+  </section>
+
+  <details class="more"><summary id="yes-sum">Who has to say yes</summary><div class="inner"><ul class="yeslist" id="yes"></ul></div></details>
+  <details class="more" id="rules"><summary>Rules for a move</summary><div class="inner rgrid">
+    <div><span class="lbl" id="l-max">Longest chain</span><div class="seg" role="group" aria-labelledby="l-max" id="r-max"><button type="button" data-v="1">1</button><button type="button" data-v="2">2</button><button type="button" data-v="3">3</button><button type="button" data-v="4">4</button></div></div>
+    <div><span class="lbl" id="l-min">Eligible to move after</span><div class="seg" role="group" aria-labelledby="l-min" id="r-min"><button type="button" data-v="band">12 / 18 / 24 months by band</button><button type="button" data-v="any">Any time</button></div></div>
+    <label class="tog"><input type="checkbox" id="r-opt"><span>Person must opt in</span></label>
+    <label class="tog"><input type="checkbox" id="r-lock"><span>Respect client locks</span></label>
+    <label class="tog"><input type="checkbox" id="r-loc"><span>Allow another country</span></label>
+    <label class="tog"><input type="checkbox" id="r-cost"><span>Allow another cost base (the cost moves to that country)</span></label>
+    <div><button type="button" class="btn" id="reset">Reset rules</button></div>
+  </div></details>
+  <details class="more"><summary>How it works</summary><div class="inner" style="display:flex;flex-direction:column;gap:6px;color:var(--muted)">
+    <p><b style="color:var(--ink)">Height is the level of the work</b>, from 1, graduate, to 6, principal. <b style="color:var(--ink)">License</b> is the highest level a person is qualified for. Both are for the workshop to confirm.</p>
+    <p>Every move must be a step up for the person and keep every client job covered. The last job is filled from the bench or by a junior hire. A standard optimiser picks the moves; no AI model is used.</p>
+    <p><b style="color:var(--ink)">Eligible to move</b> after 12 months on an engagement for junior bands, 18 for middle and 24 for senior. A key person on an account is backfilled with the same skill, and the account lead agrees. Both are placeholders for the workshop to confirm.</p>
+  </div></details>
+</div>
+
+<script>
+// Top-of-license rotation: invented data + chain finder. Deterministic, no model calls.
+(function (root) {
+  "use strict";
+
+  var LEVELS = ["", "Graduate", "Associate", "Practitioner", "Senior", "Lead", "Principal"];
+
+  // Engagements: client, location, cost base
+  var ENG = {
+    E1: { name: "Client A · Cloud migration", loc: "Dubai", cost: "Gulf" },
+    E2: { name: "Client B · Security operations", loc: "Riyadh", cost: "Gulf" },
+    E3: { name: "Client C · App modernisation", loc: "London", cost: "UK" },
+    E4: { name: "Client D · Data platform", loc: "Remote", cost: "Gulf" },
+    E5: { name: "Client E · Network refresh", loc: "Riyadh", cost: "Gulf" },
+    E7: { name: "Client I · Apps support", loc: "Dubai", cost: "Gulf" },
+    E9: { name: "Client J · Cloud operations", loc: "London", cost: "UK" },
+    F1: { name: "Client F · New programme", loc: "Dubai", cost: "Gulf" },
+    G1: { name: "Client G · New SOC", loc: "Riyadh", cost: "Gulf" },
+    H1: { name: "Client H · New analytics", loc: "Remote", cost: "Gulf" }
+  };
+
+  // Jobs currently filled (id, engagement, skill family, level of the work)
+  var JOBS = {
+    J01: { e: "E1", fam: "Cloud", lvl: 4 }, J02: { e: "E1", fam: "Cloud", lvl: 5 }, J03: { e: "E1", fam: "Cloud", lvl: 3 },
+    J04: { e: "E1", fam: "Cloud", lvl: 2 }, J06: { e: "E1", fam: "Cloud", lvl: 5 },
+    J07: { e: "E2", fam: "Security", lvl: 3 }, J08: { e: "E2", fam: "Security", lvl: 4 }, J09: { e: "E2", fam: "Security", lvl: 4 },
+    J10: { e: "E2", fam: "Security", lvl: 2 }, J11: { e: "E2", fam: "Security", lvl: 3 },
+    J13: { e: "E3", fam: "Apps", lvl: 4 }, J14: { e: "E3", fam: "Apps", lvl: 3 }, J15: { e: "E3", fam: "Apps", lvl: 4 },
+    J16: { e: "E7", fam: "Apps", lvl: 3 }, J17: { e: "E7", fam: "Apps", lvl: 3 }, J18: { e: "E7", fam: "Apps", lvl: 2 },
+    J20: { e: "E3", fam: "Apps", lvl: 4 }, J21: { e: "E3", fam: "Apps", lvl: 3 },
+    J22: { e: "E4", fam: "Data", lvl: 3 }, J23: { e: "E4", fam: "Data", lvl: 2 }, J25: { e: "E4", fam: "Data", lvl: 6 },
+    J26: { e: "E5", fam: "Network", lvl: 5 }, J27: { e: "E5", fam: "Network", lvl: 2 }, J28: { e: "E5", fam: "Network", lvl: 3 },
+    J30: { e: "E9", fam: "Cloud", lvl: 4 },
+    J32: { e: "E3", fam: "Security", lvl: 4 }, J33: { e: "E5", fam: "Security", lvl: 3 },
+    J34: { e: "E1", fam: "Cloud", lvl: 5 }, J35: { e: "E4", fam: "Data", lvl: 3 }
+  };
+
+  // Open roles from new demand (what Contract-to-Capacity would hand on)
+  var OPEN = {
+    R1: { e: "F1", fam: "Cloud", lvl: 6 },
+    R2: { e: "G1", fam: "Security", lvl: 5 },
+    R3: { e: "F1", fam: "Apps", lvl: 5 },
+    R4: { e: "H1", fam: "Data", lvl: 4 }
+  };
+
+  // People. lic = highest level of work they are qualified for. job = current job or null (bench).
+  // loc/cost used for bench people; assigned people take location and cost base from their engagement.
+  var PEOPLE = [
+    { id: "P01", fam: "Cloud", lic: 6, job: "J01", months: 30, optIn: true },
+    { id: "P02", fam: "Cloud", lic: 5, job: "J02", months: 28, optIn: true },
+    { id: "P03", fam: "Cloud", lic: 4, job: "J03", months: 22, optIn: true },
+    { id: "P04", fam: "Cloud", lic: 3, job: "J04", months: 20, optIn: true },
+    { id: "P05", fam: "Cloud", lic: 2, job: null, loc: "Dubai", cost: "Gulf", optIn: true },
+    { id: "P06", fam: "Cloud", lic: 5, job: "J06", months: 30, optIn: true, lock: true },
+    { id: "P07", fam: "Security", lic: 5, job: "J07", months: 14, optIn: true },
+    { id: "P08", fam: "Security", lic: 5, job: "J08", months: 30, optIn: false },
+    { id: "P09", fam: "Security", lic: 4, job: "J09", months: 20, optIn: true },
+    { id: "P10", fam: "Security", lic: 3, job: "J10", months: 20, optIn: true },
+    { id: "P11", fam: "Security", lic: 4, job: "J11", months: 24, optIn: true },
+    { id: "P12", fam: "Security", lic: 2, job: null, loc: "Riyadh", cost: "Gulf", optIn: true },
+    { id: "P13", fam: "Apps", lic: 5, job: "J13", months: 26, optIn: true },
+    { id: "P14", fam: "Apps", lic: 5, job: "J14", months: 28, optIn: true, lock: true },
+    { id: "P15", fam: "Apps", lic: 4, job: "J15", months: 20, optIn: true },
+    { id: "P16", fam: "Apps", lic: 4, job: "J16", months: 10, optIn: true },
+    { id: "P17", fam: "Apps", lic: 5, job: "J17", months: 26, optIn: true },
+    { id: "P18", fam: "Apps", lic: 3, job: "J18", months: 19, optIn: true },
+    { id: "P19", fam: "Apps", lic: 2, job: null, loc: "Riyadh", cost: "Gulf", optIn: true },
+    { id: "P20", fam: "Apps", lic: 3, job: "J20", months: 20, optIn: true },
+    { id: "P21", fam: "Apps", lic: 4, job: "J21", months: 20, optIn: true },
+    { id: "P22", fam: "Data", lic: 4, job: "J22", months: 20, optIn: true, key: true },
+    { id: "P23", fam: "Data", lic: 3, job: "J23", months: 18, optIn: true },
+    { id: "P24", fam: "Data", lic: 2, job: null, loc: "Remote", cost: "Gulf", optIn: true },
+    { id: "P25", fam: "Data", lic: 6, job: "J25", months: 30, optIn: true },
+    { id: "P26", fam: "Network", lic: 5, job: "J26", months: 30, optIn: true },
+    { id: "P27", fam: "Network", second: "Security", lic: 4, job: "J27", months: 19, optIn: true },
+    { id: "P28", fam: "Network", lic: 3, job: "J28", months: 20, optIn: true },
+    { id: "P29", fam: "Network", lic: 2, job: null, loc: "Riyadh", cost: "Gulf", optIn: true },
+    { id: "P30", fam: "Cloud", lic: 4, job: "J30", months: 20, optIn: true },
+    { id: "P31", fam: "Security", lic: 5, job: "J32", months: 28, optIn: true },
+    { id: "P32", fam: "Security", lic: 5, job: "J33", months: 30, optIn: true, lock: true },
+    { id: "P33", fam: "Security", lic: 4, job: null, loc: "London", cost: "UK", optIn: true },
+    { id: "P34", fam: "Cloud", lic: 6, job: "J34", months: 26, optIn: true },
+    { id: "P35", fam: "Data", second: "Apps", lic: 5, job: "J35", months: 25, optIn: true }
+  ];
+
+  // Eligibility: months on the current engagement before a move, by band (client input, placeholders to confirm).
+  var ELIG = { junior: 12, middle: 18, senior: 24 };
+  function band(lic) { return lic <= 2 ? "junior" : lic <= 4 ? "middle" : "senior"; }
+  var DEFAULT_RULES = { maxMoves: 3, eligibility: "band", needOptIn: true, respectLocks: true, crossLocation: false, crossCost: false };
+
+  function job(id) { return JOBS[id] || OPEN[id]; }
+  function where(p) { return p.job ? ENG[JOBS[p.job].e] : { loc: p.loc, cost: p.cost }; }
+  function workLevel(p) { return p.job ? JOBS[p.job].lvl : 0; }
+  function atTop(lic, lvl) { return lvl === lic; }
+
+  // Can person p take job/role t? Returns {ok, reasons[], flags[]}
+  function canTake(p, tId, rules) {
+    var t = job(tId), te = ENG[t.e], pw = where(p), r = [], f = [], ck = [];
+    function chk(key, ok, why, flag) { ck.push({ key: key, ok: ok, flag: !!flag }); if (!ok) r.push(why); }
+    var skillOk = p.fam === t.fam || p.second === t.fam;
+    chk("skill", skillOk, "does not have " + t.fam + " skills");
+    chk("license", p.lic >= t.lvl, "is licensed to level " + p.lic + ", the work is level " + t.lvl);
+    chk("up", !p.job || t.lvl > workLevel(p), "would not move up");
+    var need = ELIG[band(p.lic)];
+    chk("tenure", !p.job || rules.eligibility === "any" || p.months >= need, "has " + p.months + " months on the engagement; eligible at " + need + " (" + band(p.lic) + " band)");
+    chk("optin", !rules.needOptIn || p.optIn, "has not opted in to rotation");
+    chk("lock", !rules.respectLocks || !p.lock, "is locked by their client");
+    var sameLoc = te.loc === "Remote" || pw.loc === "Remote" || te.loc === pw.loc;
+    if (!sameLoc && rules.crossLocation) f.push("relocation");
+    chk("location", sameLoc || rules.crossLocation, "is in " + pw.loc + ", the work is in " + te.loc, !sameLoc);
+    if (pw.cost !== te.cost && rules.crossCost) f.push("cost base");
+    chk("cost", pw.cost === te.cost || rules.crossCost, "is on the " + pw.cost + " cost base, the work is " + te.cost, pw.cost !== te.cost);
+    return { ok: r.length === 0, reasons: r, flags: f, checks: ck };
+  }
+
+  function approvals(p, tId, flags, rules) {
+    var a = [];
+    if (p.job) a.push({ who: "Releasing manager", where: ENG[JOBS[p.job].e].name });
+    else a.push({ who: "Resourcing lead", where: "Bench" });
+    a.push({ who: "Receiving lead", where: ENG[job(tId).e].name });
+    if (rules.needOptIn) a.push({ who: "The person", where: p.id });
+    if (p.key && p.job) a.push({ who: "Account lead", where: ENG[JOBS[p.job].e].name, note: "key person: the backfill has the same skill" });
+    if (flags.indexOf("relocation") >= 0) a.push({ who: "Mobility", where: "Relocation" });
+    return a;
+  }
+
+  // Build chains for one open role. A chain is a list of moves; the last vacated job is
+  // filled from the bench or becomes a junior requisition (only if its level is 2 or less).
+  // tree (optional) records the search: each node is a job to fill and every person checked for it.
+  function chainsFor(roleId, rules, tree) {
+    var out = [];
+    function extend(target, moves, used, node) {
+      if (node) { node.target = target; node.depth = moves.length; node.checked = 0; node.pass = []; node.limit = moves.length >= rules.maxMoves; }
+      if (moves.length >= rules.maxMoves) return;
+      PEOPLE.forEach(function (p) {
+        if (used[p.id]) return;
+        var c = canTake(p, target, rules);
+        if (node) node.checked++;
+        if (!c.ok) return;
+        var m = { person: p.id, from: p.job, to: target, flags: c.flags, approvals: approvals(p, target, c.flags, rules) };
+        var mv = moves.concat([m]);
+        var u = Object.assign({}, used); u[p.id] = true;
+        var br = node ? { person: p.id, from: p.job, flags: c.flags } : null;
+        if (br) node.pass.push(br);
+        if (!p.job) { out.push({ role: roleId, moves: mv, end: "bench" }); if (br) br.end = "bench"; return; }
+        var vac = JOBS[p.job];
+        if (vac.lvl <= 2) { out.push({ role: roleId, moves: mv, end: "junior", vacated: p.job }); if (br) br.junior = true; }
+        if (br) br.child = {};
+        extend(p.job, mv, u, br && br.child);
+      });
+    }
+    extend(roleId, [], {}, tree || null);
+    return out;
+  }
+
+  var POINTS = { filled: 25, top: 10, up: 4, move: -1, cost: -5, relocation: -6, junior: -3 };
+  function scoreParts(ch) {
+    var parts = [{ label: "new job filled", pts: POINTS.filled }];
+    ch.moves.forEach(function (m) {
+      var p = byId[m.person], nl = job(m.to).lvl;
+      if (atTop(p.lic, nl) && !atTop(p.lic, workLevel(p))) parts.push({ label: m.person + " reaches top of license", pts: POINTS.top });
+      else if (nl > workLevel(p)) parts.push({ label: m.person + " moves up", pts: POINTS.up });
+      parts.push({ label: "one move", pts: POINTS.move });
+      if (m.flags.indexOf("cost base") >= 0) parts.push({ label: m.person + " changes cost base", pts: POINTS.cost });
+      if (m.flags.indexOf("relocation") >= 0) parts.push({ label: m.person + " relocates", pts: POINTS.relocation });
+    });
+    if (ch.end === "junior") parts.push({ label: "junior hire needed", pts: POINTS.junior });
+    return parts;
+  }
+  function score(ch) { return scoreParts(ch).reduce(function (a, x) { return a + x.pts; }, 0); }
+
+  var byId = {}; PEOPLE.forEach(function (p) { byId[p.id] = p; });
+
+  function solve(rules) {
+    rules = Object.assign({}, DEFAULT_RULES, rules || {});
+    var groups = [], found = {};
+    Object.keys(OPEN).forEach(function (r) {
+      var c = chainsFor(r, rules).map(function (x) { x.score = score(x); return x; });
+      c.sort(function (a, b) { return b.score - a.score || a.moves.length - b.moves.length; });
+      found[r] = c.length;
+      groups.push(c.slice(0, 40));
+    });
+    var stats = { found: found, kept: groups.map(function (g) { return g.length; }), combos: 0, pruned: 0, clashes: 0 };
+
+    // exhaustive choice: each group picks one chain or none; people and jobs must not overlap
+    var best = { score: 0, pick: [] };
+    function people(ch) { return ch.moves.map(function (m) { return m.person; }); }
+    function rec(gi, used, cur, sc) {
+      if (gi === groups.length) { stats.combos++; if (sc > best.score) best = { score: sc, pick: cur.slice() }; return; }
+      // upper bound prune
+      var ub = sc; for (var k = gi; k < groups.length; k++) ub += groups[k].length ? Math.max(0, groups[k][0].score) : 0;
+      if (ub <= best.score) { stats.pruned++; return; }
+      groups[gi].forEach(function (ch) {
+        var ps = people(ch);
+        if (ps.some(function (x) { return used[x]; })) { stats.clashes++; return; }
+        var u = Object.assign({}, used); ps.forEach(function (x) { u[x] = true; });
+        cur.push(ch); rec(gi + 1, u, cur, sc + ch.score); cur.pop();
+      });
+      rec(gi + 1, used, cur, sc);
+    }
+    rec(0, {}, [], 0);
+
+    // after-state
+    var after = {}; PEOPLE.forEach(function (p) { after[p.id] = p.job; });
+    best.pick.forEach(function (ch) { ch.moves.forEach(function (m) { after[m.person] = m.to; }); });
+    function share(map) {
+      var top = 0; PEOPLE.forEach(function (p) { var j = map[p.id]; if (j && atTop(p.lic, job(j).lvl)) top++; });
+      return top;
+    }
+    var beforeMap = {}; PEOPLE.forEach(function (p) { beforeMap[p.id] = p.job; });
+    var below = function (map) { return PEOPLE.filter(function (p) { var j = map[p.id]; return j && job(j).lvl < p.lic; }).length; };
+
+    // why-not for unfilled roles: best candidates and their blocking reasons
+    var filled = {}; best.pick.forEach(function (ch) { if (ch.role) filled[ch.role] = true; });
+    var chosen = {}; best.pick.forEach(function (ch) { ch.moves.forEach(function (m) { chosen[m.person] = true; }); });
+    var whyNot = {};
+    Object.keys(OPEN).forEach(function (r) {
+      if (filled[r]) return;
+      var t = OPEN[r];
+      whyNot[r] = PEOPLE.filter(function (p) { return (p.fam === t.fam || p.second === t.fam) && p.lic >= t.lvl && p.job && workLevel(p) < t.lvl; })
+        .map(function (p) {
+          var c = canTake(p, r, rules);
+          var rs = c.reasons.slice();
+          if (!rs.length) rs.push(chosen[p.id] ? "is used in another chain" : "needs a longer chain than the limit allows, so every client role stays covered");
+          return { person: p.id, reasons: rs };
+        });
+    });
+    var moves = 0, appr = 0; best.pick.forEach(function (ch) { moves += ch.moves.length; ch.moves.forEach(function (m) { appr += m.approvals.length; }); });
+    return { rules: rules, chains: best.pick, after: after, before: beforeMap,
+      topBefore: share(beforeMap), topAfter: share(after), belowBefore: below(beforeMap), belowAfter: below(after),
+      rolesFilled: Object.keys(filled).length, rolesTotal: Object.keys(OPEN).length, moves: moves, approvals: appr, whyNot: whyNot,
+      groups: groups, stats: stats, total: best.score };
+  }
+
+  // For comparison only: fill the new jobs one at a time, each taking its best chain
+  // that does not reuse anyone already moved. This is what a person working down a list would do.
+  function oneAtATime(rules) {
+    rules = Object.assign({}, DEFAULT_RULES, rules || {});
+    var used = {}, pick = [], total = 0;
+    Object.keys(OPEN).forEach(function (r) {
+      var c = chainsFor(r, rules).map(function (x) { x.score = score(x); return x; });
+      c.sort(function (a, b) { return b.score - a.score || a.moves.length - b.moves.length; });
+      var ch = c.filter(function (x) { return x.moves.every(function (m) { return !used[m.person]; }); })[0];
+      if (ch) { ch.moves.forEach(function (m) { used[m.person] = 1; }); pick.push(ch); total += ch.score; }
+    });
+    return { chains: pick, total: total };
+  }
+
+  // Safety checks on a result. Every one must hold or the plan is wrong.
+  function check(R) {
+    var out = [], seen = {}, twice = [];
+    R.chains.forEach(function (c) { c.moves.forEach(function (m) { if (seen[m.person]) twice.push(m.person); seen[m.person] = 1; }); });
+    out.push({ name: "Nobody is moved twice", ok: !twice.length, n: Object.keys(seen).length, detail: twice.join(", ") });
+    var held = {}, dbl = [];
+    Object.keys(R.after).forEach(function (p) { var j = R.after[p]; if (!j) return; if (held[j]) dbl.push(j); held[j] = p; });
+    out.push({ name: "No job is given to two people", ok: !dbl.length, n: Object.keys(held).length, detail: dbl.join(", ") });
+    var juniors = {}; R.chains.forEach(function (c) { if (c.end === "junior") juniors[c.vacated] = 1; });
+    var empty = Object.keys(JOBS).filter(function (j) { return !held[j] && !juniors[j]; });
+    out.push({ name: "Every current client job stays covered", ok: !empty.length, n: Object.keys(JOBS).length, detail: empty.join(", ") });
+    var over = [], down = [];
+    R.chains.forEach(function (c) { c.moves.forEach(function (m) { var p = byId[m.person], l = job(m.to).lvl; if (l > p.lic) over.push(m.person); if (p.job && l <= workLevel(p)) down.push(m.person); }); });
+    out.push({ name: "Nobody is given work above their license", ok: !over.length, n: Object.keys(seen).length, detail: over.join(", ") });
+    out.push({ name: "Every move is a step up", ok: !down.length, n: Object.keys(seen).length, detail: down.join(", ") });
+    var noDemand = R.chains.filter(function (c) { return !OPEN[c.role]; });
+    out.push({ name: "Every chain starts from a new job", ok: !noDemand.length, n: R.chains.length, detail: "" });
+    return out;
+  }
+
+  var API = { ELIG: ELIG, band: band, LEVELS: LEVELS, ENG: ENG, JOBS: JOBS, OPEN: OPEN, PEOPLE: PEOPLE, DEFAULT_RULES: DEFAULT_RULES, solve: solve, job: job, byId: byId,
+    canTake: canTake, chainsFor: chainsFor, score: score, scoreParts: scoreParts, POINTS: POINTS, check: check, oneAtATime: oneAtATime, workLevel: workLevel, where: where };
+  if (typeof module !== "undefined" && module.exports) module.exports = API; else root.TOL = API;
+})(this);
+
+</script>
+<script>
+(function(){
+"use strict";
+var T=window.TOL, L=T.LEVELS, rules=Object.assign({},T.DEFAULT_RULES), sel="R1", NS="http://www.w3.org/2000/svg";
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];});}
+function client(e){return T.ENG[e].name.split(" · ")[0];}
+function short(reason){
+  if(/eligible at/.test(reason)) return "not yet eligible";
+  if(/opted in/.test(reason)) return "not opted in";
+  if(/locked/.test(reason)) return "client lock";
+  if(/is in .*, the work is in/.test(reason)) return "other country";
+  if(/cost base/.test(reason)) return "other cost base";
+  if(/longer chain/.test(reason)) return "chain too long";
+  if(/another chain/.test(reason)) return "in another chain";
+  return "blocked";
+}
+var UNLOCK={"not yet eligible":["Allow a move before the eligibility time",function(){rules.eligibility="any";}],"not opted in":["Move without opt-in",function(){rules.needOptIn=false;}],
+ "client lock":["Ask the client to release",function(){rules.respectLocks=false;}],"other country":["Allow another country and cost base",function(){rules.crossLocation=true;rules.crossCost=true;}],
+ "other cost base":["Allow another cost base",function(){rules.crossCost=true;}],"chain too long":["Allow one more move",function(){rules.maxMoves=Math.min(4,rules.maxMoves+1);}]};
+function bestFree(rid){ var o=T.OPEN[rid]; var f=T.PEOPLE.filter(function(p){return !p.job&&(p.fam===o.fam||p.second===o.fam);}).sort(function(a,b){return b.lic-a.lic;}); return f[0]||null; }
+
+var R;
+// geometry
+var W=780, X0=70, Y=function(l){return 34+(6-l)*44;}, BENCH=34+6*44+26, PW=104;
+
+function svgChain(ch){
+  var o=T.OPEN[ch.role], slots=[{id:ch.role,lvl:o.lvl,label:"New job · "+client(o.e),isNew:true}];
+  ch.moves.forEach(function(m){ if(m.from) slots.push({id:m.from,lvl:T.JOBS[m.from].lvl,label:client(T.JOBS[m.from].e)+" job"}); });
+  var n=slots.length, gap=Math.min(170,(W-X0-PW-20)/Math.max(1,n-1));
+  slots.forEach(function(s,i){s.x=X0+20+i*gap;});
+  var sx={}; slots.forEach(function(s){sx[s.id]=s;});
+  var g=[];
+  for(var l=1;l<=6;l++){ g.push('<line class="grid" x1="'+(X0-6)+'" x2="'+(W-6)+'" y1="'+Y(l)+'" y2="'+Y(l)+'"/><text class="lvl" x="'+(X0-14)+'" y="'+(Y(l)+4)+'" text-anchor="end">L'+l+'</text>'); }
+  g.push('<rect class="bench" x="'+(X0-6)+'" y="'+(BENCH-14)+'" width="'+(W-X0)+'" height="28" rx="6"/><text class="benchl" x="'+(X0-14)+'" y="'+(BENCH+4)+'" text-anchor="end">BENCH</text>');
+  slots.forEach(function(s){
+    g.push('<line class="plat'+(s.isNew?" new":"")+'" x1="'+s.x+'" x2="'+(s.x+PW)+'" y1="'+(Y(s.lvl)+14)+'" y2="'+(Y(s.lvl)+14)+'"/>');
+    g.push('<text class="plab'+(s.isNew?" new":"")+'" x="'+(s.x+PW/2)+'" y="'+(Y(s.lvl)+32)+'" text-anchor="middle">'+esc(s.label)+'</text>');
+  });
+  // people: before -> after
+  var ppl=[];
+  ch.moves.forEach(function(m){
+    var p=T.byId[m.person], to=sx[m.to], from=m.from?sx[m.from]:null;
+    var bx=from?from.x+PW/2:to.x+PW/2, by=from?Y(from.lvl):BENCH;
+    var ax=to.x+PW/2, ay=Y(to.lvl), top=to.lvl===p.lic;
+    ppl.push({p:p,bx:bx,by:by,ax:ax,ay:ay,top:top});
+    g.push('<circle class="ghost fadein" cx="'+bx+'" cy="'+by+'" r="11"/>');
+    var mx=(bx+ax)/2, my=Math.min(by,ay)-26;
+    g.push('<path class="mv fadein" d="M'+bx+','+(by-12)+' Q'+mx+','+my+' '+(ax+(bx>ax?13:-13))+','+(ay-4)+'" marker-end="url(#ah)"/>');
+  });
+  if(ch.end==="junior"){ var last=sx[ch.vacated]; g.push('<g class="fadein"><circle cx="'+(last.x+PW/2)+'" cy="'+Y(last.lvl)+'" r="12" fill="none" stroke="var(--grey)" stroke-dasharray="3 3" stroke-width="2"/><text x="'+(last.x+PW/2)+'" y="'+(Y(last.lvl)+5)+'" text-anchor="middle" class="pid" style="fill:var(--grey)">+</text><text x="'+(last.x+PW/2)+'" y="'+(Y(last.lvl)-20)+'" text-anchor="middle" class="plab">junior hire</text></g>'); }
+  ppl.forEach(function(q,i){
+    g.push('<g class="person" data-i="'+i+'" data-bx="'+q.bx+'" data-by="'+q.by+'" data-ax="'+q.ax+'" data-ay="'+q.ay+'" style="transform:translate('+q.ax+'px,'+q.ay+'px)"><circle r="12" fill="'+(q.top?"var(--ok)":"var(--warn)")+'"/><text class="num" y="4" text-anchor="middle">'+q.p.lic+'</text><text class="pid" y="-18" text-anchor="middle">'+q.p.id+'</text></g>');
+  });
+  var H=BENCH+24;
+  return '<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="People moving up to free the right person for the new job"><defs><marker id="ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--ok)"/></marker></defs>'+g.join("")+'</svg>';
+}
+
+function svgStuck(rid){
+  var o=T.OPEN[rid], list=(R.whyNot[rid]||[]);
+  var slots=[{id:rid,lvl:o.lvl,label:"New job · "+client(o.e),isNew:true}];
+  list.forEach(function(x){ var p=T.byId[x.person]; slots.push({id:p.job,lvl:T.JOBS[p.job].lvl,label:client(T.JOBS[p.job].e),person:p,why:short(x.reasons[0])}); });
+  var n=slots.length, gap=Math.min(160,(W-X0-PW-20)/Math.max(1,n-1));
+  slots.forEach(function(s,i){s.x=X0+20+i*gap;});
+  var g=[];
+  for(var l=1;l<=6;l++){ g.push('<line class="grid" x1="'+(X0-6)+'" x2="'+(W-6)+'" y1="'+Y(l)+'" y2="'+Y(l)+'"/><text class="lvl" x="'+(X0-14)+'" y="'+(Y(l)+4)+'" text-anchor="end">L'+l+'</text>'); }
+  g.push('<rect class="bench" x="'+(X0-6)+'" y="'+(BENCH-14)+'" width="'+(W-X0)+'" height="28" rx="6"/><text class="benchl" x="'+(X0-14)+'" y="'+(BENCH+4)+'" text-anchor="end">BENCH</text>');
+  var bf=bestFree(rid);
+  if(bf){ g.push('<circle cx="'+(slots[0].x+PW/2)+'" cy="'+BENCH+'" r="11" fill="var(--grey)"/><text class="num" x="'+(slots[0].x+PW/2)+'" y="'+(BENCH+4)+'" text-anchor="middle">'+bf.lic+'</text><text class="pid" x="'+(slots[0].x+PW/2+18)+'" y="'+(BENCH+4)+'">'+bf.id+', too junior</text>'); }
+  slots.forEach(function(s,i){
+    g.push('<line class="plat'+(s.isNew?" new":"")+'" x1="'+s.x+'" x2="'+(s.x+PW)+'" y1="'+(Y(s.lvl)+14)+'" y2="'+(Y(s.lvl)+14)+'"/>');
+    g.push('<text class="plab'+(s.isNew?" new":"")+'" x="'+(s.x+PW/2)+'" y="'+(Y(s.lvl)+32)+'" text-anchor="middle">'+esc(s.label)+'</text>');
+    if(s.isNew){ g.push('<circle cx="'+(s.x+PW/2)+'" cy="'+Y(s.lvl)+'" r="12" fill="none" stroke="var(--new)" stroke-width="2" stroke-dasharray="3 3"/><text class="pid" x="'+(s.x+PW/2)+'" y="'+(Y(s.lvl)+4)+'" text-anchor="middle" style="fill:var(--new)">?</text>'); return; }
+    var cx=s.x+PW/2, cy=Y(s.lvl);
+    var tx=slots[0].x+PW/2, ty=Y(slots[0].lvl);
+    g.push('<path class="block" d="M'+cx+','+(cy-12)+' Q'+((cx+tx)/2)+','+(Math.min(cy,ty)-30)+' '+(tx+14)+','+(ty-2)+'"/>');
+    g.push('<circle cx="'+cx+'" cy="'+cy+'" r="12" fill="var(--warn)"/><text class="num" x="'+cx+'" y="'+(cy+4)+'" text-anchor="middle">'+s.person.lic+'</text><text class="pid" x="'+cx+'" y="'+(cy-18)+'" text-anchor="middle">'+s.person.id+'</text>');
+    var tw=s.why.length*6.4+16;
+    g.push('<rect class="tag" x="'+(cx-tw/2)+'" y="'+(cy+40)+'" width="'+tw+'" height="20" rx="10"/><text class="tagt" x="'+cx+'" y="'+(cy+54)+'" text-anchor="middle">'+esc(s.why)+'</text>');
+  });
+  return '<svg viewBox="0 0 '+W+' '+(BENCH+24)+'" role="img" aria-label="People who could do the new job, and what holds each one back">'+g.join("")+'</svg>';
+}
+
+function render(){
+  R=T.solve(rules);
+  var ids=Object.keys(T.OPEN);
+  document.getElementById("tabs").innerHTML=ids.map(function(id){
+    var o=T.OPEN[id], ch=R.chains.filter(function(c){return c.role===id;})[0];
+    return '<button type="button" class="tab" role="tab" data-id="'+id+'" aria-selected="'+(id===sel)+'"><span class="t1">'+esc(o.fam)+' '+L[o.lvl].toLowerCase()+'</span><span class="t2 was"><span class="dot" style="background:var(--bad)"></span>Today: no one good enough</span><span class="t2 now '+(ch?"ok":"no")+'"><span class="dot" style="background:var('+(ch?"--ok":"--bad")+')"></span>'+(ch?"Rotation: solved in "+ch.moves.length+" moves":"Rotation: still stuck")+'</span></button>';
+  }).join("");
+  document.querySelectorAll(".tab").forEach(function(b){b.onclick=function(){sel=b.dataset.id;render();setTimeout(play,60);};});
+
+  var o=T.OPEN[sel], ch=R.chains.filter(function(c){return c.role===sel;})[0], bf=bestFree(sel);
+  var cap, facts=[], yes=[];
+  if(ch){
+    var m0=ch.moves[0], p0=T.byId[m0.person], j0=T.JOBS[m0.from];
+    cap=esc(client(o.e))+' needs a <b>'+esc(o.fam)+' '+L[o.lvl].toLowerCase()+'</b>. <b>'+p0.id+'</b> can do it but is stuck on a level-'+j0.lvl+' job. Free them in <b>'+ch.moves.length+' moves</b>.';
+    var ups=ch.moves.filter(function(m){return m.from;}).length;
+    facts.push('<span class="fact">New job filled at level '+o.lvl+'</span>');
+    facts.push('<span class="fact">'+ups+' '+(ups===1?"person moves":"people move")+' up</span>');
+    facts.push('<span class="fact">'+esc(client(j0.e))+' keeps full cover</span>');
+    if(ch.end==="junior") facts.push('<span class="fact grey">1 junior hire</span>');
+    ch.moves.forEach(function(m){ if(m.flags.indexOf("cost base")>=0) facts.push('<span class="fact grey">'+m.person+'\'s cost moves to '+esc(T.ENG[T.job(m.to).e].cost)+'</span>'); if(T.byId[m.person].key) facts.push('<span class="fact grey">'+m.person+' is a key person: backfilled with the same skill</span>'); });
+    ch.moves.forEach(function(m){ var p=T.byId[m.person]; yes.push('<li><b class="mono">'+p.id+'</b> moves: '+m.approvals.map(function(a){return a.who==="The person"?p.id+" agrees":esc(a.who+(a.where&&a.where.indexOf(" · ")>0?" ("+a.where.split(" · ")[0]+")":"")+(a.note?", "+a.note:""));}).join(" · ")+'</li>'); });
+    document.getElementById("fig").innerHTML=svgChain(ch);
+    document.getElementById("replay").hidden=false;
+    document.getElementById("unlocks").innerHTML="";
+  } else {
+    var list=R.whyNot[sel]||[];
+    cap=esc(client(o.e))+' needs a <b>'+esc(o.fam)+' '+L[o.lvl].toLowerCase()+'</b>. '+(list.length?'<b>'+list.length+' people</b> could do it, but each is held back. Bend one rule to solve it.':'Nobody in the firm can do it. This is a real gap for Hire-or-Grow.');
+    facts.push('<span class="fact bad">Not solved yet</span>');
+    if(bf) facts.push('<span class="fact grey">Best free person: '+bf.id+', level '+bf.lic+'</span>');
+    document.getElementById("fig").innerHTML=svgStuck(sel);
+    document.getElementById("replay").hidden=true;
+    var seen={}; document.getElementById("unlocks").innerHTML=list.map(function(x){ var k=short(x.reasons[0]); if(seen[k]||!UNLOCK[k]) return ""; seen[k]=1; return '<button type="button" class="btn unlock" data-k="'+k+'">'+esc(UNLOCK[k][0])+'</button>'; }).join("");
+    document.querySelectorAll(".unlock").forEach(function(b){b.onclick=function(){UNLOCK[b.dataset.k][1](); render(); setTimeout(play,60);};});
+  }
+  document.getElementById("caption").innerHTML=cap;
+  document.getElementById("facts").innerHTML=facts.join("");
+  document.getElementById("yes").innerHTML=yes.length?yes.join(""):'<li class="muted">No moves for this job yet.</li>';
+  var na=0; if(ch) ch.moves.forEach(function(m){na+=m.approvals.length;});
+  document.getElementById("yes-sum").textContent="Who has to say yes"+(na?" ("+na+")":"");
+  // rules state
+  document.querySelectorAll("#r-max button").forEach(function(x){x.setAttribute("aria-pressed",+x.dataset.v===rules.maxMoves?"true":"false");});
+  document.querySelectorAll("#r-min button").forEach(function(x){x.setAttribute("aria-pressed",x.dataset.v===rules.eligibility?"true":"false");});
+  document.getElementById("r-opt").checked=rules.needOptIn; document.getElementById("r-lock").checked=rules.respectLocks;
+  document.getElementById("r-loc").checked=rules.crossLocation; document.getElementById("r-cost").checked=rules.crossCost;
+}
+function play(){
+  var ps=document.querySelectorAll("#fig .person"), fs=document.querySelectorAll("#fig .fadein");
+  if(!ps.length) return;
+  ps.forEach(function(g){ var c=g.querySelector("circle"); g.style.transition="none"; c.style.transition="none"; c.style.fill="var(--warn)"; g.style.transform="translate("+g.dataset.bx+"px,"+g.dataset.by+"px)"; });
+  fs.forEach(function(f){ f.style.transition="none"; f.style.opacity="0"; });
+  void document.getElementById("fig").offsetWidth;
+  ps.forEach(function(g,i){ var c=g.querySelector("circle"); g.style.transition=""; g.style.transitionDelay=(i*0.35)+"s"; c.style.transition=""; c.style.transitionDelay=(0.85+i*0.35)+"s"; c.style.fill=""; g.style.transform="translate("+g.dataset.ax+"px,"+g.dataset.ay+"px)"; });
+  fs.forEach(function(f){ f.style.transition=""; f.style.opacity="1"; });
+}
+document.getElementById("replay").onclick=play;
+document.querySelectorAll("#r-max button").forEach(function(x){x.onclick=function(){rules.maxMoves=+x.dataset.v;render();};});
+document.querySelectorAll("#r-min button").forEach(function(x){x.onclick=function(){rules.eligibility=x.dataset.v;render();};});
+[["r-opt","needOptIn"],["r-lock","respectLocks"],["r-loc","crossLocation"],["r-cost","crossCost"]].forEach(function(p){document.getElementById(p[0]).onchange=function(e){rules[p[1]]=e.target.checked;render();};});
+document.getElementById("reset").onclick=function(){rules=Object.assign({},T.DEFAULT_RULES);render();};
+render();
+setTimeout(play,700);
+})();
+</script>
